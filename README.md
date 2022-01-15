@@ -1,2 +1,7 @@
 # Grouper
-The revolutionary new group matching application for University students looking to achieve high grades!
+
+To run the backend and frontend concurrently use npm run dev
+
+To run the backend via nodemon use npm start-watch
+
+To run the backend via node use npm start
