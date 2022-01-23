@@ -1,81 +1,85 @@
-const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const routes = require("./routes/api");
-require("dotenv").config({ path: "./config.env" });
-
+const express = require("express");
+const cors = require("cors");
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
+const bodyParser = require("body-parser");
 const app = express();
+const User = require("./user");
+//----------------------------------------- END OF IMPORTS---------------------------------------------------
+mongoose.connect(
+  "mongodb+srv://derek:grouper@cluster0.wivsz.mongodb.net/myFirstDatabase?retryWrites=true",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  () => {
+    console.log("Mongoose Is Connected");
+  }
+);
 
-const port = process.env.PORT || 5000;
-// Connect to the database
-mongoose
-	.connect(process.env.DB, { useNewUrlParser: true })
-	.then(() => console.log(`Database connected successfully`))
-	.catch((err) => console.log(err));
-
-// Since mongoose's Promise is deprecated, we override it with Node's Promise
-mongoose.Promise = global.Promise;
-
+// Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cors({
-    origin: "http://localhost:3000",
-    credential: true
-}))
-
-app.use(session({
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:3000", // <-- location of the react app were connecting to
+    credentials: true,
+  })
+);
+app.use(
+  session({
     secret: "secretcode",
     resave: true,
-    saveUnintialized: true
-}));
+    saveUninitialized: true,
+  })
+);
+app.use(cookieParser("secretcode"));
+app.use(passport.initialize());
+app.use(passport.session());
+require("./passportConfig")(passport);
 
-app.use(cookieParser("secretcode"))
+//----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
 
-app.post("/login", (req, res) => {
-    console.log(req.body);
-})
-
-app.post("/register", (req, res) => {
-    console.log(req.body);
-    User,findOne({username: req.body.username}, (err, doc) => {
+// Routes
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) throw err;
+    if (!user) res.send("No User Exists");
+    else {
+      req.logIn(user, (err) => {
         if (err) throw err;
-        if (doc) res.send("User Already Exists");
-        if (!doc) {
-            const newUser = new User({
-                username: req.body.username,
-                password: req.body.password
-            });
-            await newUser.save();
-            res.send("User Created");
-        }
-    });
+        res.send("Successfully Authenticated");
+        console.log(req.user);
+      });
+    }
+  })(req, res, next);
 });
+app.post("/register", (req, res) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
+    if (err) throw err;
+    if (doc) res.send("User Already Exists");
+    if (!doc) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-app.get("/user", (req, res) => {});
-
-
-
-
-
-
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept"
-	);
-	next();
+      const newUser = new User({
+        username: req.body.username,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      res.send("User Created");
+    }
+  });
 });
-
-app.use(bodyParser.json());
-
-app.use("/api", routes);
-
-app.use((err, req, res, next) => {
-	console.log(err);
-	next();
+app.get("/user", (req, res) => {
+  res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
 });
+//----------------------------------------- END OF ROUTES---------------------------------------------------
+//Start Server
 
-app.listen(port, () => {
-	console.log(`Server running on port ${port}`);
+app.listen(process.env.PORT || 5000, () => {
+    console.log('Server is listening on port 5000');
 });
