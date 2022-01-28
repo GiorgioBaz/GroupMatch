@@ -1,12 +1,17 @@
-const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const routes = require("./routes/api");
+const express = require("express");
+const cors = require("cors");
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const bodyParser = require("body-parser");
 require("dotenv").config({ path: "./config.env" });
-
 const app = express();
-
+const userAuth = require("./routes/userAuth");
 const port = process.env.PORT || 5000;
+//----------------------------------------- END OF IMPORTS---------------------------------------------------
+
 // Connect to the database
 mongoose
 	.connect(process.env.DB, { useNewUrlParser: true })
@@ -16,24 +21,33 @@ mongoose
 // Since mongoose's Promise is deprecated, we override it with Node's Promise
 mongoose.Promise = global.Promise;
 
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept"
-	);
-	next();
-});
-
+// Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+	cors({
+		origin: "http://localhost:3000", // <-- location of the react app were connecting to
+		credentials: true,
+	})
+);
+app.use(
+	session({
+		secret: "secretcode",
+		resave: true,
+		saveUninitialized: true,
+	})
+);
+app.use(cookieParser("secretcode"));
+app.use(passport.initialize());
+app.use(passport.session());
+require("./passportConfig")(passport);
 
-app.use("/api", routes);
+app.use("/", userAuth);
 
-app.use((err, req, res, next) => {
-	console.log(err);
-	next();
-});
+//----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
+
+//Start Server
 
 app.listen(port, () => {
-	console.log(`Server running on port ${port}`);
+	console.log("Server is listening on port 5000");
 });
