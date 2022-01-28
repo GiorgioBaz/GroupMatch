@@ -9,6 +9,7 @@ function Login() {
 	const [loginUsername, setLoginUsername] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
 	const [data, setData] = useState(null);
+
 	const register = () => {
 		Axios({
 			method: "POST",
@@ -20,6 +21,7 @@ function Login() {
 			url: "http://localhost:5000/register",
 		}).then((res) => console.log(res));
 	};
+
 	const login = () => {
 		Axios({
 			method: "POST",
@@ -31,6 +33,7 @@ function Login() {
 			url: "http://localhost:5000/login",
 		}).then((res) => console.log(res));
 	};
+
 	const getUser = () => {
 		Axios({
 			method: "GET",
@@ -41,6 +44,20 @@ function Login() {
 			console.log(res.data);
 		});
 	};
+
+	const logout = () => {
+		Axios({
+			method: "POST",
+			data: {
+				username: loginUsername,
+				password: loginPassword,
+			},
+			withCredentials: true,
+			url: "http://localhost:5000/logout",
+		}).then((res) => console.log(res));
+		//May need a window relocation once the page is fully developed
+	};
+
 	return (
 		<div className="App">
 			<div>
@@ -74,6 +91,7 @@ function Login() {
 				<button onClick={getUser}>Submit</button>
 				{data ? <h1>Welcome Back {data.username}</h1> : null}
 			</div>
+			<button onClick={logout}>Log Out</button>
 		</div>
 	);
 }

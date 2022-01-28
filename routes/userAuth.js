@@ -19,6 +19,7 @@ app.post("/login", (req, res, next) => {
 		}
 	})(req, res, next);
 });
+
 app.post("/register", (req, res) => {
 	User.findOne({ username: req.body.username }, async (err, doc) => {
 		if (err) throw err;
@@ -34,8 +35,14 @@ app.post("/register", (req, res) => {
 		}
 	});
 });
+
 app.get("/user", (req, res) => {
 	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
+});
+
+app.post("/logout", function (req, res) {
+	req.logout();
+	res.send("Successfully Logged Out");
 });
 
 module.exports = app;
