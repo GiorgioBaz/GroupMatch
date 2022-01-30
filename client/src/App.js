@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 
 //Importing Components
-import Login from "./Components/Login.js";
+import Login from "./Components/Login/Login.js";
 import Register from "./Components/Register/Register";
 
 function App() {
