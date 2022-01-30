@@ -2,8 +2,8 @@ import { useState } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import "./Login.css";
-import passwordIcon from "../Assets/password-icon.svg";
-import emailIcon from "../Assets/email-icon.svg";
+import passwordIcon from "../../Assets/password-icon.svg";
+import emailIcon from "../../Assets/email-icon.svg";
 
 function Login() {
 	const [loginEmail, setLoginEmail] = useState("");
