@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 //Importing Components
 import Login from "./Components/Login.js";
-import Register from "./Components/Register/Register";
 
 function App() {
 	return (
@@ -13,14 +12,6 @@ function App() {
 					element={
 						<div className="App">
 							<Login />
-						</div>
-					}
-				/>
-				<Route
-					path="/register"
-					element={
-						<div className="App">
-							<Register />
 						</div>
 					}
 				/>

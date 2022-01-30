@@ -32,12 +32,12 @@ app.use(
 );
 app.use(
 	session({
-		secret: "pennylanebevs",
+		secret: "secretcode",
 		resave: true,
 		saveUninitialized: true,
 	})
 );
-app.use(cookieParser("pennylanebevs"));
+app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
