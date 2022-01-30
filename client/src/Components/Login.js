@@ -4,29 +4,15 @@ import "./Login.css";
 import background from "../Assets/background.svg";
 
 function Login() {
-	const [registerUsername, setRegisterUsername] = useState("");
-	const [registerPassword, setRegisterPassword] = useState("");
-	const [loginUsername, setLoginUsername] = useState("");
+	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
 	const [data, setData] = useState(null);
-
-	const register = () => {
-		Axios({
-			method: "POST",
-			data: {
-				username: registerUsername,
-				password: registerPassword,
-			},
-			withCredentials: true,
-			url: "http://localhost:5000/register",
-		}).then((res) => console.log(res));
-	};
 
 	const login = () => {
 		Axios({
 			method: "POST",
 			data: {
-				username: loginUsername,
+				email: loginEmail,
 				password: loginPassword,
 			},
 			withCredentials: true,
@@ -38,7 +24,7 @@ function Login() {
 		Axios({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/user",
+			url: "http://localhost:5000/currentUser",
 		}).then((res) => {
 			setData(res.data);
 			console.log(res.data);
@@ -48,10 +34,6 @@ function Login() {
 	const logout = () => {
 		Axios({
 			method: "POST",
-			data: {
-				username: loginUsername,
-				password: loginPassword,
-			},
 			withCredentials: true,
 			url: "http://localhost:5000/logout",
 		}).then((res) => console.log(res));
@@ -61,26 +43,17 @@ function Login() {
 	return (
 		<div className="App">
 			<div>
-				<h1>Register</h1>
-				<input
-					placeholder="username"
-					onChange={(e) => setRegisterUsername(e.target.value)}
-				/>
-				<input
-					placeholder="password"
-					onChange={(e) => setRegisterPassword(e.target.value)}
-				/>
-				<button onClick={register}>Submit</button>
-			</div>
-
-			<div>
 				<h1>Login</h1>
 				<input
-					placeholder="username"
-					onChange={(e) => setLoginUsername(e.target.value)}
+					placeholder="Email"
+					name="email"
+					onChange={(e) =>
+						setLoginEmail(e.target.value.toString().toLowerCase())
+					}
 				/>
 				<input
-					placeholder="password"
+					placeholder="Password"
+					type={"password"}
 					onChange={(e) => setLoginPassword(e.target.value)}
 				/>
 				<button onClick={login}>Submit</button>
@@ -89,7 +62,7 @@ function Login() {
 			<div>
 				<h1>Get User</h1>
 				<button onClick={getUser}>Submit</button>
-				{data ? <h1>Welcome Back {data.username}</h1> : null}
+				{data ? <h1>Welcome Back {data.name}</h1> : null}
 			</div>
 			<button onClick={logout}>Log Out</button>
 		</div>
