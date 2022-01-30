@@ -2,6 +2,8 @@ import { useState } from "react";
 import Axios from "axios";
 import "./Login.css";
 import background from "../Assets/background.svg";
+import passwordIcon from "../Assets/password-icon.svg";
+import usernameIcon from "../Assets/username-icon.svg";
 
 function Login() {
 	const [registerUsername, setRegisterUsername] = useState("");
@@ -59,39 +61,37 @@ function Login() {
 	};
 
 	return (
-		<div className="App">
+		<div className="App" style={{ 
+			backgroundImage: `url(${background})`,
+			backgroundPosition: 'center',
+			backgroundSize: 'cover',
+			width: '100vw',
+			height: '100vh',
+			paddingTop: 0}}>
 			<div>
-				<h1>Register</h1>
-				<input
-					placeholder="username"
-					onChange={(e) => setRegisterUsername(e.target.value)}
-				/>
-				<input
-					placeholder="password"
-					onChange={(e) => setRegisterPassword(e.target.value)}
-				/>
-				<button onClick={register}>Submit</button>
+				<div>
+					<form className="form-login">
+						<h1 className="form-header">Login</h1><br/><br/><br/>
+						<section>
+							<h3 className="form-input-headers" style={{marginTop: "10%"}}>Username</h3>
+							<input className="form-box"
+								style={{alignItems: "middle"}}
+								placeholder="Username"
+								onChange={(e) => setLoginUsername(e.target.value)}
+							/>
+						</section><br/><br/>
+						<section>
+							<h3 className="form-input-headers">Password</h3>
+							<input className="form-box"
+								placeholder="Password"
+								onChange={(e) => setLoginPassword(e.target.value)}
+							/>
+						</section>
+						<button className="button" onClick={login}>Continue</button>
+						<p style={{position: "absolute", bottom:"0px", paddingLeft:"5%"}}>I'm a new user? Register.</p>
+					</form>
+				</div>
 			</div>
-
-			<div>
-				<h1>Login</h1>
-				<input
-					placeholder="username"
-					onChange={(e) => setLoginUsername(e.target.value)}
-				/>
-				<input
-					placeholder="password"
-					onChange={(e) => setLoginPassword(e.target.value)}
-				/>
-				<button onClick={login}>Submit</button>
-			</div>
-
-			<div>
-				<h1>Get User</h1>
-				<button onClick={getUser}>Submit</button>
-				{data ? <h1>Welcome Back {data.username}</h1> : null}
-			</div>
-			<button onClick={logout}>Log Out</button>
 		</div>
 	);
 }
