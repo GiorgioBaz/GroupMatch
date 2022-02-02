@@ -23,7 +23,9 @@ app.post("/login", (req, res, next) => {
 app.post("/register", (req, res) => {
 	User.findOne({ email: req.body.email }, async (err, doc) => {
 		if (err) throw err;
+
 		if (doc) res.send("User Already Exists");
+
 		if (!doc) {
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
 			const newUser = new User({
@@ -37,14 +39,52 @@ app.post("/register", (req, res) => {
 	});
 });
 
-//Gets the currently logged in user
-app.get("/currentUser", (req, res) => {
-	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
+app.post("/forgotpassword", (req, res) => {
+	const body = req.body;
+	const newPassword = body.password;
+	const userEmail = body.email;
+
+	User.findOne({ email: userEmail }, (err, user) => {
+		if (err) throw err;
+
+		if (!userEmail) {
+			return res.send({
+				success: false,
+				message:
+					"Please check your email for incorrect spelling or missing characters",
+			});
+		}
+
+		if (!user) {
+			return res.send({
+				success: false,
+				message:
+					"Not a registered account, please check your email for incorrect spelling or missing characters",
+			});
+		}
+
+		return res.send({
+			success: true,
+			message: "A reset email has been sent",
+		});
+	});
+	if (newPassword) {
+		User.findOneAndUpdate(
+			{ email: userEmail },
+			{ password: bcrypt.hash(body.password, 10) }
+		).then(() => {
+			return res.send("Your password has been changed!");
+		});
+	}
 });
 
 app.post("/logout", function (req, res) {
 	req.logout();
 	res.send("Successfully Logged Out");
+});
+//Gets the currently logged in user
+app.get("/currentUser", (req, res) => {
+	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
 });
 
 //----------------------------------------- Postman Routes Only ---------------------------------------------------
