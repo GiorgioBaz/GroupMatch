@@ -527,7 +527,7 @@ app.post("/forgotpassword", (req, res) => {
 				});
 			}
 			 else {
-				User.findOne({ _id: inputtedCode }, async (err, user) => {
+				User.findOne({ _id: inputtedCode, email: userEmail }, async (err, user) => {
 					//This query is an ID check to see if the user already exists
 					if (!user) {
 						return res.send({
@@ -548,12 +548,30 @@ app.post("/forgotpassword", (req, res) => {
 						).then(() => {
 							req.logOut();
 							return res.send({
-								success: true,
-								message: "Your password has been changed!",
+								success: false,
+								message: "Incorrect reset code",
 							});
-						});
+						}
+
+						if (user && user.passwordRequested) {
+							User.findOneAndUpdate(
+								{ _id: inputtedCode },
+								{ passwordRequested: false }
+							).then(); //find the unique user entry and execute an update to log the account's successful email verification
+
+							User.findOneAndUpdate(
+								{ email: userEmail },
+								{ password: await bcrypt.hash(newPassword, 10) }
+							).then(() => {
+								req.logOut();
+								return res.send({
+									success: true,
+									message: "Your password has been changed!",
+								});
+							});
+						}
 					}
-				});
+				);
 			}
 		}
 	});

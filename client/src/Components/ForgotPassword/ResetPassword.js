@@ -42,16 +42,19 @@ function ResetPassword() {
 				url: "http://localhost:5000/forgotpassword",
 			}).then((res) => {
 				if (res.data.success) {
-					Swal.fire("Success", `${res.data.message}`, "success").then(
-						(swal) => {
-							if (swal.isConfirmed) {
-								window.location.href = "/";
-							}
+					Swal.fire({
+						title: "Success",
+						text: `${res.data.message}`,
+						icon: "success",
+						confirmButtonText: "Log In",
+					}).then((swal) => {
+						if (swal.isConfirmed || swal.isDismissed) {
+							window.location.href = "/";
 						}
-					);
+					});
+					setErrorMsg(res.data.message);
 				} else {
 					setErrorMsg(res.data.message);
-					console.log(res.data.message);
 				}
 			});
 		}
