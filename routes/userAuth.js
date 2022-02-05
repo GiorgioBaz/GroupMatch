@@ -3,6 +3,7 @@ const app = express();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const nodemailer = require('nodemailer');
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
@@ -68,6 +69,30 @@ app.post("/forgotpassword", (req, res) => {
 			message: "A reset email has been sent",
 		});
 	});
+	
+	let transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: process.env.EMAIL,
+			pass: process.env.PASSWORD
+		}
+	});
+	
+	let mailOptions = {
+		from: "...",
+		to: userEmail,
+		subject: "GroupMatch - Forgot Password",
+		text: "test test test"
+	};
+	
+	transporter.sendMail(mailOptions, function(err, data) {
+		if (err) {
+			console.log("Error Occurs: ", err);
+		} else {
+			console.log("email send");
+		}
+	});
+
 	if (newPassword) {
 		User.findOneAndUpdate(
 			{ email: userEmail },
@@ -76,6 +101,8 @@ app.post("/forgotpassword", (req, res) => {
 			return res.send("Your password has been changed!");
 		});
 	}
+	
+	
 });
 
 app.post("/logout", function (req, res) {
@@ -118,3 +145,4 @@ app.get("/allUsers", function (req, res) {
 });
 
 module.exports = app;
+
