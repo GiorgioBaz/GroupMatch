@@ -2,12 +2,19 @@ import { useState } from "react";
 import Axios from "axios";
 import Swal from "sweetalert2";
 
+import ResetPassword from "./ResetPassword";
+
 import "./ResetPassword.css";
 import emailIcon from "../../Assets/email-icon.svg";
 
 function Login() {
 	const [resetEmail, setResetEmail] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+
+	const emailError = errorMsg &&
+		errorMsg.includes("incorrect spelling or missing characters") && (
+			<p className="error-p">{errorMsg}</p>
+		);
 
 	const forgotPass = (e) => {
 		e.preventDefault();
@@ -35,9 +42,9 @@ function Login() {
 	};
 	console.log(errorMsg);
 	return (
-		<div className="login-div">
+		<div className="forgot-div">
 			<div className="forgot-card">
-				<form className="login-form" onSubmit={forgotPass}>
+				<form className="forgot-form" onSubmit={forgotPass}>
 					<h1 className="form-header">Forgot Password</h1>
 					<div className="email-div">
 						<div className="email-label">
@@ -53,15 +60,13 @@ function Login() {
 									e.target.value.toString().toLowerCase()
 								)
 							}
+							required
 						/>
 					</div>
-					{errorMsg != undefined &&
-						errorMsg.includes(
-							"incorrect spelling or missing characters"
-						) && <p className="error-p">{errorMsg}</p>}
+					{emailError}
 
 					<div className="continue-button">
-						<button className="button">Continue</button>
+						<button className="forgot-button">Continue</button>
 					</div>
 				</form>
 			</div>

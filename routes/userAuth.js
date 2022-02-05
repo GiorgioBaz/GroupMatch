@@ -3,17 +3,21 @@ const app = express();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const user = require("../models/user");
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
 app.post("/login", (req, res, next) => {
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
-		if (!user) res.send("No User Exists");
+		if (!user) res.send({ success: false, message: "No User Exists" });
 		else {
 			req.logIn(user, (err) => {
 				if (err) throw err;
-				res.send("Successfully Authenticated");
+				res.send({
+					success: true,
+					message: "Successfully Authenticated",
+				});
 				console.log(req.user);
 			});
 		}
@@ -24,7 +28,7 @@ app.post("/register", (req, res) => {
 	User.findOne({ email: req.body.email }, async (err, doc) => {
 		if (err) throw err;
 
-		if (doc) res.send("User Already Exists");
+		if (doc) res.send({ success: false, message: "User Already Exists" });
 
 		if (!doc) {
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -34,7 +38,7 @@ app.post("/register", (req, res) => {
 				password: hashedPassword,
 			});
 			await newUser.save();
-			res.send("User Created");
+			res.send({ success: true, message: "User Created" });
 		}
 	});
 });
@@ -43,6 +47,7 @@ app.post("/forgotpassword", (req, res) => {
 	const body = req.body;
 	const newPassword = body.password;
 	const userEmail = body.email;
+	const inputtedCode = body.resetCode;
 
 	User.findOne({ email: userEmail }, (err, user) => {
 		if (err) throw err;
@@ -63,19 +68,66 @@ app.post("/forgotpassword", (req, res) => {
 			});
 		}
 
-		return res.send({
-			success: true,
-			message: "A reset email has been sent",
-		});
+		if (user && !newPassword) {
+			return res.send({
+				success: true,
+				message: "A reset email has been sent",
+			});
+		}
 	});
-	if (newPassword) {
-		User.findOneAndUpdate(
-			{ email: userEmail },
-			{ password: bcrypt.hash(body.password, 10) }
-		).then(() => {
-			return res.send("Your password has been changed!");
-		});
-	}
+
+	User.findOne({ email: userEmail }, (err, user) => {
+		if (user && !user.passwordRequested) {
+			const currentUserId = user._id;
+
+			User.findOneAndUpdate(
+				{ email: userEmail },
+				{ passwordRequested: true }
+			).then();
+		} else if (user && user.passwordRequested) {
+			if (!newPassword) {
+				return res.send({
+					success: false,
+					message: "Password cannot be blank!",
+				});
+			}
+
+			if (newPassword.length < 8) {
+				return res.send({
+					success: false,
+					message: "Password cannot be shorter than 8 characters",
+				});
+			} else {
+				User.findOne({ _id: inputtedCode }, async (err, user) => {
+					//This query is an ID check to see if the user already exists
+					if (!user) {
+						return res.send({
+							success: false,
+							message: "Incorrect reset code",
+						});
+					}
+
+					if (user && user.passwordRequested) {
+						User.findOneAndUpdate(
+							{ _id: inputtedCode },
+							{ passwordRequested: false }
+						).then(); //find the unique user entry and execute an update to log the account's successful email verification
+
+						User.findOneAndUpdate(
+							{ email: userEmail },
+							{ password: await bcrypt.hash(newPassword, 10) }
+						).then(() => {
+							req.logOut();
+							return res.send({
+								success: true,
+								message: "Your password has been changed!",
+							});
+						});
+					}
+				});
+			}
+		}
+	});
 });
 
 app.post("/logout", function (req, res) {

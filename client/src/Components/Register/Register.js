@@ -71,6 +71,7 @@ function Login() {
 							onChange={(e) =>
 								setRegisterName(e.target.value.toString())
 							}
+							required
 						/>
 					</div>
 
@@ -92,6 +93,7 @@ function Login() {
 									e.target.value.toString().toLowerCase()
 								)
 							}
+							required
 						/>
 					</div>
 
@@ -111,6 +113,8 @@ function Login() {
 							onChange={(e) =>
 								setRegisterPassword(e.target.value)
 							}
+							required
+							minLength="8"
 						/>
 					</div>
 
@@ -130,6 +134,8 @@ function Login() {
 							placeholder="Confirm Password"
 							type={"password"}
 							onChange={(e) => setConfirmPassword(e.target.value)}
+							required
+							minLength="8"
 						/>
 					</div>
 

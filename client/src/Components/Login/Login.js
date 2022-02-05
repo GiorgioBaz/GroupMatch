@@ -42,6 +42,7 @@ function Login() {
 									e.target.value.toString().toLowerCase()
 								)
 							}
+							required
 						/>
 					</div>
 
@@ -55,6 +56,8 @@ function Login() {
 							placeholder="Password"
 							type={"password"}
 							onChange={(e) => setLoginPassword(e.target.value)}
+							required
+							minLength="8"
 						/>
 					</div>
 
