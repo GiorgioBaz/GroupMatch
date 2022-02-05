@@ -1,49 +1,108 @@
 import { useState } from "react";
 import Axios from "axios";
+import Swal from "sweetalert2";
+
 import "./ResetPassword.css";
 import passwordIcon from "../../Assets/password-icon.svg";
+import emailIcon from "../../Assets/email-icon.svg";
 
-function Login() {
-	const [registerPassword, setRegisterPassword] = useState("");
+function ResetPassword() {
+	const [resetPassword, setResetPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const updatedPass =
-		registerPassword !== confirmPassword ? false : registerPassword;
+	const [resetEmail, setResetEmail] = useState("");
+	const [resetCode, setResetCode] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
+
+	const emailErr = errorMsg &&
+		errorMsg.includes("incorrect spelling or missing characters") && (
+			<p className="error-p">{errorMsg}</p>
+		);
+
+	const resetCodeErr = errorMsg &&
+		errorMsg.includes("Incorrect reset code") && (
+			<p className="error-p">{errorMsg}</p>
+		);
+
+	const passMismatchErr = resetPassword !== confirmPassword && (
+		<p className="error-p">Passwords are not the same</p>
+	);
+
 	const resetPass = (e) => {
 		e.preventDefault();
-		if (!updatedPass) {
-			console.log("Password is not the same");
-			return;
-		}
-		Axios({
-			method: "POST",
-			data: {
-				password: updatedPass,
-			},
-			withCredentials: true,
-			url: "http://localhost:5000/forgotpassword",
-		}).then((res) => console.log(res));
-	};
 
+		if (resetPassword === confirmPassword) {
+			Axios({
+				method: "POST",
+				data: {
+					email: resetEmail,
+					password: resetPassword,
+					resetCode: resetCode,
+				},
+				withCredentials: true,
+				url: "http://localhost:5000/forgotpassword",
+			}).then((res) => {
+				if (res.data.success) {
+					Swal.fire("Success", `${res.data.message}`, "success").then(
+						(swal) => {
+							if (swal.isConfirmed) {
+								window.location.href = "/";
+							}
+						}
+					);
+				} else {
+					setErrorMsg(res.data.message);
+					console.log(res.data.message);
+				}
+			});
+		}
+	};
 	return (
-		<div className="login-div">
+		<div className="reset-div">
 			<div className="reset-card">
-				<form className="login-form" onSubmit={resetPass}>
+				<form className="reset-form" onSubmit={resetPass}>
 					<h1 className="form-header">Reset Password</h1>
 					<div className="email-div">
 						<div className="email-label">
-							<img className="email-icon" src={passwordIcon} />
-							<h3 className="form-input-headers">Password</h3>
+							<img
+								alt="Email Icon"
+								className="email-icon"
+								src={emailIcon}
+							/>
+							<h3 className="form-input-headers">Email</h3>
+						</div>
+						<input
+							className="input-field"
+							placeholder="Email"
+							name="email"
+							onChange={(e) =>
+								setResetEmail(
+									e.target.value.toString().toLowerCase()
+								)
+							}
+							required
+							autoComplete="off"
+						/>
+					</div>
+					{emailErr}
+					<div className="password-div">
+						<div className="password-label">
+							<img className="password-icon" src={passwordIcon} />
+							<h3 className="form-input-headers">New Password</h3>
 						</div>
 						<input
 							className="input-field"
 							placeholder="Password"
 							type={"password"}
 							name="email"
-							onChange={(e) =>
-								setRegisterPassword(e.target.value)
-							}
+							onChange={(e) => setResetPassword(e.target.value)}
+							required
+							minLength="8"
+							autoComplete="off"
 						/>
 					</div>
+
+					{passMismatchErr}
+
 					<div className="password-div">
 						<div className="password-label">
 							<img className="password-icon" src={passwordIcon} />
@@ -56,10 +115,34 @@ function Login() {
 							placeholder="Confirm Password"
 							type={"password"}
 							onChange={(e) => setConfirmPassword(e.target.value)}
+							required
+							minLength="8"
+							autoComplete="off"
 						/>
 					</div>
+
+					{passMismatchErr}
+
+					<div className="resetcode-div">
+						<div className="resetcode-label">
+							<img className="password-icon" src={passwordIcon} />
+							<h3 className="form-input-headers">Reset Code</h3>
+						</div>
+						<input
+							className="input-field"
+							type="text"
+							onChange={(e) => setResetCode(e.target.value)}
+							name="Reset Code"
+							placeholder="Password Reset Code"
+							required
+							autoComplete="off"
+						/>
+					</div>
+
+					{resetCodeErr}
+
 					<div className="continue-button">
-						<button className="button">Continue</button>
+						<button className="reset-button">Continue</button>
 					</div>
 				</form>
 			</div>
@@ -67,4 +150,4 @@ function Login() {
 	);
 }
 
-export default Login;
+export default ResetPassword;
