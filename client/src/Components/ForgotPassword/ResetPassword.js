@@ -52,7 +52,7 @@ function ResetPassword() {
 							window.location.href = "/";
 						}
 					});
-					setErrorMsg(res.data.message);
+					//setErrorMsg(res.data.message);
 				} else {
 					setErrorMsg(res.data.message);
 				}
@@ -89,7 +89,11 @@ function ResetPassword() {
 					{emailErr}
 					<div className="password-div">
 						<div className="password-label">
-							<img className="password-icon" src={passwordIcon} />
+							<img
+								alt="Password Icon"
+								className="password-icon"
+								src={passwordIcon}
+							/>
 							<h3 className="form-input-headers">New Password</h3>
 						</div>
 						<input
@@ -108,7 +112,11 @@ function ResetPassword() {
 
 					<div className="password-div">
 						<div className="password-label">
-							<img className="password-icon" src={passwordIcon} />
+							<img
+								alt="Password Icon"
+								className="password-icon"
+								src={passwordIcon}
+							/>
 							<h3 className="form-input-headers">
 								Confirm Password
 							</h3>
@@ -128,7 +136,11 @@ function ResetPassword() {
 
 					<div className="resetcode-div">
 						<div className="resetcode-label">
-							<img className="password-icon" src={passwordIcon} />
+							<img
+								alt="Password Icon"
+								className="password-icon"
+								src={passwordIcon}
+							/>
 							<h3 className="form-input-headers">Reset Code</h3>
 						</div>
 						<input

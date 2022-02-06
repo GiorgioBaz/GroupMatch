@@ -2,8 +2,6 @@ import { useState } from "react";
 import Axios from "axios";
 import Swal from "sweetalert2";
 
-import ResetPassword from "./ResetPassword";
-
 import "./ResetPassword.css";
 import emailIcon from "../../Assets/email-icon.svg";
 
@@ -11,10 +9,7 @@ function Login() {
 	const [resetEmail, setResetEmail] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 
-	const emailError = errorMsg &&
-		errorMsg.includes("incorrect spelling or missing characters") && (
-			<p className="error-p">{errorMsg}</p>
-		);
+	const emailError = errorMsg && <p className="error-p">{errorMsg}</p>;
 
 	const forgotPass = (e) => {
 		e.preventDefault();
@@ -32,7 +27,7 @@ function Login() {
 					"Please check your inboxes including spam",
 					"success"
 				).then((swal) => {
-					if (swal.isConfirmed) {
+					if (swal.isConfirmed || swal.isDismissed) {
 						window.location.href = "/";
 					}
 				});
@@ -48,7 +43,11 @@ function Login() {
 					<h1 className="form-header">Forgot Password</h1>
 					<div className="email-div">
 						<div className="email-label">
-							<img className="email-icon" src={emailIcon} />
+							<img
+								alt="Email Icon"
+								className="email-icon"
+								src={emailIcon}
+							/>
 							<h3 className="form-input-headers">Email</h3>
 						</div>
 						<input
@@ -63,6 +62,7 @@ function Login() {
 							required
 						/>
 					</div>
+
 					{emailError}
 
 					<div className="continue-button">

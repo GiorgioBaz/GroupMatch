@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+
 import "./Register.css";
 import passwordIcon from "../../Assets/password-icon.svg";
 import emailIcon from "../../Assets/email-icon.svg";
@@ -12,23 +14,46 @@ function Login() {
 	const [registerName, setRegisterName] = useState("");
 	const [registerEmail, setRegisterEmail] = useState("");
 	//const [data, setData] = useState(null);
+	const [errorMsg, setErrorMsg] = useState("");
+
+	const emailErr = errorMsg && errorMsg && (
+		<p className="error-p">{errorMsg}</p>
+	);
+
+	const passMismatchErr = registerPassword !== confirmPassword && (
+		<p className="error-p">Passwords are not the same</p>
+	);
 
 	const register = (e) => {
 		e.preventDefault();
-		if (registerPassword !== confirmPassword) {
-			console.log("Password is not the same");
-			return;
+
+		if (registerPassword === confirmPassword) {
+			Axios({
+				method: "POST",
+				data: {
+					name: registerName,
+					email: registerEmail,
+					password: registerPassword,
+				},
+				withCredentials: true,
+				url: "http://localhost:5000/register",
+			}).then((res) => {
+				if (res.data.success) {
+					Swal.fire({
+						title: "Success",
+						text: `${res.data.message}`,
+						icon: "success",
+						confirmButtonText: "Log In",
+					}).then((swal) => {
+						if (swal.isConfirmed || swal.isDismissed) {
+							window.location.href = "/";
+						}
+					});
+				} else {
+					setErrorMsg(res.data.message);
+				}
+			});
 		}
-		Axios({
-			method: "POST",
-			data: {
-				name: registerName,
-				email: registerEmail,
-				password: registerPassword,
-			},
-			withCredentials: true,
-			url: "http://localhost:5000/register",
-		}).then((res) => console.log(res));
 	};
 	/*
 	const getUser = () => {
@@ -97,6 +122,8 @@ function Login() {
 						/>
 					</div>
 
+					{emailErr}
+
 					<div className="password-div">
 						<div className="password-label">
 							<img
@@ -117,6 +144,8 @@ function Login() {
 							minLength="8"
 						/>
 					</div>
+
+					{passMismatchErr}
 
 					<div className="confirmpass-div">
 						<div className="confirmpass-label">
@@ -139,6 +168,8 @@ function Login() {
 						/>
 					</div>
 
+					{passMismatchErr}
+
 					<div className="create-button">
 						<button className="button">Create Account</button>
 					</div>
@@ -146,7 +177,7 @@ function Login() {
 					<p className="register-p">
 						Have an account?
 						<Link to="/" className="register-span">
-							Login
+							Log In
 						</Link>
 					</p>
 				</form>

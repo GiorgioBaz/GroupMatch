@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+
 import "./Login.css";
 import passwordIcon from "../../Assets/password-icon.svg";
 import emailIcon from "../../Assets/email-icon.svg";
@@ -8,6 +10,11 @@ import emailIcon from "../../Assets/email-icon.svg";
 function Login() {
 	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
+
+	const passwordErr = errorMsg && errorMsg && (
+		<p className="error-p">{errorMsg}</p>
+	);
 
 	const login = (e) => {
 		e.preventDefault();
@@ -19,7 +26,17 @@ function Login() {
 			},
 			withCredentials: true,
 			url: "http://localhost:5000/login",
-		}).then((res) => console.log(res));
+		}).then((res) => {
+			if (res.data.success) {
+				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
+			} else {
+				setErrorMsg(res.data.message);
+			}
+		});
 	};
 
 	return (
@@ -30,7 +47,11 @@ function Login() {
 
 					<div className="email-div">
 						<div className="email-label">
-							<img className="email-icon" src={emailIcon} />
+							<img
+								alt="Email Icon"
+								className="email-icon"
+								src={emailIcon}
+							/>
 							<h3 className="form-input-headers">Email</h3>
 						</div>
 						<input
@@ -48,8 +69,18 @@ function Login() {
 
 					<div className="password-div">
 						<div className="password-label">
-							<img className="password-icon" src={passwordIcon} />
+							<img
+								alt="Password Icon"
+								className="password-icon"
+								src={passwordIcon}
+							/>
 							<h3 className="form-input-headers">Password</h3>
+							<Link
+								to="/forgotpassword"
+								className="resetpass-span"
+							>
+								Forgot your password?
+							</Link>
 						</div>
 						<input
 							className="input-field"
@@ -60,6 +91,8 @@ function Login() {
 							minLength="8"
 						/>
 					</div>
+
+					{passwordErr}
 
 					<div className="continue-button">
 						<button className="button">Continue</button>

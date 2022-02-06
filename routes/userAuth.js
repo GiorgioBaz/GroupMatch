@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const User = require("../models/user");
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
@@ -10,7 +10,11 @@ const User = require("../models/user");
 app.post("/login", (req, res, next) => {
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
-		if (!user) res.send({ success: false, message: "No User Exists" });
+		if (!user)
+			res.send({
+				success: false,
+				message: "Incorrect email or password",
+			});
 		else {
 			req.logIn(user, (err) => {
 				if (err) throw err;
@@ -28,7 +32,11 @@ app.post("/register", (req, res) => {
 	User.findOne({ email: req.body.email }, async (err, doc) => {
 		if (err) throw err;
 
-		if (doc) res.send({ success: false, message: "User Already Exists" });
+		if (doc)
+			res.send({
+				success: false,
+				message: "An account already exists with this email.",
+			});
 
 		if (!doc) {
 			const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -38,7 +46,7 @@ app.post("/register", (req, res) => {
 				password: hashedPassword,
 			});
 			await newUser.save();
-			res.send({ success: true, message: "User Created" });
+			res.send({ success: true, message: "Welcome to GroupMatch!" });
 		}
 	});
 });
@@ -67,17 +75,17 @@ app.post("/forgotpassword", (req, res) => {
 					"Not a registered account, please check your email for incorrect spelling or missing characters",
 			});
 		}
-		if (user && !newPassword) {		
+		if (user && !newPassword) {
 			let transporter = nodemailer.createTransport({
-				service: 'Gmail',
+				service: "Gmail",
 				auth: {
 					user: process.env.EMAIL,
-					pass: process.env.PASSWORD
-				}
+					pass: process.env.PASSWORD,
+				},
 			});
-			console.log(process.env.EMAIL)
-			console.log(process.env.PASSWORD)
-			
+			console.log(process.env.EMAIL);
+			console.log(process.env.PASSWORD);
+
 			let mailOptions = {
 				from: "groupmatchapp@gmail.com",
 				to: userEmail,
@@ -488,11 +496,9 @@ app.post("/forgotpassword", (req, res) => {
           <!--[if (IE)]></div><![endif]-->
           </body>
           </html>`,
-         
-
 			};
-			
-		transporter.sendMail(mailOptions, function(err, data) {
+
+			transporter.sendMail(mailOptions, function (err, data) {
 				if (err) {
 					console.log("Error Occurs: ", err);
 				} else {
@@ -520,33 +526,18 @@ app.post("/forgotpassword", (req, res) => {
 					success: false,
 					message: "Password cannot be shorter than 8 characters",
 				});
-			}if (!newPassword) {
+			}
+			if (!newPassword) {
 				return res.send({
 					success: false,
 					message: "Password cannot be blank!",
 				});
-			}
-			 else {
-				User.findOne({ _id: inputtedCode, email: userEmail }, async (err, user) => {
-					//This query is an ID check to see if the user already exists
-					if (!user) {
-						return res.send({
-							success: false,
-							message: "Incorrect reset code",
-						});
-					}
-
-					if (user && user.passwordRequested) {
-						User.findOneAndUpdate(
-							{ _id: inputtedCode },
-							{ passwordRequested: false }
-						).then(); //find the unique user entry and execute an update to log the account's successful email verification
-
-						User.findOneAndUpdate(
-							{ email: userEmail },
-							{ password: await bcrypt.hash(newPassword, 10) }
-						).then(() => {
-							req.logOut();
+			} else {
+				User.findOne(
+					{ _id: inputtedCode, email: userEmail },
+					async (err, user) => {
+						//This query is an ID check to see if the user already exists
+						if (!user) {
 							return res.send({
 								success: false,
 								message: "Incorrect reset code",
@@ -617,4 +608,3 @@ app.get("/allUsers", function (req, res) {
 });
 
 module.exports = app;
-
