@@ -110,3 +110,14 @@
 	font-weight: 700;
 	text-decoration: none;
 }
+
+.error-p {
+	color: red;
+	margin-left: 7.2%;
+	font-size: 14px;
+	margin-top: 1em;
+}
+
+.error-input {
+	border: 1px solid red;
+}

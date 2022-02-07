@@ -6,6 +6,7 @@ import passwordIcon from "../../Assets/password-icon.svg";
 function Login() {
 	const [registerPassword, setRegisterPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
 	const updatedPass =
 		registerPassword !== confirmPassword ? false : registerPassword;
 	const resetPass = (e) => {
@@ -21,7 +22,7 @@ function Login() {
 			},
 			withCredentials: true,
 			url: "http://localhost:5000/forgotpassword",
-		}).then((res) => console.log(res));
+		}).then((res) => setErrorMsg(res.data.message));
 	};
 
 	return (
@@ -43,6 +44,11 @@ function Login() {
 								setRegisterPassword(e.target.value)
 							}
 						/>
+						{errorMsg != undefined &&
+						errorMsg.includes(
+							"Passwords"
+						) && <p className="error-p">{errorMsg}</p>
+					}
 					</div>
 					<div className="password-div">
 						<div className="password-label">

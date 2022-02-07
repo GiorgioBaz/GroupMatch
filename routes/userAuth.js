@@ -7,6 +7,17 @@ const passport = require("passport");
 
 // Routes
 app.post("/login", (req, res, next) => {
+	const body = req.body;
+	const userEmail = body.email;
+
+	if(!userEmail.includes("@") || !userEmail.includes(".com")){
+		return res.send({
+			success: false,
+			message:
+				"Please enter a valid email"
+		});
+	}
+
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
 		if (!user) res.send("No User Exists");
@@ -21,6 +32,26 @@ app.post("/login", (req, res, next) => {
 });
 
 app.post("/register", (req, res) => {
+	const body = req.body;
+	const userEmail = body.email;
+	const userPassword = body.password;
+
+	if(!userEmail.includes("@") || !userEmail.includes(".com")){
+		return res.send({
+			success: false,
+			message:
+				"Please enter a valid email"
+		});
+	}
+
+	if(userPassword.length < 8){
+		return res.send({
+			success: false,
+			message:
+				"Passwords must be at least 8 characters long."
+		});
+	}
+
 	User.findOne({ email: req.body.email }, async (err, doc) => {
 		if (err) throw err;
 
@@ -69,7 +100,7 @@ app.post("/forgotpassword", (req, res) => {
 		});
 	});
 	if (newPassword) {
-		User.findOneAndUpdate(
+		User.findOneAnsdUpdate(
 			{ email: userEmail },
 			{ password: bcrypt.hash(body.password, 10) }
 		).then(() => {

@@ -8,6 +8,7 @@ import emailIcon from "../../Assets/email-icon.svg";
 function Login() {
 	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
 
 	const login = (e) => {
 		e.preventDefault();
@@ -19,7 +20,7 @@ function Login() {
 			},
 			withCredentials: true,
 			url: "http://localhost:5000/login",
-		}).then((res) => console.log(res));
+		}).then((res) => setErrorMsg(res.data.message));
 	};
 
 	return (
@@ -43,6 +44,11 @@ function Login() {
 								)
 							}
 						/>
+						{errorMsg != undefined &&
+						errorMsg.includes(
+							"email"
+						) && <p className="error-p">{errorMsg}</p>
+					}
 					</div>
 
 					<div className="password-div">

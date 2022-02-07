@@ -11,6 +11,7 @@ function Login() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [registerName, setRegisterName] = useState("");
 	const [registerEmail, setRegisterEmail] = useState("");
+	const [errorMsg, setErrorMsg] = useState("");
 	//const [data, setData] = useState(null);
 
 	const register = (e) => {
@@ -28,7 +29,7 @@ function Login() {
 			},
 			withCredentials: true,
 			url: "http://localhost:5000/register",
-		}).then((res) => console.log(res));
+		}).then((res) => setErrorMsg(res.data.message));
 	};
 	/*
 	const getUser = () => {
@@ -93,6 +94,10 @@ function Login() {
 								)
 							}
 						/>
+						{errorMsg != undefined &&
+						errorMsg.includes(
+							"email"
+						) && <p className="error-p">{errorMsg}</p>}
 					</div>
 
 					<div className="password-div">
@@ -112,6 +117,10 @@ function Login() {
 								setRegisterPassword(e.target.value)
 							}
 						/>
+						{errorMsg != undefined &&
+						errorMsg.includes(
+							"Passwords"
+						) && <p className="error-p">{errorMsg}</p>}
 					</div>
 
 					<div className="confirmpass-div">
