@@ -8,8 +8,20 @@ const User = require("../models/user");
 
 // Routes
 app.post("/login", (req, res, next) => {
+  const body = req.body;
+	const userEmail = body.email;
+
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
+
+    if(!userEmail.includes("@") || !userEmail.includes(".com")){
+      return res.send({
+        success: false,
+        message:
+          "Please enter a valid email"
+      });
+    }
+    
 		if (!user)
 			res.send({
 				success: false,
@@ -29,6 +41,17 @@ app.post("/login", (req, res, next) => {
 });
 
 app.post("/register", (req, res) => {
+  const body = req.body;
+	const userEmail = body.email;
+  
+  if(!userEmail.includes("@") || !userEmail.includes(".com")){
+		return res.send({
+			success: false,
+			message:
+				"Please enter a valid email"
+		});
+	}
+
 	User.findOne({ email: req.body.email }, async (err, doc) => {
 		if (err) throw err;
 
