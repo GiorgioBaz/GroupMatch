@@ -30,7 +30,7 @@ function Login() {
 			if (res.data.success) {
 				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
 					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.href = "/";
+						window.location.href = "/mainpage";
 					}
 				});
 			} else {

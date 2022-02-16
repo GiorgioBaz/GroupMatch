@@ -6,6 +6,7 @@ import Login from "./Components/Login/Login.js";
 import Register from "./Components/Register/Register";
 import ResetPassword from "./Components/ForgotPassword/ResetPassword";
 import ForgotPassword from "./Components/ForgotPassword/ForgotPassword";
+import MainPage from "./Components/MainPage/MainPage";
 
 function App() {
 	return (
@@ -40,6 +41,14 @@ function App() {
 					element={
 						<div className="App">
 							<ResetPassword />
+						</div>
+					}
+				/>
+				<Route
+					path="/mainpage"
+					element={
+						<div className="App">
+							<MainPage />
 						</div>
 					}
 				/>
