@@ -26,6 +26,12 @@ const user = new mongoose.Schema({
 		required: true,
 		default: false,
 	},
+
+	grade: {
+		type: String,
+		required: false,
+		default: "",
+	}
 });
 
 module.exports = mongoose.model("User", user);
