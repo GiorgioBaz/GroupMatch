@@ -1,0 +1,117 @@
+.profile-div {
+    background-color: white;
+    display: flex;
+	flex-direction: column;
+    align-items: center;
+}
+
+.profile-card{
+    display: flex;
+    flex-direction: column;
+    width: 25vw;
+    height: fit-content;
+    position: relative;
+    margin-left: 250%;
+}
+
+.student-header {
+    position: relative;
+    font-weight: bold;
+    font-size: 36px;
+    text-align: center;
+    margin-left: 40%;
+}
+
+.student-photo{
+    border-radius: 50%;
+    width: 9em;
+    align-self: center;
+    margin-top: 0.5em;
+    margin-left: 40%;
+}
+
+.profile-form{
+    display: flex;
+	flex-direction: column;
+}
+
+.username-div{
+    margin-top: 3em;
+}
+
+.username-label {
+    display: flex;
+	flex-direction: row;
+}
+
+.username-icon {
+    margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.profile-header {
+    position: relative;
+	font-weight: bold;
+    margin-left: 2%;
+}
+
+.profile-field {
+    position: relative;
+    width: 150%;
+    height: 3.3em; 
+    background: #F2F2F2;
+    border-radius: 8px;
+}
+
+.email-div{
+    margin-top: 2em;
+}
+
+.student-email-label {
+    display: flex;
+	flex-direction: row;
+}
+
+.student-email-icon{
+    margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.academics-div{
+    margin-top: 2em;
+}
+
+.academics-label {
+    display: flex;
+	flex-direction: row;
+}
+
+.academics-icon{
+    margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.profile-buttons{
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: 3.2em;
+    margin-bottom: 3.2em;
+}
+
+.changes-button {
+    width: 40%;
+    height: 3.8em;
+    background: #8324FB;
+    border-radius: 15px;
+    color:white;
+}
+
+.cancel-button {
+    width: 40%;
+    height: 3.8em;
+    border: 2px solid #8324FB;
+    box-sizing: border-box;
+    border-radius: 15px;
+    color:#8324FB;
+}
