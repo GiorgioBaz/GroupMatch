@@ -8,20 +8,19 @@ const User = require("../models/user");
 
 // Routes
 app.post("/login", (req, res, next) => {
-  const body = req.body;
+	const body = req.body;
 	const userEmail = body.email;
 
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
 
-    if(!userEmail.includes("@") || !userEmail.includes(".com")){
-      return res.send({
-        success: false,
-        message:
-          "Please enter a valid email"
-      });
-    }
-    
+		if (!userEmail.includes("@") || !userEmail.includes(".com")) {
+			return res.send({
+				success: false,
+				message: "Please enter a valid email",
+			});
+		}
+
 		if (!user)
 			res.send({
 				success: false,
@@ -41,14 +40,13 @@ app.post("/login", (req, res, next) => {
 });
 
 app.post("/register", (req, res) => {
-  const body = req.body;
+	const body = req.body;
 	const userEmail = body.email;
-  
-  if(!userEmail.includes("@") || !userEmail.includes(".com")){
+
+	if (!userEmail.includes("@") || !userEmail.includes(".com")) {
 		return res.send({
 			success: false,
-			message:
-				"Please enter a valid email"
+			message: "Please enter a valid email",
 		});
 	}
 
@@ -525,7 +523,7 @@ app.post("/forgotpassword", (req, res) => {
 				if (err) {
 					console.log("Error Occurs: ", err);
 				} else {
-					console.log("email send");
+					console.log("Email Sent");
 					return res.send({
 						success: true,
 						message: "A reset email has been sent",
