@@ -1,4 +1,3 @@
-
 import "./Profile.css";
 import emailIcon from "../../Assets/email-icon.svg";
 import userIcon from "../../Assets/user-icon.svg";
@@ -6,14 +5,12 @@ import academicsIcon from "../../Assets/academics-icon.svg";
 import blankUserIcon from "../../Assets/blank-profile-temp.png";
 
 function Profile() {
-	
 	return (
 		<div className="profile-div">
 			<div className="profile-card">
 				<h2 className="student-header">Student Name</h2>
 				<form className="profile-form">
-
-					<img 
+					<img
 						alt="Student Profile"
 						className="student-photo"
 						src={blankUserIcon}
@@ -28,11 +25,11 @@ function Profile() {
 							/>
 							<h4 className="profile-header">Username</h4>
 						</div>
-						<input 
+						<input
 							className="profile-field"
-							placeholder="Username Here">
-						</input>
-					</div>	
+							placeholder="Username Here"
+						></input>
+					</div>
 
 					<div className="email-div">
 						<div className="student-email-label">
@@ -45,8 +42,8 @@ function Profile() {
 						</div>
 						<input
 							className="profile-field"
-							placeholder="Email Here">
-						</input>
+							placeholder="Email Here"
+						></input>
 					</div>
 
 					<div className="academics-div">
@@ -60,9 +57,9 @@ function Profile() {
 						</div>
 						<input
 							className="profile-field"
-							placeholder="Subjects Here">
-						</input>
-					</div> 
+							placeholder="Subjects Here"
+						></input>
+					</div>
 
 					<div className="profile-buttons">
 						<button className="cancel-button">Cancel</button>
