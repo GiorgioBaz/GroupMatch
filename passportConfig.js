@@ -32,7 +32,7 @@ module.exports = function (passport) {
 			const userInformation = {
 				name: user.name,
 				email: user.email,
-				grade: user.grade
+				grades: user.grades,
 			};
 			cb(err, userInformation);
 		});

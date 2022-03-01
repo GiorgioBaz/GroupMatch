@@ -27,11 +27,11 @@ const user = new mongoose.Schema({
 		default: false,
 	},
 
-	grade: {
+	grades: {
 		type: String,
 		required: false,
 		default: "",
-	}
+	},
 });
 
 module.exports = mongoose.model("User", user);

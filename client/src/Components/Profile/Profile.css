@@ -1,117 +1,162 @@
 .profile-div {
-    background-color: white;
-    display: flex;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
 	flex-direction: column;
-    align-items: center;
+	align-items: center;
 }
 
-.profile-card{
-    display: flex;
-    flex-direction: column;
-    width: 25vw;
-    height: fit-content;
-    position: relative;
-    margin-left: 250%;
+.profile-card {
+	display: flex;
+	flex-direction: column;
+	background-color: white;
+	width: 50vw;
+	height: fit-content;
+	position: relative;
+	margin-top: 3em;
+	position: relative;
+}
+
+.profile-form {
+	margin-top: 1em;
+	display: flex;
+	flex-direction: column;
+}
+
+.profile-form-inputs {
+	display: flex;
+	flex-direction: column;
+	margin-left: 10em;
+}
+
+.profile-input {
+	position: relative;
+	background: rgba(133, 36, 251, 0.2);
+	border: none;
+	border-radius: 5px;
+	width: 80%;
+	height: 3.3em;
+	padding-left: 2%;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.profile-input:focus {
+	outline: 2px solid #8324fb;
+}
+
+.profile-input:invalid:focus {
+	position: relative;
+	background: rgba(196, 37, 37, 0.208);
+	border: 1px solid red;
+	border-radius: 5px;
+	outline: 1px red;
+	width: 100%;
+	height: 3.3em;
+	padding-left: 2%;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.academics-div > textarea {
+	padding-top: 1.5em;
+	height: fit-content;
+}
+
+.student-info-div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .student-header {
-    position: relative;
-    font-weight: bold;
-    font-size: 36px;
-    text-align: center;
-    margin-left: 40%;
+	display: flex;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 36px;
 }
 
-.student-photo{
-    border-radius: 50%;
-    width: 9em;
-    align-self: center;
-    margin-top: 0.5em;
-    margin-left: 40%;
+.student-photo {
+	border-radius: 50%;
+	width: 9em;
+	align-self: center;
+	margin-top: 0.5em;
 }
 
-.profile-form{
-    display: flex;
-	flex-direction: column;
-}
-
-.username-div{
-    margin-top: 3em;
+.username-div {
+	margin-top: 2em;
+	margin-bottom: 2em;
 }
 
 .username-label {
-    display: flex;
+	display: flex;
 	flex-direction: row;
 }
 
 .username-icon {
-    margin-left: 1.1%;
+	margin-left: 1.1%;
 	margin-bottom: 1%;
 }
 
 .profile-header {
-    position: relative;
-	font-weight: bold;
-    margin-left: 2%;
+	position: relative;
+	font-weight: 600;
+	margin-left: 1.5%;
 }
 
-.profile-field {
-    position: relative;
-    width: 150%;
-    height: 3.3em; 
-    background: #F2F2F2;
-    border-radius: 8px;
-}
-
-.email-div{
-    margin-top: 2em;
-}
-
-.student-email-label {
-    display: flex;
+.profile-email-label {
+	display: flex;
 	flex-direction: row;
 }
 
-.student-email-icon{
-    margin-left: 1.1%;
+.profile-email-icon {
+	margin-left: 1.1%;
 	margin-bottom: 1%;
 }
 
-.academics-div{
-    margin-top: 2em;
+.academics-div {
+	margin-top: 2em;
 }
 
 .academics-label {
-    display: flex;
+	display: flex;
 	flex-direction: row;
 }
 
-.academics-icon{
-    margin-left: 1.1%;
+.academics-icon {
+	margin-left: 1.1%;
 	margin-bottom: 1%;
 }
 
-.profile-buttons{
-    text-align: center;
-    display: flex;
-    flex-direction: row;
-    margin-top: 3.2em;
-    margin-bottom: 3.2em;
+.profile-buttons {
+	display: flex;
+	margin-top: 3.2em;
+	margin-bottom: 3.2em;
+	justify-content: space-evenly;
 }
 
-.changes-button {
-    width: 40%;
-    height: 3.8em;
-    background: #8324FB;
-    border-radius: 15px;
-    color:white;
+.submit-button {
+	width: 20%;
+	height: 2.7em;
+	background: #8324fb;
+	border-radius: 15px;
+	border: none;
+	color: white;
+	font-weight: 600;
+	font-size: 18px;
+	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
 }
 
 .cancel-button {
-    width: 40%;
-    height: 3.8em;
-    border: 2px solid #8324FB;
-    box-sizing: border-box;
-    border-radius: 15px;
-    color:#8324FB;
+	width: 20%;
+	height: 2.7em;
+	border: 2px solid #8324fb;
+	box-sizing: border-box;
+	border-radius: 15px;
+	color: #8324fb;
+	font-weight: 600;
+	background: white;
+	font-size: 18px;
+	border: 2px solid #8324fb;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
 }

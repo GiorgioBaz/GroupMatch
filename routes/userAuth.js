@@ -35,7 +35,7 @@ app.post("/login", (req, res, next) => {
 				});
 				console.log(req.user);
 			});
-		} 
+		}
 	})(req, res, next);
 });
 
@@ -595,9 +595,27 @@ app.post("/logout", function (req, res) {
 });
 
 //Gets the currently logged in user
-app.get("/currentUser", checkAuthenticated, (req, res) => {
+app.get("/currentUser", (req, res) => {
 	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
+	console.log(req.user);
 });
+
+app.post("/userprofile", function (req, res) {
+	res.send(req.user);
+});
+
+function checkAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return;
+	}
+}
+
+/*function checknotAuthenticated (req, res, next) {
+	if (req.isAuthenticated()) {
+		return res.redirect('/')
+	}
+  next()
+} */
 
 //----------------------------------------- Postman Routes Only ---------------------------------------------------
 
@@ -628,25 +646,5 @@ app.get("/allUsers", function (req, res) {
 		}
 	});
 });
-
-app.post('/userprofile', function (req, res){
-  res.send(req.user);
-})
-
-
-function checkAuthenticated (req, res, next) {
-	if (req.isAuthenticated()) {
-		return next()
-	}
-
-	res.redirect('/')
-}
-
-/*function checknotAuthenticated (req, res, next) {
-	if (req.isAuthenticated()) {
-		return res.redirect('/')
-	}
-  next()
-} */
 
 module.exports = app;
