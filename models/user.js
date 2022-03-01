@@ -32,6 +32,25 @@ const user = new mongoose.Schema({
 		required: false,
 		default: "",
 	},
+
+	degree: {
+		type: String,
+		required: false,
+		default: "",
+	},
+
+	gpa: {
+		type: String,
+		required: false,
+		default: "",
+	},
+
+	studyload: {
+		type: Boolean,
+		required: false,
+		default: true,
+	}
+
 });
 
 module.exports = mongoose.model("User", user);
