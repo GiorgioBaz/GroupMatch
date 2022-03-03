@@ -33,6 +33,9 @@ module.exports = function (passport) {
 				name: user.name,
 				email: user.email,
 				grades: user.grades,
+				gpa: user.gpa,
+				degree: user.degree,
+				studyLoad: user.studyLoad
 			};
 			cb(err, userInformation);
 		});

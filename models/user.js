@@ -45,12 +45,11 @@ const user = new mongoose.Schema({
 		default: "",
 	},
 
-	studyload: {
-		type: Boolean,
+	studyLoad: {
+		type: String,
 		required: false,
-		default: true,
-	}
-
+		default: "",
+	},
 });
 
 module.exports = mongoose.model("User", user);

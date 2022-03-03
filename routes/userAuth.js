@@ -595,13 +595,45 @@ app.post("/logout", function (req, res) {
 });
 
 //Gets the currently logged in user
-app.get("/currentUser", (req, res) => {
+app.get("/userProfile", (req, res) => {
 	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
 	console.log(req.user);
 });
 
-app.post("/userprofile", function (req, res) {
-	res.send(req.user);
+// Updates user's information
+app.post("/updateProfile", function (req, res) {
+	const user = req.user;
+	const { name, email, grades, degree, gpa, studyLoad } = req.body;
+	User.findOne({ email: email }, (error, user) => {
+		if (error) throw error;
+		if (user) {
+			res.send({
+				success: false,
+				message: "Email already exist!",
+			});
+		} else {
+			User.findOneAndUpdate(
+				{ email: user.email },
+				{
+					name: name,
+					email: email,
+					grades: grades,
+					degree: degree,
+					gpa: gpa,
+					studyLoad: studyLoad,
+				}
+			)
+				.then(() => {
+					return res.send({
+						success: true,
+						message: "Your profile has been changed!",
+					});
+				})
+				.catch((err) => {
+					res.send(err); //catches any errors when updating
+				});
+		}
+	});
 });
 
 function checkAuthenticated(req, res, next) {
