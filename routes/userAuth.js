@@ -596,20 +596,26 @@ app.post("/logout", function (req, res) {
 
 //Gets the currently logged in user
 app.get("/userProfile", (req, res) => {
-	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
-	console.log(req.user);
+	if (req.user) {
+		return res.send({ success: true, user: req.user }); // The req.user stores the entire user that has been authenticated inside of it.
+	} else {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
 });
 
 // Updates user's information
 app.post("/updateProfile", function (req, res) {
 	const user = req.user;
-	const { name, email, grades, degree, gpa, studyLoad } = req.body;
-	User.findOne({ email: email }, (error, user) => {
+	const { name, email, academics, degree, gpa, studyLoad } = req.body;
+	User.findOne({ email: email }, (error, doc) => {
 		if (error) throw error;
-		if (user) {
+		if (doc) {
 			res.send({
 				success: false,
-				message: "Email already exist!",
+				message: "Email already exists!",
 			});
 		} else {
 			User.findOneAndUpdate(
@@ -617,7 +623,7 @@ app.post("/updateProfile", function (req, res) {
 				{
 					name: name,
 					email: email,
-					grades: grades,
+					academics: academics,
 					degree: degree,
 					gpa: gpa,
 					studyLoad: studyLoad,

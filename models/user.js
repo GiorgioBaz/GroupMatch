@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const user = new mongoose.Schema({
 	name: {
 		type: String,
@@ -27,11 +28,7 @@ const user = new mongoose.Schema({
 		default: false,
 	},
 
-	grades: {
-		type: String,
-		required: false,
-		default: "",
-	},
+	academics: [{ grade: Schema.Types.String, subject: Schema.Types.String }],
 
 	degree: {
 		type: String,
