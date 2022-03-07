@@ -3,6 +3,7 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 
 import "./Profile.css";
+import Grade from "./Grade/Grade";
 import emailIcon from "../../Assets/email-icon.svg";
 import userIcon from "../../Assets/user-icon.svg";
 import academicsIcon from "../../Assets/academics-icon.svg";
@@ -14,7 +15,12 @@ import studyLoadIcon from "../../Assets/study-load-icon.svg";
 function Profile() {
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
-	const [academics, setAcademics] = useState("");
+	const [grade1, setGrade1] = useState("HD");
+	const [subject1, setSubject1] = useState("");
+	const [grade2, setGrade2] = useState("HD");
+	const [subject2, setSubject2] = useState("");
+	const [grade3, setGrade3] = useState("HD");
+	const [subject3, setSubject3] = useState("");
 	const [degree, setDegree] = useState("");
 	const [gpa, setGpa] = useState("");
 	const [studyLoad, setStudyLoad] = useState("");
@@ -22,11 +28,21 @@ function Profile() {
 	const [resetForm, setResetForm] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
 
+	const emailErr = errorMsg && errorMsg && (
+		<p className="error-p">{errorMsg}</p>
+	);
+	// Creates an array of objects which we use to evaluate if the information has been changed so we can send the new info
+	const academicFields = [
+		{ grade: grade1, subject: subject1 },
+		{ grade: grade2, subject: subject2 },
+		{ grade: grade3, subject: subject3 },
+	];
+
 	const updatedUser = {
 		name: username,
 		email: email,
 		degree: degree,
-		academics: academics,
+		academics: academicFields,
 		gpa: gpa,
 		studyLoad: studyLoad,
 	};
@@ -47,9 +63,15 @@ function Profile() {
 			url: "http://localhost:5000/userProfile",
 		}).then((res) => {
 			if (res.data.success) {
+				const academics = res.data.user.academics;
 				setUsername(res.data.user.name);
 				setEmail(res.data.user.email);
-				setAcademics(res.data.user.academics);
+				setGrade1(academics[0]?.grade);
+				setSubject1(academics[0]?.subject);
+				setGrade2(academics[1]?.grade);
+				setSubject2(academics[1]?.subject);
+				setGrade3(academics[2]?.grade);
+				setSubject3(academics[2]?.subject);
 				setDegree(res.data.user.degree);
 				setGpa(res.data.user.gpa);
 				setStudyLoad(res.data.user.studyLoad);
@@ -78,16 +100,62 @@ function Profile() {
 		setIsDisabled("");
 	}
 
+	function handleGradeChange(e, i) {
+		switch (i) {
+			case 0:
+				setGrade1(e.target.value);
+				break;
+			case 1:
+				setGrade2(e.target.value);
+				break;
+			case 2:
+				setGrade3(e.target.value);
+				break;
+		}
+		setIsDisabled("");
+	}
+
+	function handleSubjectChange(e, i) {
+		switch (i) {
+			case 0:
+				setSubject1(e.target.value);
+				break;
+			case 1:
+				setSubject2(e.target.value);
+				break;
+			case 2:
+				setSubject3(e.target.value);
+				break;
+		}
+		setIsDisabled("");
+	}
+
 	async function updatedFields() {
 		const user = await getUserInfo();
 		const updated = {};
 
+		if (!user)
+			return Swal.fire(
+				"Oops! Something Broke",
+				`Please Log In To Your Account Again`,
+				"error"
+			);
+
 		for (let key of Object.keys(user)) {
-			if (user[key] !== updatedUser[key]) {
+			if (user[key] !== updatedUser[key] && key !== "academics") {
 				updated[key] = updatedUser[key];
+			} else if (key === "academics") {
+				const updatedAcademics = updatedUser[key].find(
+					(el, i) =>
+						el.grade !== user[key][i]?.grade ||
+						el.subject !== user[key][i]?.subject
+				);
+
+				if (updatedAcademics) {
+					updated[key] = updatedUser[key];
+				}
 			}
 		}
-
 		return updated;
 	}
 
@@ -96,7 +164,7 @@ function Profile() {
 
 		const payload = await updatedFields();
 
-		if (!payload) {
+		if (Object.keys(payload).length === 0) {
 			return Swal.fire(
 				"Whoops!",
 				"You haven't updated anything",
@@ -111,11 +179,7 @@ function Profile() {
 			url: "http://localhost:5000/updateProfile",
 		}).then((res) => {
 			if (res.data.success) {
-				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
-					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.href = "/mainpage";
-					}
-				});
+				Swal.fire(`${res.data.message}`, "", "success");
 			} else {
 				setErrorMsg(res.data.message);
 			}
@@ -125,7 +189,7 @@ function Profile() {
 	return (
 		<div className="profile-div">
 			<div className="profile-card">
-				<h2 className="student-header">Student Name</h2>
+				<h2 className="student-header">{username}</h2>
 				<form className="profile-form" onSubmit={updateUserInfo}>
 					<img
 						alt="Student Profile"
@@ -171,7 +235,9 @@ function Profile() {
 									setEmail(e.target.value);
 									setIsDisabled("");
 								}}
+								required
 							/>
+							{emailErr}
 						</div>
 
 						<div className="degree-div">
@@ -203,16 +269,33 @@ function Profile() {
 								/>
 								<h3 className="profile-header">Academics</h3>
 							</div>
-							<textarea
-								className="profile-input"
-								placeholder="Subjects"
-								type={"textarea"}
-								value={academics || ""}
-								onChange={(e) => {
-									setAcademics(e.target.value);
-									setIsDisabled("");
-								}}
-							></textarea>
+							<div className="academics-label2">
+								<h4 className="academics-grade">Grade</h4>
+								<h4 className="academics-subject">Subject</h4>
+							</div>
+							<Grade
+								index={0}
+								grade={grade1}
+								subject={subject1}
+								onGradeChange={handleGradeChange}
+								onSubjectChange={handleSubjectChange}
+							/>
+
+							<Grade
+								index={1}
+								grade={grade2}
+								subject={subject2}
+								onGradeChange={handleGradeChange}
+								onSubjectChange={handleSubjectChange}
+							/>
+
+							<Grade
+								index={2}
+								grade={grade3}
+								subject={subject3}
+								onGradeChange={handleGradeChange}
+								onSubjectChange={handleSubjectChange}
+							/>
 						</div>
 
 						<div className="profile-container">
@@ -227,7 +310,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="GPA (out of 7)"
+									placeholder="GPA / 7"
 									value={gpa || ""}
 									onChange={(e) => {
 										setGpa(e.target.value);
@@ -285,7 +368,6 @@ function Profile() {
 							className="cancel-button"
 							onClick={() => {
 								setResetForm(!resetForm);
-								console.log(resetForm);
 							}}
 						>
 							Cancel
