@@ -617,6 +617,11 @@ app.post("/updateProfile", function (req, res) {
 				success: false,
 				message: "Email already exists!",
 			});
+		} else if (!email.includes("@") || !email.includes(".com")) {
+			return res.send({
+				success: false,
+				message: "Please enter a valid email",
+			});
 		} else {
 			User.findOneAndUpdate(
 				{ email: user.email },
