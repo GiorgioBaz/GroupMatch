@@ -13,7 +13,7 @@
     width: 25vw;
     height: fit-content;
     position: relative;
-    margin-left: 1%;
+    margin-left: 8%;
     margin-top: 3em;
 }
 
@@ -55,7 +55,52 @@
     margin-top: 1.4em;
     display: flex;
     flex-direction: column;
-    font-size: 18px;
+    font-size: 17px;
     margin-left: 5%;
     margin-bottom: 0.5em;
+}
+
+.student-degree-details{
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+    margin-left: 5%
+}
+
+.student-gpa{
+    font-size: 17px;
+}
+
+.student-study{
+    font-size: 17px;
+    margin-left: 20%;
+}
+
+.student-interest-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-top: 4em;
+    margin-left: 10%;
+}
+
+.student-reject-button{
+    border-color: white;
+    background: white;
+    border-radius: 5%;
+}
+
+.student-reject-image{
+    width: 4em;
+}
+
+.student-interest-button{
+    margin-left: 25%;
+    border-color: white;
+    background: white;
+    border-radius: 5%;
+}
+
+.student-interest-image{
+    width: 4em;
 }

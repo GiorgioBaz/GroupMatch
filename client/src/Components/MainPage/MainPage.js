@@ -3,6 +3,8 @@ import Axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import sampleStudent from "../../Assets/blank-profile-temp.png";
+import rejectIcon from "../../Assets/reject-button-icon.svg";
+import interestIcon from "../../Assets/interest-button-icon.svg";
 
 
 function MainPage() {
@@ -49,6 +51,34 @@ function MainPage() {
 						<p>Subject B</p>
 						<p>Subject C</p>
 					</div>
+
+					<div className="student-degree-details">
+						<div className="student-gpa">
+							<p>GPA/7</p>
+						</div>
+
+						<div className="student-study">
+							<p>Full/Part Time</p>
+						</div>
+					</div>
+				</div>
+
+				<div className="student-interest-buttons">
+					<button className="student-reject-button">
+						<img
+						alt="Reject"
+						className="student-reject-image"
+						src={rejectIcon}
+						/>
+					</button>
+
+					<button className="student-interest-button">
+						<img
+						alt="Interest"
+						className="student-interest-image"
+						src={interestIcon}
+						/>
+					</button>
 				</div>
 			</div>
 		</div>
