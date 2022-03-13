@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const cloudinary = require("cloudinary").v2;
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
@@ -607,7 +608,7 @@ app.get("/userProfile", (req, res) => {
 });
 
 // Updates user's information
-app.post("/updateProfile", function (req, res) {
+app.post("/updateProfile", async function (req, res) {
 	const user = req.user;
 	const { name, email, academics, degree, gpa, studyLoad } = req.body;
 	User.findOne({ email: email }, (error, doc) => {
@@ -617,12 +618,13 @@ app.post("/updateProfile", function (req, res) {
 				success: false,
 				message: "Email already exists!",
 			});
-		} else if (!email.includes("@") || !email.includes(".com")) {
-			return res.send({
-				success: false,
-				message: "Please enter a valid email",
-			});
 		} else {
+			if (email && (!email.includes("@") || !email.includes(".com"))) {
+				return res.send({
+					success: false,
+					message: "Please enter a valid email",
+				});
+			}
 			User.findOneAndUpdate(
 				{ email: user.email },
 				{
@@ -645,6 +647,36 @@ app.post("/updateProfile", function (req, res) {
 				});
 		}
 	});
+});
+
+app.post("/api/upload", async (req, res) => {
+	const user = req.user;
+	try {
+		const fileStr = req.body.data;
+		const uploadResponse = await cloudinary.uploader.upload(fileStr);
+		console.log(uploadResponse);
+		User.findOneAndUpdate(
+			{ email: user.email },
+			{
+				avatar: uploadResponse.secure_url,
+				cloudinary_id: uploadResponse.public_id,
+			}
+		).then(() => {
+			return res.send({
+				success: true,
+				message: "Your profile image has been changed!",
+			});
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ err: "Something went wrong" });
+	}
+});
+
+cloudinary.config({
+	cloud_name: "doyt19vwv",
+	api_key: 725842734339165,
+	api_secret: "qHU9B5rNOOjjz4Izd2gm_Haxsb0",
 });
 
 function checkAuthenticated(req, res, next) {

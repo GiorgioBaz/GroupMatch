@@ -47,6 +47,19 @@ const user = new mongoose.Schema({
 		required: false,
 		default: "",
 	},
+
+	avatar: {
+		type: String,
+		required: true,
+		default:
+			"https://res.cloudinary.com/doyt19vwv/image/upload/v1646923245/odydlozucf9ql6osef2g.jpg",
+	},
+
+	cloudinary_id: {
+		type: String,
+		required: false,
+		default: "",
+	},
 });
 
 module.exports = mongoose.model("User", user);

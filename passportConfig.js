@@ -36,6 +36,8 @@ module.exports = function (passport) {
 				academics: user.academics,
 				gpa: user.gpa,
 				studyLoad: user.studyLoad,
+				avatar: user.avatar,
+				cloudinary_id: user.cloudinary_id,
 			};
 			cb(err, userInformation);
 		});

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Axios from "axios";
 import Swal from "sweetalert2";
 
@@ -7,7 +7,6 @@ import Grade from "./Grade/Grade";
 import emailIcon from "../../Assets/email-icon.svg";
 import userIcon from "../../Assets/user-icon.svg";
 import academicsIcon from "../../Assets/academics-icon.svg";
-import blankUserIcon from "../../Assets/blank-profile-temp.png";
 import degreeIcon from "../../Assets/degree-icon.svg";
 import gpaIcon from "../../Assets/gpa-icon.svg";
 import studyLoadIcon from "../../Assets/study-load-icon.svg";
@@ -24,9 +23,15 @@ function Profile() {
 	const [degree, setDegree] = useState("");
 	const [gpa, setGpa] = useState("");
 	const [studyLoad, setStudyLoad] = useState("");
+	const [avatar, setAvatar] = useState("");
 	const [isDisabled, setIsDisabled] = useState("");
 	const [resetForm, setResetForm] = useState(false);
 	const [errorMsg, setErrorMsg] = useState("");
+	const [fileInputState, setFileInputState] = useState("");
+	const [previewSource, setPreviewSource] = useState("");
+	const [selectedFile, setSelectedFile] = useState();
+	const [successMsg, setSuccessMsg] = useState("");
+	const [errMsg, setErrMsg] = useState("");
 
 	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
@@ -45,6 +50,7 @@ function Profile() {
 		academics: academicFields,
 		gpa: gpa,
 		studyLoad: studyLoad,
+		avatar: previewSource,
 	};
 
 	async function getUserInfo() {
@@ -75,6 +81,7 @@ function Profile() {
 				setDegree(res.data.user.degree);
 				setGpa(res.data.user.gpa);
 				setStudyLoad(res.data.user.studyLoad);
+				setAvatar(res.data.user.avatar);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -159,9 +166,8 @@ function Profile() {
 		return updated;
 	}
 
-	async function updateUserInfo(e) {
+	const updateUserInfo = async (e) => {
 		e.preventDefault();
-
 		const payload = await updatedFields();
 
 		if (Object.keys(payload).length === 0) {
@@ -171,7 +177,6 @@ function Profile() {
 				"error"
 			);
 		}
-
 		Axios({
 			method: "POST",
 			data: payload,
@@ -179,22 +184,82 @@ function Profile() {
 			url: "http://localhost:5000/updateProfile",
 		}).then((res) => {
 			if (res.data.success) {
+				handleSubmitFile();
 				Swal.fire(`${res.data.message}`, "", "success");
 			} else {
 				setErrorMsg(res.data.message);
 			}
 		});
+	};
+
+	const inputRef = useRef();
+
+	const handleUpload = () => {
+		inputRef.current.click();
+	};
+
+	const handleFileInputChange = (e) => {
+		const file = e.target.files[0];
+		previewFile(file);
+		setSelectedFile(file);
+		setFileInputState(e.target.value);
+		setIsDisabled("");
+	};
+
+	const previewFile = (file) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onloadend = () => {
+			setPreviewSource(reader.result);
+		};
+	};
+
+	function handleSubmitFile() {
+		if (!selectedFile) return;
+		const reader = new FileReader();
+		reader.readAsDataURL(selectedFile);
+		reader.onloadend = () => {
+			uploadImage(reader.result);
+		};
+		reader.onerror = () => {
+			console.error("AHHHHHHHH!!");
+			setErrMsg("something went wrong!");
+		};
 	}
+
+	const uploadImage = async (base64EncodedImage) => {
+		try {
+			await fetch("/api/upload", {
+				method: "POST",
+				body: JSON.stringify({ data: base64EncodedImage }),
+				headers: { "Content-Type": "application/json" },
+			});
+			setSuccessMsg("Image uploaded successfully");
+		} catch (err) {
+			console.error(err);
+			setErrMsg("Something went wrong!");
+		}
+	};
 
 	return (
 		<div className="profile-div">
+			<input
+				type="file"
+				ref={inputRef}
+				id="fileInput"
+				name="image"
+				onChange={handleFileInputChange}
+				value={fileInputState}
+				className="form-input"
+			/>
 			<div className="profile-card">
 				<h2 className="student-header">{username}</h2>
 				<form className="profile-form" onSubmit={updateUserInfo}>
 					<img
+						onClick={handleUpload}
 						alt="Student Profile"
 						className="student-photo"
-						src={blankUserIcon}
+						src={previewSource ? previewSource : avatar}
 					/>
 					<div className="profile-form-inputs">
 						<div className="username-div">
