@@ -30,8 +30,6 @@ function Profile() {
 	const [fileInputState, setFileInputState] = useState("");
 	const [previewSource, setPreviewSource] = useState("");
 	const [selectedFile, setSelectedFile] = useState();
-	const [successMsg, setSuccessMsg] = useState("");
-	const [errMsg, setErrMsg] = useState("");
 
 	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
@@ -221,10 +219,6 @@ function Profile() {
 		reader.onloadend = () => {
 			uploadImage(reader.result);
 		};
-		reader.onerror = () => {
-			console.error("AHHHHHHHH!!");
-			setErrMsg("something went wrong!");
-		};
 	}
 
 	const uploadImage = async (base64EncodedImage) => {
@@ -234,10 +228,8 @@ function Profile() {
 				body: JSON.stringify({ data: base64EncodedImage }),
 				headers: { "Content-Type": "application/json" },
 			});
-			setSuccessMsg("Image uploaded successfully");
 		} catch (err) {
 			console.error(err);
-			setErrMsg("Something went wrong!");
 		}
 	};
 
