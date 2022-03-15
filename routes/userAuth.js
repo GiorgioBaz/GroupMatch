@@ -5,6 +5,8 @@ const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const cloudinary = require("cloudinary").v2;
+require("dotenv").config({ path: "../config.env" });
+
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
@@ -607,6 +609,9 @@ app.get("/userProfile", (req, res) => {
 	}
 });
 
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 // Updates user's information
 app.post("/updateProfile", async function (req, res) {
 	const user = req.user;
@@ -653,7 +658,9 @@ app.post("/api/upload", async (req, res) => {
 	const user = req.user;
 	try {
 		const fileStr = req.body.data;
-		const uploadResponse = await cloudinary.uploader.upload(fileStr);
+		const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+			upload_preset: "GroupMatch",
+		});
 		console.log(uploadResponse);
 		User.findOneAndUpdate(
 			{ email: user.email },
@@ -674,9 +681,9 @@ app.post("/api/upload", async (req, res) => {
 });
 
 cloudinary.config({
-	cloud_name: "doyt19vwv",
-	api_key: 725842734339165,
-	api_secret: "qHU9B5rNOOjjz4Izd2gm_Haxsb0",
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 function checkAuthenticated(req, res, next) {
