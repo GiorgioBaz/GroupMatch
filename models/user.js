@@ -81,6 +81,12 @@ const user = new mongoose.Schema({
 		required: false,
 		default: [],
 	},
+
+	numUsers: {
+		type: Number,
+		required: false,
+		default: 0,
+	},
 });
 
 module.exports = mongoose.model("User", user);

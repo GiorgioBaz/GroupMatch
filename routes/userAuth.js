@@ -685,27 +685,53 @@ app.post("/api/upload", async (req, res) => {
 	}
 });
 
-app.get("/allUsers", async function (req, res) {
-	const rawUsers = await User.find({});
+//FUCKEN TOOK 5 HOURS TO MAKE THIS SHIT, WHY DOES THIS EVEN WORK
+async function getAllUsers() {
+	const rawUsers = await User.find({}); // Gets all users from db
 	const allUsers = [];
-	const userInfo = {};
+	let userInfo = {};
+
+	//Loop through all users and add information to variables above
 	rawUsers.forEach((user) => {
 		for (let key of Object.keys(user._doc)) {
+			//Filter out the keys we dont want to display
 			if (
 				key !== "email" &&
 				key !== "password" &&
 				key !== "passwordRequested" &&
+				key !== "academics" &&
 				key !== "cloudinary_id" &&
 				key !== "allUsers" &&
+				key !== "numUsers" &&
 				key !== "__v"
 			) {
+				//Adds every key to the userinfo object for later
 				userInfo[key] = user[key];
+			} else if (key === "academics") {
+				//special logic to loop through the academics array and get all objectsa
+				const academics = [];
+
+				if (user[key].length !== 0) {
+					user[key].forEach((academic) => {
+						const { grade, subject } = academic;
+						academics.push({ grade, subject });
+					});
+					userInfo[key] = academics; // Sets the academics key in the userinfo object
+				} else userInfo[key] = [];
 			}
 		}
-		allUsers.push(userInfo);
+		allUsers.push(userInfo); // push all of the user information we want to the
+		userInfo = {}; // resets object for next iteration
 	});
+	return allUsers;
+}
+
+app.get("/allUsers", async function (req, res) {
+	const allUsers = await getAllUsers();
 	res.send(allUsers);
 });
+
+app.post("/updateAllUsers", async (req, res) => {});
 
 app.post("/declineUser", async (req, res) => {});
 
