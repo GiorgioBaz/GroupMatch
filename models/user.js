@@ -65,17 +65,17 @@ const user = new mongoose.Schema({
 		type: [
 			{
 				id: Schema.Types.ObjectId,
-				avatar: Schema.Types.String,
 				name: Schema.Types.String,
 				degree: Schema.Types.String,
+				gpa: Schema.Types.String,
+				studyLoad: Schema.Types.String,
+				avatar: Schema.Types.String,
 				academics: [
 					{
 						grade: Schema.Types.String,
 						subject: Schema.Types.String,
 					},
 				],
-				gpa: Schema.Types.String,
-				studyLoad: Schema.Types.String,
 			},
 		],
 		required: false,

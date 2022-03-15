@@ -701,7 +701,6 @@ async function getAllUsers() {
 				key !== "passwordRequested" &&
 				key !== "academics" &&
 				key !== "cloudinary_id" &&
-				key !== "allUsers" &&
 				key !== "numUsers" &&
 				key !== "__v"
 			) {
@@ -718,6 +717,32 @@ async function getAllUsers() {
 					});
 					userInfo[key] = academics; // Sets the academics key in the userinfo object
 				} else userInfo[key] = [];
+			} else if (key === "allUsers") {
+				const allUsers = [];
+
+				if (user[key].length !== 0) {
+					user[key].forEach((user) => {
+						const {
+							id,
+							name,
+							degree,
+							gpa,
+							academics,
+							studyLoad,
+							avatar,
+						} = user;
+						allUsers.push({
+							id,
+							name,
+							degree,
+							gpa,
+							academics,
+							studyLoad,
+							avatar,
+						});
+					});
+					userInfo[key] = allUsers; // Sets the academics key in the userinfo object
+				} else userInfo[key] = [];
 			}
 		}
 		allUsers.push(userInfo); // push all of the user information we want to the
@@ -731,7 +756,27 @@ app.get("/allUsers", async function (req, res) {
 	res.send(allUsers);
 });
 
-app.post("/updateAllUsers", async (req, res) => {});
+app.post("/updateAllUsers", async (req, res) => {
+	const user = req.user;
+
+	if (!user) {
+		return res.send({
+			success: true,
+			message: "Login dog",
+		});
+	}
+
+	const updateUser = await getAllUsers();
+	User.findOneAndUpdate(
+		{ email: user.email },
+		{ allUsers: updateUser, numUsers: updateUser.length }
+	).then(() => {
+		return res.send({
+			success: true,
+			message: "Your profile has been changed!",
+		});
+	});
+});
 
 app.post("/declineUser", async (req, res) => {});
 
