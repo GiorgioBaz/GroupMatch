@@ -661,7 +661,6 @@ app.post("/api/upload", async (req, res) => {
 		const uploadResponse = await cloudinary.uploader.upload(fileStr, {
 			upload_preset: "GroupMatch",
 		});
-		console.log(uploadResponse);
 		User.findOneAndUpdate(
 			{ email: user.email },
 			{
