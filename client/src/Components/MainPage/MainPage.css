@@ -1,0 +1,106 @@
+.main-div{
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+	height: 100vh;
+}
+
+.main-card{
+    display: flex;
+    flex-direction: column;
+    width: 25vw;
+    height: fit-content;
+    position: relative;
+    margin-left: 8%;
+    margin-top: 3em;
+}
+
+.main-student-photo{
+    width: 20em;
+    align-self: center;
+    margin-top: 0.5em;
+    margin-right: auto;
+    border-radius: 5%;
+}
+
+.student-info{
+    display: flex;
+    flex-direction: column;
+    width: 20em;
+    height: fit-content;
+    box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.25);
+    border-radius: 5%;
+}
+
+.student-title{
+    display: flex;
+    flex-direction: row;
+    margin-top: 1em;
+}
+
+.student-name{
+    font-size: 20px;
+    margin-left: 5%;
+}
+
+.student-degree{
+    font-size: 20px;
+    margin-left: 5%;
+    font-weight: normal;
+}
+
+.student-academics{
+    margin-top: 1.4em;
+    display: flex;
+    flex-direction: column;
+    font-size: 17px;
+    margin-left: 5%;
+    margin-bottom: 0.5em;
+}
+
+.student-degree-details{
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+    margin-left: 5%
+}
+
+.student-gpa{
+    font-size: 17px;
+}
+
+.student-study{
+    font-size: 17px;
+    margin-left: 20%;
+}
+
+.student-interest-buttons{
+    display: flex;
+    flex-direction: row;
+    margin-top: 4em;
+    margin-left: 10%;
+}
+
+.student-reject-button{
+    border-color: white;
+    background: white;
+    border-radius: 5%;
+}
+
+.student-reject-image{
+    width: 4em;
+}
+
+.student-interest-button{
+    margin-left: 25%;
+    border-color: white;
+    background: white;
+    border-radius: 5%;
+}
+
+.student-interest-image{
+    width: 4em;
+}
