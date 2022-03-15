@@ -60,6 +60,27 @@ const user = new mongoose.Schema({
 		required: false,
 		default: "",
 	},
+
+	allUsers: {
+		type: [
+			{
+				id: Schema.Types.ObjectId,
+				avatar: Schema.Types.String,
+				name: Schema.Types.String,
+				degree: Schema.Types.String,
+				academics: [
+					{
+						grade: Schema.Types.String,
+						subject: Schema.Types.String,
+					},
+				],
+				gpa: Schema.Types.String,
+				studyLoad: Schema.Types.String,
+			},
+		],
+		required: false,
+		default: [],
+	},
 });
 
 module.exports = mongoose.model("User", user);

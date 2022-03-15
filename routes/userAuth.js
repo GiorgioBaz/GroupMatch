@@ -6,6 +6,11 @@ const nodemailer = require("nodemailer");
 const User = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
@@ -680,11 +685,29 @@ app.post("/api/upload", async (req, res) => {
 	}
 });
 
-cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET,
+app.get("/allUsers", async function (req, res) {
+	const rawUsers = await User.find({});
+	const allUsers = [];
+	const userInfo = {};
+	rawUsers.forEach((user) => {
+		for (let key of Object.keys(user._doc)) {
+			if (
+				key !== "email" &&
+				key !== "password" &&
+				key !== "passwordRequested" &&
+				key !== "cloudinary_id" &&
+				key !== "allUsers" &&
+				key !== "__v"
+			) {
+				userInfo[key] = user[key];
+			}
+		}
+		allUsers.push(userInfo);
+	});
+	res.send(allUsers);
 });
+
+app.post("/declineUser", async (req, res) => {});
 
 function checkAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
@@ -702,13 +725,13 @@ function checkAuthenticated(req, res, next) {
 //----------------------------------------- Postman Routes Only ---------------------------------------------------
 
 // DELETES ALL USERS IN THE DB ---- USE WISELY
-app.delete("/deleteAll", async function (req, res) {
+app.delete("/deleteAllPM", async function (req, res) {
 	await User.deleteMany({});
 	res.send("Successfully Deleted All Records");
 });
 
 // Gets a specific user by email
-app.post("/user", function (req, res) {
+app.post("/userPM", function (req, res) {
 	User.findOne({ email: req.body.email }, (err, user) => {
 		if (err) throw err;
 		if (!user) res.send("Ya dun goofed lad");
@@ -719,7 +742,7 @@ app.post("/user", function (req, res) {
 });
 
 // Convienient Way to Get All Users in DB
-app.get("/allUsers", function (req, res) {
+app.get("/allUsersPM", function (req, res) {
 	User.find({}, (err, user) => {
 		if (err) throw err;
 		if (!user) res.send("Ya dun goofed lad");

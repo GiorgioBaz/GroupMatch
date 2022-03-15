@@ -34,13 +34,14 @@ function Profile() {
 	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
 	);
-	// Creates an array of objects which we use to evaluate if the information has been changed so we can send the new info
+	// Creates an array of objects which we use to evaluate if the grades has been changed so we can send the new info
 	const academicFields = [
 		{ grade: grade1, subject: subject1 },
 		{ grade: grade2, subject: subject2 },
 		{ grade: grade3, subject: subject3 },
 	];
 
+	// Creates an object which we use to see if info has been changed
 	const updatedUser = {
 		name: username,
 		email: email,
@@ -60,6 +61,7 @@ function Profile() {
 		return user.data.user;
 	}
 
+	// Sets all the default information pulled from the db
 	function setUserInfo() {
 		Axios({
 			method: "GET",
@@ -135,6 +137,7 @@ function Profile() {
 		setIsDisabled("");
 	}
 
+	// Function which checks and returns the fields which have changed
 	async function updatedFields() {
 		const user = await getUserInfo();
 		const updated = {};
@@ -164,6 +167,7 @@ function Profile() {
 		return updated;
 	}
 
+	// Axios Req to backend
 	const updateUserInfo = async (e) => {
 		e.preventDefault();
 		const payload = await updatedFields();
