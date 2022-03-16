@@ -61,6 +61,7 @@ const user = new mongoose.Schema({
 		default: "",
 	},
 
+	// add an overarching user key to it for semantics then copy for other keys
 	allUsers: {
 		type: [
 			{
@@ -87,6 +88,12 @@ const user = new mongoose.Schema({
 		required: false,
 		default: 0,
 	},
+
+	// potentialMatches array
+	// exact same (copy-paste) structure as the allUsers key
+
+	// confirmedMatches array
+	// exact same (copy-paste) structure as the allUsers key
 });
 
 module.exports = mongoose.model("User", user);

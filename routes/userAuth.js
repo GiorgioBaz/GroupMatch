@@ -707,7 +707,7 @@ async function getAllUsers() {
 				//Adds every key to the userinfo object for later
 				userInfo[key] = user[key];
 			} else if (key === "academics") {
-				//special logic to loop through the academics array and get all objectsa
+				//special logic to loop through the academics array and get all objects
 				const academics = [];
 
 				if (user[key].length !== 0) {
@@ -762,7 +762,7 @@ app.post("/updateAllUsers", async (req, res) => {
 	if (!user) {
 		return res.send({
 			success: true,
-			message: "Login dog",
+			message: "Please Log In To Your Account Again",
 		});
 	}
 
@@ -778,7 +778,34 @@ app.post("/updateAllUsers", async (req, res) => {
 	});
 });
 
-app.post("/declineUser", async (req, res) => {});
+// Create new post route similar to update all users (practically the same)
+// In this route you will need to evaluate the length of the current amount of registered users against the last number of registered users
+// To see if there have been new users. If so you wanna update the allUsers key with the new users (practically copy-paste the findoneandupdatecode)
+// You will also need to update the numUsers key (also in the findoneandupdatecode)
+
+// Filters the list of users based on the user currently being displayed
+async function filterUserList(user, currentUser) {
+	const filteredUserList = currentUser?.allUsers.filter((elem) => {
+		return elem._id.toString() !== user?._id;
+	});
+
+	return filteredUserList;
+}
+
+app.post("/declineUser", async (req, res) => {
+	const currentUser = req.user;
+	const { user } = req.body;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const filteredUsers = await filterUserList(user, currentUser);
+	return res.send(filteredUsers); //beefed up with the success, message approach
+});
 
 function checkAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {
