@@ -26,9 +26,6 @@ function MainPage() {
         		<Link to="/profile"> 
 							Profile
 						</Link>    
-						
-				<button onClick={getUser}>Submit</button> 
-				{data ? <h1>{data}</h1> : null}
 			</div>
 
 			<div className="main-card">
@@ -47,9 +44,9 @@ function MainPage() {
 					</div>
 
 					<div className="student-academics">
-						<p>Subject A</p>
-						<p>Subject B</p>
-						<p>Subject C</p>
+						<p><span class="academic-marks"> HD/D/C/F - </span>Subject A</p>
+						<p><span class="academic-marks"> HD/D/C/F - </span>Subject B</p>
+						<p><span class="academic-marks"> HD/D/C/F - </span>Subject C</p>
 					</div>
 
 					<div className="student-degree-details">
@@ -64,21 +61,18 @@ function MainPage() {
 				</div>
 
 				<div className="student-interest-buttons">
-					<button className="student-reject-button">
-						<img
+					<img
 						alt="Reject"
 						className="student-reject-image"
 						src={rejectIcon}
-						/>
-					</button>
-
-					<button className="student-interest-button">
-						<img
+						onClick={() => console.log("Click")}
+					/>
+					<img
 						alt="Interest"
 						className="student-interest-image"
 						src={interestIcon}
-						/>
-					</button>
+						onClick={() => console.log("Click")}
+					/>
 				</div>
 			</div>
 		</div>
