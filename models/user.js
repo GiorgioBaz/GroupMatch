@@ -62,38 +62,79 @@ const user = new mongoose.Schema({
 	},
 
 	// add an overarching user key to it for semantics then copy for other keys
-	allUsers: {
-		type: [
-			{
-				id: Schema.Types.ObjectId,
-				name: Schema.Types.String,
-				degree: Schema.Types.String,
-				gpa: Schema.Types.String,
-				studyLoad: Schema.Types.String,
-				avatar: Schema.Types.String,
-				academics: [
-					{
-						grade: Schema.Types.String,
-						subject: Schema.Types.String,
-					},
-				],
-			},
-		],
-		required: false,
-		default: [],
-	},
-
 	numUsers: {
 		type: Number,
 		required: false,
 		default: 0,
 	},
 
-	// potentialMatches array
-	// exact same (copy-paste) structure as the allUsers key
+	allUsers: {
+		type: [
+			{
+				user: {
+					id: Schema.Types.ObjectId,
+					name: Schema.Types.String,
+					degree: Schema.Types.String,
+					gpa: Schema.Types.String,
+					studyLoad: Schema.Types.String,
+					avatar: Schema.Types.String,
+					academics: [
+						{
+							grade: Schema.Types.String,
+							subject: Schema.Types.String,
+						},
+					],
+				},
+			},
+		],
+		required: false,
+		default: [],
+	},
 
-	// confirmedMatches array
-	// exact same (copy-paste) structure as the allUsers key
+	confirmMatches: {
+		type: [
+			{
+				user: {
+					id: Schema.Types.ObjectId,
+					name: Schema.Types.String,
+					degree: Schema.Types.String,
+					gpa: Schema.Types.String,
+					studyLoad: Schema.Types.String,
+					avatar: Schema.Types.String,
+					academics: [
+						{
+							grade: Schema.Types.String,
+							subject: Schema.Types.String,
+						},
+					],
+				},
+			},
+		],
+		required: false,
+		default: [],
+	},
+	potentialMatches: {
+		type: [
+			{
+				user: {
+					id: Schema.Types.ObjectId,
+					name: Schema.Types.String,
+					degree: Schema.Types.String,
+					gpa: Schema.Types.String,
+					studyLoad: Schema.Types.String,
+					avatar: Schema.Types.String,
+					academics: [
+						{
+							grade: Schema.Types.String,
+							subject: Schema.Types.String,
+						},
+					],
+				},
+			},
+		],
+		required: false,
+		default: [],
+	},
 });
 
 module.exports = mongoose.model("User", user);

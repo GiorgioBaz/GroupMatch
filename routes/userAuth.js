@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const { update } = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
 cloudinary.config({
@@ -771,11 +772,41 @@ app.post("/updateAllUsers", async (req, res) => {
 		{ email: user.email },
 		{ allUsers: updateUser, numUsers: updateUser.length }
 	).then(() => {
+		console.log(updateUser, updateUser.length);
 		return res.send({
 			success: true,
 			message: "Your profile has been changed!",
 		});
 	});
+});
+
+app.post("/updateNewUsers", async (req, res) => {
+	const user = req.user;
+
+	if (!user) {
+		return res.send({
+			success: true,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const updateUser = await getAllUsers();
+	if (user.numUsers < updateUser.length) {
+		User.findOneAndUpdate(
+			{ email: user.email },
+			{ allUsers: updateUser, numUsers: updateUser.length }
+		).then(() => {
+			return res.send({
+				success: true,
+				message: "Your profile has been changed!",
+			});
+		});
+	} else {
+		return res.send({
+			success: true,
+			message: "Your profile is already up to date",
+		});
+	}
 });
 
 // Create new post route similar to update all users (practically the same)
