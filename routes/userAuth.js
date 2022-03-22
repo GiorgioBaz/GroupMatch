@@ -113,8 +113,6 @@ app.post("/forgotpassword", (req, res) => {
 					pass: process.env.PASSWORD,
 				},
 			});
-			console.log(process.env.EMAIL);
-			console.log(process.env.PASSWORD);
 
 			let mailOptions = {
 				from: "groupmatchapp@gmail.com",
@@ -530,7 +528,7 @@ app.post("/forgotpassword", (req, res) => {
 
 			transporter.sendMail(mailOptions, function (err, data) {
 				if (err) {
-					console.log("Error Occurs: ", err);
+					console.log("Error Occurred: ", err);
 				} else {
 					console.log("Email Sent");
 					return res.send({
@@ -687,10 +685,17 @@ app.post("/api/upload", async (req, res) => {
 });
 
 //FUCKEN TOOK 5 HOURS TO MAKE THIS SHIT, WHY DOES THIS EVEN WORK
-async function getAllUsers() {
-	const rawUsers = await User.find({}); // Gets all users from db
+async function getAllUsers(req = undefined) {
+	let rawUsers;
+	if (req) {
+		const currentUser = req.user;
+		rawUsers = await User.find({ email: { $ne: currentUser.email } }); // Gets all users from db excluding current user
+	} else {
+		rawUsers = await User.find({}); // Gets all users from db for Postman purposes
+	}
+
 	const allUsers = [];
-	let userInfo = {};
+	let userInfo = { user: {} };
 
 	//Loop through all users and add information to variables above
 	rawUsers.forEach((user) => {
@@ -701,12 +706,14 @@ async function getAllUsers() {
 				key !== "password" &&
 				key !== "passwordRequested" &&
 				key !== "academics" &&
+				key !== "allUsers" &&
+				key !== "_id" &&
 				key !== "cloudinary_id" &&
 				key !== "numUsers" &&
 				key !== "__v"
 			) {
 				//Adds every key to the userinfo object for later
-				userInfo[key] = user[key];
+				userInfo.user[key] = user[key];
 			} else if (key === "academics") {
 				//special logic to loop through the academics array and get all objects
 				const academics = [];
@@ -716,38 +723,14 @@ async function getAllUsers() {
 						const { grade, subject } = academic;
 						academics.push({ grade, subject });
 					});
-					userInfo[key] = academics; // Sets the academics key in the userinfo object
-				} else userInfo[key] = [];
-			} else if (key === "allUsers") {
-				const allUsers = [];
-
-				if (user[key].length !== 0) {
-					user[key].forEach((user) => {
-						const {
-							id,
-							name,
-							degree,
-							gpa,
-							academics,
-							studyLoad,
-							avatar,
-						} = user;
-						allUsers.push({
-							id,
-							name,
-							degree,
-							gpa,
-							academics,
-							studyLoad,
-							avatar,
-						});
-					});
-					userInfo[key] = allUsers; // Sets the academics key in the userinfo object
-				} else userInfo[key] = [];
+					userInfo.user[key] = academics; // Sets the academics key in the userinfo object
+				} else userInfo.user[key] = [];
+			} else if (key === "_id") {
+				userInfo.user[key] = user[key].toString();
 			}
 		}
 		allUsers.push(userInfo); // push all of the user information we want to the
-		userInfo = {}; // resets object for next iteration
+		userInfo = { user: {} }; // resets object for next iteration
 	});
 	return allUsers;
 }
@@ -767,12 +750,11 @@ app.post("/updateAllUsers", async (req, res) => {
 		});
 	}
 
-	const updateUser = await getAllUsers();
+	const updateUser = await getAllUsers(req);
 	User.findOneAndUpdate(
 		{ email: user.email },
 		{ allUsers: updateUser, numUsers: updateUser.length }
 	).then(() => {
-		console.log(updateUser, updateUser.length);
 		return res.send({
 			success: true,
 			message: "Your profile has been changed!",
@@ -780,7 +762,7 @@ app.post("/updateAllUsers", async (req, res) => {
 	});
 });
 
-app.post("/updateNewUsers", async (req, res) => {
+app.post("/updateUserList", async (req, res) => {
 	const user = req.user;
 
 	if (!user) {
@@ -790,8 +772,8 @@ app.post("/updateNewUsers", async (req, res) => {
 		});
 	}
 
-	const updateUser = await getAllUsers();
-	if (user.numUsers < updateUser.length) {
+	const updateUser = await getAllUsers(req);
+	if (updateUser.length > user.numUsers) {
 		User.findOneAndUpdate(
 			{ email: user.email },
 			{ allUsers: updateUser, numUsers: updateUser.length }
@@ -815,12 +797,19 @@ app.post("/updateNewUsers", async (req, res) => {
 // You will also need to update the numUsers key (also in the findoneandupdatecode)
 
 // Filters the list of users based on the user currently being displayed
-async function filterUserList(user, currentUser) {
-	const filteredUserList = currentUser?.allUsers.filter((elem) => {
-		return elem._id.toString() !== user?._id;
+async function filterUserList(userId, currentUser) {
+	const filteredUserList = currentUser?.allUsers?.filter((elem) => {
+		return elem.user._id.toString() !== userId;
 	});
 
 	return filteredUserList;
+}
+
+function isMatch(currentUser, matchedUser) {
+	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
+		return e.user.id.toString() === currentUser.id;
+	});
+	return confirmedMatch;
 }
 
 app.post("/declineUser", async (req, res) => {
@@ -835,6 +824,70 @@ app.post("/declineUser", async (req, res) => {
 	}
 
 	const filteredUsers = await filterUserList(user, currentUser);
+	return res.send(filteredUsers); //beefed up with the success, message approach
+});
+
+app.post("/acceptUser", async (req, res) => {
+	const currentUser = req.user;
+	const { _id, name } = req.body.user;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const matchedUser = await User.findById(_id);
+
+	// Adds the payload user to the current users potential matches
+	const dbUser = await User.findOne({ email: currentUser.email });
+	const previouslyMatched = dbUser.potentialMatches.some((e) => {
+		return e.user.id?.toString() === _id;
+	});
+
+	if (!matchedUser) {
+		return res.send({
+			success: false,
+			message: "This student has deactivated their account",
+		});
+	}
+	if (!previouslyMatched) {
+		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
+		await dbUser.save().then(async () => {
+			if (isMatch(dbUser, matchedUser)) {
+				dbUser.confirmedMatches.push({
+					user: {
+						id: matchedUser.id,
+						name: matchedUser.name,
+					},
+				});
+				matchedUser.confirmedMatches.push({
+					user: {
+						id: dbUser.id,
+						name: dbUser.name,
+					},
+				});
+				await dbUser.save();
+				await matchedUser.save();
+			}
+		});
+	} else {
+		return res.send({
+			success: false,
+			message: "You've previously liked this student",
+		});
+	}
+
+	//When a match is classified as a potential match we will add that entire user object to the potentialMatches key
+	//From here we will need to loop through the list of all potential users' potentialMatches key to evaluate whether its a confirmed match
+	//If a match is confirmed the entire user will be added onto the confirmedMatches key
+	//This will be done using some sort of a function isMatch, which will return true or false depending on the evaluation
+
+	// After the above is complete we will need to create a new function which pulls the information of the user just matched
+	// From here we will need to send all that users information (including socials when its done) to the frontend where it will be displayed
+
+	const filteredUsers = await filterUserList(_id, currentUser);
 	return res.send(filteredUsers); //beefed up with the success, message approach
 });
 

@@ -30,7 +30,7 @@ module.exports = function (passport) {
 	passport.deserializeUser((id, cb) => {
 		User.findOne({ _id: id }, (err, user) => {
 			const userInformation = {
-				id: user._id.toString(),
+				id: user.id,
 				name: user.name,
 				email: user.email,
 				degree: user.degree,
@@ -41,6 +41,8 @@ module.exports = function (passport) {
 				cloudinary_id: user.cloudinary_id,
 				allUsers: user.allUsers,
 				numUsers: user.numUsers,
+				potentialMatches: user.potentialMatches,
+				confirmedMatches: user.confirmedMatches,
 			};
 			cb(err, userInformation);
 		});
