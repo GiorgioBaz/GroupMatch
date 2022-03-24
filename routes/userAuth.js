@@ -4,6 +4,15 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const { update } = require("../models/user");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config({ path: "../config.env" });
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
@@ -35,7 +44,7 @@ app.post("/login", (req, res, next) => {
 				});
 				console.log(req.user);
 			});
-		} 
+		}
 	})(req, res, next);
 });
 
@@ -104,8 +113,6 @@ app.post("/forgotpassword", (req, res) => {
 					pass: process.env.PASSWORD,
 				},
 			});
-			console.log(process.env.EMAIL);
-			console.log(process.env.PASSWORD);
 
 			let mailOptions = {
 				from: "groupmatchapp@gmail.com",
@@ -521,7 +528,7 @@ app.post("/forgotpassword", (req, res) => {
 
 			transporter.sendMail(mailOptions, function (err, data) {
 				if (err) {
-					console.log("Error Occurs: ", err);
+					console.log("Error Occurred: ", err);
 				} else {
 					console.log("Email Sent");
 					return res.send({
@@ -595,20 +602,318 @@ app.post("/logout", function (req, res) {
 });
 
 //Gets the currently logged in user
-app.get("/currentUser", checkAuthenticated, (req, res) => {
-	res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
+app.get("/userProfile", (req, res) => {
+	if (req.user) {
+		return res.send({ success: true, user: req.user }); // The req.user stores the entire user that has been authenticated inside of it.
+	} else {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
 });
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// Updates user's information
+app.post("/updateProfile", async function (req, res) {
+	const user = req.user;
+	const { name, email, academics, degree, gpa, studyLoad } = req.body;
+	User.findOne({ email: email }, (error, doc) => {
+		if (error) throw error;
+		if (doc) {
+			res.send({
+				success: false,
+				message: "Email already exists!",
+			});
+		} else {
+			if (email && (!email.includes("@") || !email.includes(".com"))) {
+				return res.send({
+					success: false,
+					message: "Please enter a valid email",
+				});
+			}
+			User.findOneAndUpdate(
+				{ email: user.email },
+				{
+					name: name,
+					email: email,
+					academics: academics,
+					degree: degree,
+					gpa: gpa,
+					studyLoad: studyLoad,
+				}
+			)
+				.then(() => {
+					return res.send({
+						success: true,
+						message: "Your profile has been changed!",
+					});
+				})
+				.catch((err) => {
+					res.send(err); //catches any errors when updating
+				});
+		}
+	});
+});
+
+app.post("/api/upload", async (req, res) => {
+	const user = req.user;
+	try {
+		const fileStr = req.body.data;
+		const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+			upload_preset: "GroupMatch",
+		});
+		console.log(uploadResponse);
+		User.findOneAndUpdate(
+			{ email: user.email },
+			{
+				avatar: uploadResponse.secure_url,
+				cloudinary_id: uploadResponse.public_id,
+			}
+		).then(() => {
+			return res.send({
+				success: true,
+				message: "Your profile image has been changed!",
+			});
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ err: "Something went wrong" });
+	}
+});
+
+//FUCKEN TOOK 5 HOURS TO MAKE THIS SHIT, WHY DOES THIS EVEN WORK
+async function getAllUsers(req = undefined) {
+	let rawUsers;
+	if (req) {
+		const currentUser = req.user;
+		rawUsers = await User.find({ email: { $ne: currentUser.email } }); // Gets all users from db excluding current user
+	} else {
+		rawUsers = await User.find({}); // Gets all users from db for Postman purposes
+	}
+
+	const allUsers = [];
+	let userInfo = { user: {} };
+
+	//Loop through all users and add information to variables above
+	rawUsers.forEach((user) => {
+		for (let key of Object.keys(user._doc)) {
+			//Filter out the keys we dont want to display
+			if (
+				key !== "email" &&
+				key !== "password" &&
+				key !== "passwordRequested" &&
+				key !== "academics" &&
+				key !== "allUsers" &&
+				key !== "_id" &&
+				key !== "cloudinary_id" &&
+				key !== "numUsers" &&
+				key !== "__v"
+			) {
+				//Adds every key to the userinfo object for later
+				userInfo.user[key] = user[key];
+			} else if (key === "academics") {
+				//special logic to loop through the academics array and get all objects
+				const academics = [];
+
+				if (user[key].length !== 0) {
+					user[key].forEach((academic) => {
+						const { grade, subject } = academic;
+						academics.push({ grade, subject });
+					});
+					userInfo.user[key] = academics; // Sets the academics key in the userinfo object
+				} else userInfo.user[key] = [];
+			} else if (key === "_id") {
+				userInfo.user[key] = user[key].toString();
+			}
+		}
+		allUsers.push(userInfo); // push all of the user information we want to the
+		userInfo = { user: {} }; // resets object for next iteration
+	});
+	return allUsers;
+}
+
+app.get("/allUsers", async function (req, res) {
+	const allUsers = await getAllUsers();
+	res.send(allUsers);
+});
+
+app.post("/updateAllUsers", async (req, res) => {
+	const user = req.user;
+
+	if (!user) {
+		return res.send({
+			success: true,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const updateUser = await getAllUsers(req);
+	User.findOneAndUpdate(
+		{ email: user.email },
+		{ allUsers: updateUser, numUsers: updateUser.length }
+	).then(() => {
+		return res.send({
+			success: true,
+			message: "Your profile has been changed!",
+		});
+	});
+});
+
+app.post("/updateUserList", async (req, res) => {
+	const user = req.user;
+
+	if (!user) {
+		return res.send({
+			success: true,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const updateUser = await getAllUsers(req);
+	if (updateUser.length > user.numUsers) {
+		User.findOneAndUpdate(
+			{ email: user.email },
+			{ allUsers: updateUser, numUsers: updateUser.length }
+		).then(() => {
+			return res.send({
+				success: true,
+				message: "Your profile has been changed!",
+			});
+		});
+	} else {
+		return res.send({
+			success: true,
+			message: "Your profile is already up to date",
+		});
+	}
+});
+
+// Create new post route similar to update all users (practically the same)
+// In this route you will need to evaluate the length of the current amount of registered users against the last number of registered users
+// To see if there have been new users. If so you wanna update the allUsers key with the new users (practically copy-paste the findoneandupdatecode)
+// You will also need to update the numUsers key (also in the findoneandupdatecode)
+
+// Filters the list of users based on the user currently being displayed
+async function filterUserList(userId, currentUser) {
+	const filteredUserList = currentUser?.allUsers?.filter((elem) => {
+		return elem.user._id.toString() !== userId;
+	});
+
+	return filteredUserList;
+}
+
+function isMatch(currentUser, matchedUser) {
+	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
+		return e.user.id.toString() === currentUser.id;
+	});
+	return confirmedMatch;
+}
+
+app.post("/declineUser", async (req, res) => {
+	const currentUser = req.user;
+	const { user } = req.body;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const filteredUsers = await filterUserList(user, currentUser);
+	return res.send(filteredUsers); //beefed up with the success, message approach
+});
+
+app.post("/acceptUser", async (req, res) => {
+	const currentUser = req.user;
+	const { _id, name } = req.body.user;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const matchedUser = await User.findById(_id);
+
+	// Adds the payload user to the current users potential matches
+	const dbUser = await User.findOne({ email: currentUser.email });
+	const previouslyMatched = dbUser.potentialMatches.some((e) => {
+		return e.user.id?.toString() === _id;
+	});
+
+	if (!matchedUser) {
+		return res.send({
+			success: false,
+			message: "This student has deactivated their account",
+		});
+	}
+	if (!previouslyMatched) {
+		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
+		await dbUser.save().then(async () => {
+			if (isMatch(dbUser, matchedUser)) {
+				dbUser.confirmedMatches.push({
+					user: {
+						id: matchedUser.id,
+						name: matchedUser.name,
+					},
+				});
+				matchedUser.confirmedMatches.push({
+					user: {
+						id: dbUser.id,
+						name: dbUser.name,
+					},
+				});
+				await dbUser.save();
+				await matchedUser.save();
+			}
+		});
+	} else {
+		return res.send({
+			success: false,
+			message: "You've previously liked this student",
+		});
+	}
+
+	//When a match is classified as a potential match we will add that entire user object to the potentialMatches key
+	//From here we will need to loop through the list of all potential users' potentialMatches key to evaluate whether its a confirmed match
+	//If a match is confirmed the entire user will be added onto the confirmedMatches key
+	//This will be done using some sort of a function isMatch, which will return true or false depending on the evaluation
+
+	// After the above is complete we will need to create a new function which pulls the information of the user just matched
+	// From here we will need to send all that users information (including socials when its done) to the frontend where it will be displayed
+
+	const filteredUsers = await filterUserList(_id, currentUser);
+	return res.send(filteredUsers); //beefed up with the success, message approach
+});
+
+function checkAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return;
+	}
+}
+
+/*function checknotAuthenticated (req, res, next) {
+	if (req.isAuthenticated()) {
+		return res.redirect('/')
+	}
+  next()
+} */
 
 //----------------------------------------- Postman Routes Only ---------------------------------------------------
 
 // DELETES ALL USERS IN THE DB ---- USE WISELY
-app.delete("/deleteAll", async function (req, res) {
+app.delete("/deleteAllPM", async function (req, res) {
 	await User.deleteMany({});
 	res.send("Successfully Deleted All Records");
 });
 
 // Gets a specific user by email
-app.post("/user", function (req, res) {
+app.post("/userPM", function (req, res) {
 	User.findOne({ email: req.body.email }, (err, user) => {
 		if (err) throw err;
 		if (!user) res.send("Ya dun goofed lad");
@@ -619,7 +924,7 @@ app.post("/user", function (req, res) {
 });
 
 // Convienient Way to Get All Users in DB
-app.get("/allUsers", function (req, res) {
+app.get("/allUsersPM", function (req, res) {
 	User.find({}, (err, user) => {
 		if (err) throw err;
 		if (!user) res.send("Ya dun goofed lad");
@@ -628,25 +933,5 @@ app.get("/allUsers", function (req, res) {
 		}
 	});
 });
-
-app.post('/userprofile', function (req, res){
-  res.send(req.user);
-})
-
-
-function checkAuthenticated (req, res, next) {
-	if (req.isAuthenticated()) {
-		return next()
-	}
-
-	res.redirect('/')
-}
-
-/*function checknotAuthenticated (req, res, next) {
-	if (req.isAuthenticated()) {
-		return res.redirect('/')
-	}
-  next()
-} */
 
 module.exports = app;

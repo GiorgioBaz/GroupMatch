@@ -6,26 +6,25 @@ import sampleStudent from "../../Assets/blank-profile-temp.png";
 import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
 
-
 function MainPage() {
-	const {data, setData} = useState(null);
+	const { data, setData } = useState(null);
 
-	 const getUser = () => {
-    Axios({
-      method: "GET",
-      withCredentials: true,
-      url: "http://localhost:5000/currentUser",
-    }).then((res) => {
-      console.log(res.data);
-    });
-  };
+	async function getUserInfo() {
+		const user = await Axios({
+			method: "GET",
+			withCredentials: true,
+			url: "http://localhost:5000/userProfile",
+		});
+		return user.data.user;
+	}
 
 	return (
 		<div className="main-div">
 			<div>
-        		<Link to="/profile"> 
-							Profile
-						</Link>    
+				<Link to="/profile">Profile</Link>
+
+				<button onClick={getUserInfo}>Submit</button>
+				{data ? <h1>{data}</h1> : null}
 			</div>
 
 			<div className="main-card">
@@ -35,7 +34,7 @@ function MainPage() {
 						className="main-student-photo"
 						src={sampleStudent}
 					/>
-				</div>	
+				</div>
 
 				<div className="student-info">
 					<div className="student-title">
