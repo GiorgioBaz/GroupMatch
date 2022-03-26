@@ -10,6 +10,9 @@ import academicsIcon from "../../Assets/academics-icon.svg";
 import degreeIcon from "../../Assets/degree-icon.svg";
 import gpaIcon from "../../Assets/gpa-icon.svg";
 import studyLoadIcon from "../../Assets/study-load-icon.svg";
+import facebookIcon from "../../Assets/facebook.svg";
+import instagramIcon from "../../Assets/instagram.svg";
+import twitterIcon from "../../Assets/twitter.svg";
 
 function Profile() {
 	const [username, setUsername] = useState("");
@@ -23,6 +26,9 @@ function Profile() {
 	const [degree, setDegree] = useState("");
 	const [gpa, setGpa] = useState("");
 	const [studyLoad, setStudyLoad] = useState("");
+	const [twitter, setTwitter] = useState("");
+	const [facebook, setFacebook] = useState("");
+	const [instagram, setInstagram] = useState("");
 	const [avatar, setAvatar] = useState("");
 	const [isDisabled, setIsDisabled] = useState("");
 	const [resetForm, setResetForm] = useState(false);
@@ -50,6 +56,9 @@ function Profile() {
 		gpa: gpa,
 		studyLoad: studyLoad,
 		avatar: previewSource,
+		instagram: instagram,
+		facebook: facebook,
+		twitter: twitter,
 	};
 
 	async function getUserInfo() {
@@ -82,6 +91,9 @@ function Profile() {
 				setGpa(res.data.user.gpa);
 				setStudyLoad(res.data.user.studyLoad);
 				setAvatar(res.data.user.avatar);
+				setFacebook(res.data.user.facebook);
+				setInstagram(res.data.user.instagram);
+				setTwitter(res.data.user.twitter);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -440,6 +452,77 @@ function Profile() {
 						>
 							Save Changes
 						</button>
+					</div>
+
+					<span>
+						{" "}
+						<hr />
+					</span>
+					<p className="disclaimer">
+						Disclaimer: Atleast one social is needed to connect with
+						other students.{" "}
+					</p>
+					<div className="profile-form-inputs">
+						<div className="facebook-div">
+							<div className="facebook-label">
+								<img
+									alt="User Icon"
+									className="facebook-icon"
+									src={facebookIcon}
+								/>
+								<h3 className="profile-header">Facebook</h3>
+							</div>
+							<input
+								className="profile-input"
+								placeholder="Facebook"
+								value={facebook || ""}
+								onChange={(e) => {
+									setFacebook(e.target.value);
+									setIsDisabled("");
+								}}
+							></input>
+						</div>
+
+						<div className="instagram-div">
+							<div className="instagram-label">
+								<img
+									alt="instagram Icon"
+									className="instagram-icon"
+									src={instagramIcon}
+								/>
+								<h3 className="profile-header">Instagram</h3>
+							</div>
+							<input
+								className="profile-input"
+								placeholder="Instagram"
+								name="instagram"
+								value={instagram || ""}
+								onChange={(e) => {
+									setInstagram(e.target.value);
+									setIsDisabled("");
+								}}
+							/>
+						</div>
+
+						<div className="twitter-div">
+							<div className="twitter-label">
+								<img
+									alt="Twitter Icon"
+									className="twitter-icon"
+									src={twitterIcon}
+								/>
+								<h3 className="profile-header">Twitter</h3>
+							</div>
+							<input
+								className="profile-input"
+								placeholder="Twitter"
+								value={twitter || ""}
+								onChange={(e) => {
+									setTwitter(e.target.value);
+									setIsDisabled("");
+								}}
+							/>
+						</div>
 					</div>
 				</form>
 			</div>
