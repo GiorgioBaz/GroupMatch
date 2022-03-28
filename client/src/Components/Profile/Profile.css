@@ -223,7 +223,7 @@
 
 .profile-buttons {
 	display: flex;
-	margin-top: 2.2em;
+	margin-top: 1em;
 	margin-bottom: 2.2em;
 	justify-content: space-evenly;
 }
@@ -241,6 +241,7 @@
 
 .study-load-buttons {
 	display: flex;
+	margin-bottom: 3em;
 }
 
 .part-time-div {
