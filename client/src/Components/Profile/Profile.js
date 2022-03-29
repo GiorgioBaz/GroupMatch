@@ -330,6 +330,7 @@ function Profile() {
 										setDegree(e.target.value);
 										setIsDisabled("");
 									}}
+									required
 								/>
 							</div>
 
@@ -461,7 +462,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Facebook"
+									placeholder="Facebook URL"
 									value={facebook || ""}
 									onChange={(e) => {
 										setFacebook(e.target.value);
@@ -484,7 +485,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Instagram"
+									placeholder="Instagram URL"
 									name="instagram"
 									value={instagram || ""}
 									onChange={(e) => {
@@ -505,7 +506,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Twitter"
+									placeholder="Twitter URL"
 									value={twitter || ""}
 									onChange={(e) => {
 										setTwitter(e.target.value);
