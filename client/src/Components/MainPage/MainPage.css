@@ -1,100 +1,102 @@
-.main-div{
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100vw;
+.main-div {
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100vw;
 	height: 100vh;
 }
 
-.main-card{
-    display: flex;
-    flex-direction: column;
-    width: 25vw;
-    height: fit-content;
-    position: relative;
-    margin-top: 6em;
-    align-items: center;
+.main-card {
+	display: flex;
+	flex-direction: column;
+	width: 25vw;
+	height: fit-content;
+	position: relative;
+	margin-top: 6em;
+	align-items: center;
 }
 
-.main-student-photo{
-    width: 23em;
-    height: 23em;
-    margin-top: 0.5em;
-    border-radius: 5% 5% 0% 0%;
-
+.main-student-photo {
+	width: 23em;
+	height: 23em;
+	margin-top: 0.5em;
+	border-radius: 5% 5% 0% 0%;
 }
 
-.student-info{
-    display: flex;
-    flex-direction: column;
-    width: 23em;
-    height: fit-content;
-    box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.25);
-    border-radius: 0% 0% 5% 5%;
+.student-info {
+	display: flex;
+	flex-direction: column;
+	width: 23em;
+	height: fit-content;
+	box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.25);
+	border-radius: 0% 0% 5% 5%;
 }
 
-.student-title{
-    display: flex;
-    flex-direction: row;
-    margin-top: 1em;
+.student-title {
+	display: flex;
+	flex-direction: row;
+	margin-top: 1em;
 }
 
-.student-name{
-    font-size: 17px;
-    margin-left: 5%;
+.student-name {
+	font-size: 17px;
+	margin-left: 5%;
 }
 
-.student-degree{
-    font-size: 17px;
-    margin-left: 5%;
-    font-weight: normal;
+.student-degree {
+	font-size: 17px;
+	margin-left: 5%;
+	font-weight: normal;
 }
 
-.student-academics{
-    margin-top: 1.4em;
-    display: flex;
-    flex-direction: column;
-    font-size: 15px;
-    margin-left: 5%;
-    margin-bottom: 0.5em;
+.student-academics {
+	margin-top: 1.4em;
+	display: flex;
+	flex-direction: column;
+	font-size: 15px;
+	margin-left: 5%;
+	margin-bottom: 0.5em;
 }
 
-.academic-marks{
-    font-weight: bold;
-    font-size: 15px;
+.academic-marks {
+	font-weight: bold;
+	font-size: 15px;
 }
 
-.student-degree-details{
-    display: flex;
-    flex-direction: row;
-    margin-top: 1.4em;
-    margin-bottom: 0.5em;
-    margin-left: 5%
+.student-degree-details {
+	display: flex;
+	flex-direction: row;
+	margin-top: 1.4em;
+	margin-bottom: 0.5em;
+	margin-left: 5%;
 }
 
-.student-gpa{
-    font-size: 15px;
+.student-gpa {
+	font-size: 15px;
 }
 
-.student-study{
-    font-size: 15px;
-    margin-left: 40%;
+.student-study {
+	font-size: 15px;
+	margin-left: 40%;
 }
 
-.student-interest-buttons{
-    display: flex;
-    flex-direction: row;
-    margin-top: 4em;
-    width: 20em;
+.student-interest-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	margin-top: 4em;
+	width: 20em;
 }
 
-.student-reject-image{
-    width: 4em;
-    margin-left: 20%;
+.student-reject-image {
+	width: 4em;
+	margin-left: 20%;
+	cursor: pointer;
 }
 
-.student-interest-image{
-    width: 4em;
-    margin-left: 20%;
+.student-interest-image {
+	width: 4em;
+	margin-left: 20%;
+	cursor: pointer;
 }

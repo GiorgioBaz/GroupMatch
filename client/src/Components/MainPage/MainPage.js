@@ -1,55 +1,48 @@
 import "./MainPage.css";
 import Axios from "axios";
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
 
-import sampleStudent from "../../Assets/blank-profile-temp.png";
 import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
 
 function MainPage() {
-	const [username, setUsername] = useState("");
-	const [grade1, setGrade1] = useState("HD");
-	const [subject1, setSubject1] = useState("");
-	const [grade2, setGrade2] = useState("HD");
-	const [subject2, setSubject2] = useState("");
-	const [grade3, setGrade3] = useState("HD");
-	const [subject3, setSubject3] = useState("");
-	const [degree, setDegree] = useState("");
-	const [gpa, setGpa] = useState("");
-	const [studyLoad, setStudyLoad] = useState("");
-	const [avatar, setAvatar] = useState("");
+	const [userList, setUserList] = useState([]);
 
-	const { data, setData } = useState(null);
-
-	async function getUserInfo() {
+	async function getUserList() {
+		let userList;
 		const user = await Axios({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/userProfile",
-		});
-		return user.data.user;
-	}
-	function setUserInfo() {
-		Axios({
-			method: "GET",
-			withCredentials: true,
-			url: "http://localhost:5000/userProfile",
+			url: "http://localhost:5000/userList",
 		}).then((res) => {
 			if (res.data.success) {
-				const academics = res.data.user.academics;
-				setUsername(res.data.user.name);
-				setGrade1(academics[0]?.grade);
-				setSubject1(academics[0]?.subject);
-				setGrade2(academics[1]?.grade);
-				setSubject2(academics[1]?.subject);
-				setGrade3(academics[2]?.grade);
-				setSubject3(academics[2]?.subject);
-				setDegree(res.data.user.degree);
-				setGpa(res.data.user.gpa);
-				setStudyLoad(res.data.user.studyLoad);
-				setAvatar(res.data.user.avatar);
+				userList = res.data.userList;
+			} else {
+				Swal.fire(
+					"Oops! Something Broke",
+					`${res.data.message}`,
+					"error"
+				);
+			}
+		});
+		return userList;
+	}
+
+	useEffect(async () => {
+		setUserList(await getUserList());
+	}, []);
+
+	async function handleRejection(user) {
+		await Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/declineUser",
+			data: { user: user },
+		}).then((res) => {
+			if (res.data.success) {
+				setUserList(res.data.userList);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -60,65 +53,98 @@ function MainPage() {
 		});
 	}
 
-	useEffect(() => {
-		setUserInfo();
-	}, []);
-
+	async function handleMatch(user) {
+		await Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/acceptUser",
+			data: { user: user },
+		}).then((res) => {
+			if (res.data.success) {
+				setUserList(res.data.userList);
+			} else {
+				Swal.fire(
+					"Oops! Something Broke",
+					`${res.data.message}`,
+					"error"
+				);
+			}
+		});
+	}
 	return (
 		<div className="main-div">
 			<div>
 				<Link to="/profile">Profile</Link>
-
-				<button onClick={getUserInfo}>Submit</button>
-				{data ? <h1>{data}</h1> : null}
 			</div>
 
 			<div className="main-card">
-				<div className="main-student-photo">
-					<img
-						alt="Student"
-						className="main-student-photo"
-						src={avatar}
-					/>
-				</div>
+				{userList?.length > 0 &&
+					userList?.map((student, i) => (
+						<div className="absolute-student-card" key={i}>
+							<div className="main-student-photo">
+								<img
+									alt="Student"
+									className="main-student-photo"
+									src={student.user.avatar}
+								/>
+							</div>
 
-				<div className="student-info">
-					<div className="student-title">
-						<h3 className="student-name">{username}</h3>
-						<h5 className="student-degree">{degree}</h5>
-					</div>
+							<div className="student-info">
+								<div className="student-title">
+									<h3 className="student-name">
+										{student.user.name}
+									</h3>
+									<h5 className="student-degree">
+										{student.user.degree}
+									</h5>
+								</div>
 
-					<div className="student-academics">
-						<p><span className="academic-marks">{grade1 || "HD"} - </span>{subject1}</p>
-						<p><span className="academic-marks">{grade2 || "HD"} - </span>{subject2}</p>
-						<p><span className="academic-marks">{grade3 || "HD"} - </span>{subject3}</p>
-					</div>
+								{student.user.academics?.length > 0 &&
+									student.user.academics.map(
+										(academic, i) => (
+											<div
+												className="student-academics"
+												key={i}
+											>
+												<p>
+													<span className="academic-marks">
+														{academic.grade || "HD"}{" "}
+														-{" "}
+													</span>
+													{academic.subject}
+												</p>
+											</div>
+										)
+									)}
 
-					<div className="student-degree-details">
-						<div className="student-gpa">
-							<p>{gpa}</p>
+								<div className="student-degree-details">
+									<div className="student-gpa">
+										<p>{student.user.gpa}</p>
+									</div>
+
+									<div className="student-study">
+										<p>{student.user.studyLoad}</p>
+									</div>
+								</div>
+							</div>
+							<div className="student-interest-buttons">
+								<img
+									alt="Reject"
+									className="student-reject-image"
+									src={rejectIcon}
+									onClick={(e) =>
+										handleRejection(student.user)
+									}
+								/>
+								<img
+									alt="Interest"
+									className="student-interest-image"
+									src={interestIcon}
+									onClick={() => handleMatch(student.user)}
+								/>
+							</div>
 						</div>
-
-						<div className="student-study">
-							<p>{studyLoad}</p>
-						</div>
-					</div>
-				</div>
-
-				<div className="student-interest-buttons">
-					<img
-						alt="Reject"
-						className="student-reject-image"
-						src={rejectIcon}
-						onClick={() => console.log("Click")}
-					/>
-					<img
-						alt="Interest"
-						className="student-interest-image"
-						src={interestIcon}
-						onClick={() => console.log("Click")}
-					/>
-				</div>
+					))}
 			</div>
 		</div>
 	);

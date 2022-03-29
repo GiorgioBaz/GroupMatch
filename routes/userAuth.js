@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
-const { update } = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
 cloudinary.config({
@@ -798,11 +797,16 @@ app.post("/updateUserList", async (req, res) => {
 
 // Filters the list of users based on the user currently being displayed
 async function filterUserList(userId, currentUser) {
-	const filteredUserList = currentUser?.allUsers?.filter((elem) => {
-		return elem.user._id.toString() !== userId;
+	const matchId = currentUser?.allUsers?.findIndex((el) => {
+		return el.user._id.toString() === userId;
 	});
 
-	return filteredUserList;
+	if (matchId > -1) {
+		currentUser?.allUsers?.splice(matchId, 1);
+		return currentUser?.allUsers;
+	} else {
+		return "404";
+	}
 }
 
 function isMatch(currentUser, matchedUser) {
@@ -812,9 +816,8 @@ function isMatch(currentUser, matchedUser) {
 	return confirmedMatch;
 }
 
-app.post("/declineUser", async (req, res) => {
+app.get("/userList", async (req, res) => {
 	const currentUser = req.user;
-	const { user } = req.body;
 
 	if (!currentUser) {
 		return res.send({
@@ -823,8 +826,59 @@ app.post("/declineUser", async (req, res) => {
 		});
 	}
 
-	const filteredUsers = await filterUserList(user, currentUser);
-	return res.send(filteredUsers); //beefed up with the success, message approach
+	const dbUser = await User.findOne({ email: currentUser.email });
+
+	if (dbUser.allUsers.length === 0) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	return res.send({
+		success: true,
+		message: "List Filtered",
+		userList: dbUser.allUsers,
+	});
+});
+
+app.post("/declineUser", async (req, res) => {
+	const currentUser = req.user;
+	const { _id } = req.body?.user;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const filteredUsers = await filterUserList(_id, currentUser);
+
+	if (filteredUsers.length === 0) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	if (filteredUsers === "404") {
+		return res.send({
+			success: false,
+			message: "That User No Longer Exists",
+		});
+	}
+
+	await User.findOneAndUpdate(
+		{ email: currentUser.email },
+		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
+	);
+
+	return res.send({
+		success: true,
+		message: "List Filtered",
+		userList: filteredUsers,
+	});
 });
 
 app.post("/acceptUser", async (req, res) => {
@@ -888,7 +942,30 @@ app.post("/acceptUser", async (req, res) => {
 	// From here we will need to send all that users information (including socials when its done) to the frontend where it will be displayed
 
 	const filteredUsers = await filterUserList(_id, currentUser);
-	return res.send(filteredUsers); //beefed up with the success, message approach
+	if (filteredUsers.length === 0) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	if (filteredUsers === "404") {
+		return res.send({
+			success: false,
+			message: "That User No Longer Exists",
+		});
+	}
+
+	await User.findOneAndUpdate(
+		{ email: currentUser.email },
+		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
+	);
+
+	return res.send({
+		success: true,
+		message: "List Filtered",
+		userList: filteredUsers,
+	});
 });
 
 function checkAuthenticated(req, res, next) {
