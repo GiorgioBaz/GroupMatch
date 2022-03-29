@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Axios from "axios";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "./Profile.css";
@@ -13,6 +14,7 @@ import studyLoadIcon from "../../Assets/study-load-icon.svg";
 import twitterIcon from "../../Assets/twitterIcon.svg";
 import facebookIcon from "../../Assets/facebookIcon.svg";
 import instagramIcon from "../../Assets/instagramIcon.svg";
+import homeIcon from "../../Assets/home-icon.svg";
 
 function Profile() {
 	const [username, setUsername] = useState("");
@@ -243,283 +245,297 @@ function Profile() {
 	};
 
 	return (
-		<div className="profile-div">
-			<input
-				type="file"
-				ref={inputRef}
-				id="fileInput"
-				name="image"
-				onChange={handleFileInputChange}
-				value={fileInputState}
-				className="form-input"
-			/>
-			<div className="profile-card">
-				<h2 className="student-header">{username}</h2>
-				<form className="profile-form" onSubmit={updateUserInfo}>
-					<img
-						onClick={handleUpload}
-						alt="Student Profile"
-						className="student-photo"
-						src={previewSource ? previewSource : avatar}
-					/>
-					<div className="profile-form-inputs">
-						<div className="username-div">
-							<div className="username-label">
-								<img
-									alt="User Icon"
-									className="username-icon"
-									src={userIcon}
-								/>
-								<h3 className="profile-header">Username</h3>
-							</div>
-							<input
-								className="profile-input"
-								placeholder="Username"
-								value={username || ""}
-								onChange={(e) => {
-									setUsername(e.target.value);
-									setIsDisabled("");
-								}}
-							></input>
-						</div>
+		<>
+			<Link className="home-icon" to="/mainpage">
+				<img alt="mainpageIcon" src={homeIcon}></img>
+			</Link>
 
-						<div className="email-div">
-							<div className="profile-email-label">
-								<img
-									alt="Email Icon"
-									className="profile-email-icon"
-									src={emailIcon}
-								/>
-								<h3 className="profile-header">Email</h3>
-							</div>
-							<input
-								className="profile-input"
-								placeholder="Email"
-								name="email"
-								value={email || ""}
-								onChange={(e) => {
-									setEmail(e.target.value);
-									setIsDisabled("");
-								}}
-								required
-							/>
-							{emailErr}
-						</div>
-
-						<div className="degree-div">
-							<div className="degree-label">
-								<img
-									alt="Degree Icon"
-									className="degree-icon"
-									src={degreeIcon}
-								/>
-								<h3 className="profile-header">Degree</h3>
-							</div>
-							<input
-								className="profile-input"
-								placeholder="Degree"
-								value={degree || ""}
-								onChange={(e) => {
-									setDegree(e.target.value);
-									setIsDisabled("");
-								}}
-							/>
-						</div>
-
-						<div className="academics-div">
-							<div className="academics-label">
-								<img
-									alt="Academics Icon"
-									className="academics-icon"
-									src={academicsIcon}
-								/>
-								<h3 className="profile-header">Academics</h3>
-							</div>
-							<div className="academics-label2">
-								<h4 className="academics-grade">Grade</h4>
-								<h4 className="academics-subject">Subject</h4>
-							</div>
-							<Grade
-								index={0}
-								grade={grade1}
-								subject={subject1}
-								onGradeChange={handleGradeChange}
-								onSubjectChange={handleSubjectChange}
-							/>
-
-							<Grade
-								index={1}
-								grade={grade2}
-								subject={subject2}
-								onGradeChange={handleGradeChange}
-								onSubjectChange={handleSubjectChange}
-							/>
-
-							<Grade
-								index={2}
-								grade={grade3}
-								subject={subject3}
-								onGradeChange={handleGradeChange}
-								onSubjectChange={handleSubjectChange}
-							/>
-						</div>
-
-						<div className="profile-container">
-							<div className="gpa-div">
-								<div className="gpa-label">
+			<div className="profile-div">
+				<input
+					type="file"
+					ref={inputRef}
+					id="fileInput"
+					name="image"
+					onChange={handleFileInputChange}
+					value={fileInputState}
+					className="form-input"
+				/>
+				<div className="profile-card">
+					<h2 className="student-header">{username}</h2>
+					<form className="profile-form" onSubmit={updateUserInfo}>
+						<img
+							onClick={handleUpload}
+							alt="Student Profile"
+							className="student-photo"
+							src={previewSource ? previewSource : avatar}
+						/>
+						<div className="profile-form-inputs">
+							<div className="username-div">
+								<div className="username-label">
 									<img
-										alt="GPA Icon"
-										className="gpa-icon"
-										src={gpaIcon}
+										alt="User Icon"
+										className="username-icon"
+										src={userIcon}
 									/>
-									<h3 className="profile-header">GPA</h3>
+									<h3 className="profile-header">Username</h3>
 								</div>
 								<input
 									className="profile-input"
-									placeholder="GPA / 7"
-									value={gpa || ""}
+									placeholder="Username"
+									value={username || ""}
 									onChange={(e) => {
-										setGpa(e.target.value);
+										setUsername(e.target.value);
+										setIsDisabled("");
+									}}
+								></input>
+							</div>
+
+							<div className="email-div">
+								<div className="profile-email-label">
+									<img
+										alt="Email Icon"
+										className="profile-email-icon"
+										src={emailIcon}
+									/>
+									<h3 className="profile-header">Email</h3>
+								</div>
+								<input
+									className="profile-input"
+									placeholder="Email"
+									name="email"
+									value={email || ""}
+									onChange={(e) => {
+										setEmail(e.target.value);
+										setIsDisabled("");
+									}}
+									required
+								/>
+								{emailErr}
+							</div>
+
+							<div className="degree-div">
+								<div className="degree-label">
+									<img
+										alt="Degree Icon"
+										className="degree-icon"
+										src={degreeIcon}
+									/>
+									<h3 className="profile-header">Degree</h3>
+								</div>
+								<input
+									className="profile-input"
+									placeholder="Degree"
+									value={degree || ""}
+									onChange={(e) => {
+										setDegree(e.target.value);
 										setIsDisabled("");
 									}}
 								/>
 							</div>
 
-							<div className="study-load-div">
-								<div className="study-load-label">
+							<div className="academics-div">
+								<div className="academics-label">
 									<img
-										alt="Study Load Icon"
-										className="study-load-icon"
-										src={studyLoadIcon}
+										alt="Academics Icon"
+										className="academics-icon"
+										src={academicsIcon}
 									/>
 									<h3 className="profile-header">
-										Study Load
+										Academics
 									</h3>
 								</div>
+								<div className="academics-label2">
+									<h4 className="academics-grade">Grade</h4>
+									<h4 className="academics-subject">
+										Subject
+									</h4>
+								</div>
+								<Grade
+									index={0}
+									grade={grade1}
+									subject={subject1}
+									onGradeChange={handleGradeChange}
+									onSubjectChange={handleSubjectChange}
+								/>
+								<Grade
+									index={1}
+									grade={grade2}
+									subject={subject2}
+									onGradeChange={handleGradeChange}
+									onSubjectChange={handleSubjectChange}
+								/>
+								<Grade
+									index={2}
+									grade={grade3}
+									subject={subject3}
+									onGradeChange={handleGradeChange}
+									onSubjectChange={handleSubjectChange}
+								/>
+							</div>
 
-								<div className="study-load-buttons">
-									<div className="full-time-div">
-										<input
-											className="study-load-input"
-											type={"radio"}
-											value="full-time"
-											id="fulltime-input"
-											checked={studyLoad === "full-time"}
-											onChange={handleRadioChange}
+							<div className="profile-container">
+								<div className="gpa-div">
+									<div className="gpa-label">
+										<img
+											alt="GPA Icon"
+											className="gpa-icon"
+											src={gpaIcon}
 										/>
-										<label htmlFor="fulltime-input">
-											Full-Time
-										</label>
+										<h3 className="profile-header">GPA</h3>
 									</div>
-									<div className="part-time-div">
-										<input
-											className="study-load-input"
-											type={"radio"}
-											value="part-time"
-											id="parttime"
-											checked={studyLoad === "part-time"}
-											onChange={handleRadioChange}
+									<input
+										className="profile-input"
+										placeholder="GPA / 7"
+										value={gpa || ""}
+										onChange={(e) => {
+											setGpa(e.target.value);
+											setIsDisabled("");
+										}}
+									/>
+								</div>
+
+								<div className="study-load-div">
+									<div className="study-load-label">
+										<img
+											alt="Study Load Icon"
+											className="study-load-icon"
+											src={studyLoadIcon}
 										/>
-										<label htmlFor="parttime-input">
-											Part-Time
-										</label>
+										<h3 className="profile-header">
+											Study Load
+										</h3>
+									</div>
+
+									<div className="study-load-buttons">
+										<div className="full-time-div">
+											<input
+												className="study-load-input"
+												type={"radio"}
+												value="full-time"
+												id="fulltime-input"
+												checked={
+													studyLoad === "full-time"
+												}
+												onChange={handleRadioChange}
+											/>
+											<label htmlFor="fulltime-input">
+												Full-Time
+											</label>
+										</div>
+										<div className="part-time-div">
+											<input
+												className="study-load-input"
+												type={"radio"}
+												value="part-time"
+												id="parttime"
+												checked={
+													studyLoad === "part-time"
+												}
+												onChange={handleRadioChange}
+											/>
+											<label htmlFor="parttime-input">
+												Part-Time
+											</label>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
 
-					<span>
-						{" "}
-						<hr />
-					</span>
-					<p className="disclaimer">
-						Disclaimer: Atleast one social is needed to connect with
-						other students.{" "}
-					</p>
-					<div className="profile-form-inputs">
-						<div className="facebook-div">
-							<div className="facebook-label">
-								<img
-									alt="User Icon"
-									className="facebook-icon"
-									src={facebookIcon}
-								/>
-								<h3 className="profile-header">Facebook</h3>
+						<span className="span-div">
+							<hr />
+						</span>
+						<p className="disclaimer">
+							Disclaimer: At least one social is needed to connect
+							with other students.
+						</p>
+						<div className="profile-form-inputs">
+							<div className="facebook-div">
+								<div className="facebook-label">
+									<img
+										alt="User Icon"
+										className="facebook-icon"
+										src={facebookIcon}
+									/>
+									<h3 className="profile-header">Facebook</h3>
+								</div>
+								<input
+									className="profile-input"
+									placeholder="Facebook"
+									value={facebook || ""}
+									onChange={(e) => {
+										setFacebook(e.target.value);
+										setIsDisabled("");
+									}}
+									required
+								></input>
 							</div>
-							<input
-								className="profile-input"
-								placeholder="Facebook"
-								value={facebook || ""}
-								onChange={(e) => {
-									setFacebook(e.target.value);
-									setIsDisabled("");
-								}}
-							></input>
-						</div>
 
-						<div className="instagram-div">
-							<div className="instagram-label">
-								<img
-									alt="instagram Icon"
-									className="instagram-icon"
-									src={instagramIcon}
+							<div className="instagram-div">
+								<div className="instagram-label">
+									<img
+										alt="instagram Icon"
+										className="instagram-icon"
+										src={instagramIcon}
+									/>
+									<h3 className="profile-header">
+										Instagram
+									</h3>
+								</div>
+								<input
+									className="profile-input"
+									placeholder="Instagram"
+									name="instagram"
+									value={instagram || ""}
+									onChange={(e) => {
+										setInstagram(e.target.value);
+										setIsDisabled("");
+									}}
 								/>
-								<h3 className="profile-header">Instagram</h3>
 							</div>
-							<input
-								className="profile-input"
-								placeholder="Instagram"
-								name="instagram"
-								value={instagram || ""}
-								onChange={(e) => {
-									setInstagram(e.target.value);
-									setIsDisabled("");
-								}}
-							/>
-						</div>
 
-						<div className="twitter-div">
-							<div className="twitter-label">
-								<img
-									alt="Twitter Icon"
-									className="twitter-icon"
-									src={twitterIcon}
+							<div className="twitter-div">
+								<div className="twitter-label">
+									<img
+										alt="Twitter Icon"
+										className="twitter-icon"
+										src={twitterIcon}
+									/>
+									<h3 className="profile-header">Twitter</h3>
+								</div>
+								<input
+									className="profile-input"
+									placeholder="Twitter"
+									value={twitter || ""}
+									onChange={(e) => {
+										setTwitter(e.target.value);
+										setIsDisabled("");
+									}}
 								/>
-								<h3 className="profile-header">Twitter</h3>
 							</div>
-							<input
-								className="profile-input"
-								placeholder="Twitter"
-								value={twitter || ""}
-								onChange={(e) => {
-									setTwitter(e.target.value);
-									setIsDisabled("");
-								}}
-							/>
 						</div>
-					</div>
-					<div className="profile-buttons">
-						<button
-							type="button"
-							className="cancel-button"
-							onClick={() => {
-								setResetForm(!resetForm);
-							}}
-						>
-							Cancel
-						</button>
-						<button
-							disabled={isDisabled ? true : ""}
-							type="submit"
-							className="submit-button"
-						>
-							Save Changes
-						</button>
-					</div>
-				</form>
+						<div className="profile-buttons">
+							<button
+								type="button"
+								className="cancel-button"
+								onClick={() => {
+									setResetForm(!resetForm);
+								}}
+							>
+								Cancel
+							</button>
+							<button
+								disabled={isDisabled ? true : ""}
+								type="submit"
+								className="submit-button"
+							>
+								Save Changes
+							</button>
+						</div>
+					</form>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 

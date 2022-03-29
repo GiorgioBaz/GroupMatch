@@ -17,6 +17,7 @@ function Grade(props) {
 				placeholder="Subject Name"
 				value={props.subject || ""}
 				onChange={(e) => props.onSubjectChange(e, props.index)}
+				required
 			/>
 		</div>
 	);
