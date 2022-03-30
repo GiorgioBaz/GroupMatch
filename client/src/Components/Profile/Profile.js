@@ -462,7 +462,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Facebook URL"
+									placeholder="Facebook Account URL"
 									value={facebook || ""}
 									onChange={(e) => {
 										setFacebook(e.target.value);
@@ -485,7 +485,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Instagram URL"
+									placeholder="Instagram Account URL"
 									name="instagram"
 									value={instagram || ""}
 									onChange={(e) => {
@@ -506,7 +506,7 @@ function Profile() {
 								</div>
 								<input
 									className="profile-input"
-									placeholder="Twitter URL"
+									placeholder="Twitter Account URL"
 									value={twitter || ""}
 									onChange={(e) => {
 										setTwitter(e.target.value);
