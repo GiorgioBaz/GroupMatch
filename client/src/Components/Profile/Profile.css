@@ -199,6 +199,18 @@
 	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
 }
 
+.subject-grade > .profile-input:invalid:focus {
+	position: relative;
+	background: rgba(196, 37, 37, 0.208);
+	border: 1px solid red;
+	border-radius: 5px;
+	outline: 1px red;
+	width: 73%;
+	height: 3.3em;
+	padding-left: 2%;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
 .study-load-div {
 	display: flex;
 	flex-direction: column;
@@ -223,7 +235,7 @@
 
 .profile-buttons {
 	display: flex;
-	margin-top: 2.2em;
+	margin-top: 1em;
 	margin-bottom: 2.2em;
 	justify-content: space-evenly;
 }
@@ -241,6 +253,7 @@
 
 .study-load-buttons {
 	display: flex;
+	margin-bottom: 3em;
 }
 
 .part-time-div {
@@ -293,4 +306,62 @@
 	border: 2px solid #8324fb;
 	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
 	cursor: pointer;
+}
+
+.instagram-icon {
+	margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.facebook-icon {
+	margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.twitter-icon {
+	margin-left: 1.1%;
+	margin-bottom: 1%;
+}
+
+.instagram-div {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.instagram-label {
+	display: flex;
+}
+
+.facebook-div {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.facebook-label {
+	display: flex;
+}
+
+.twitter-label {
+	display: flex;
+}
+
+.twitter-div {
+	margin-top: 1em;
+	margin-bottom: 3em;
+}
+
+.disclaimer {
+	margin-top: 2em;
+	margin-bottom: 1em;
+	margin-left: 3em;
+	position: relative;
+	text-align: center;
+	color: orange;
+}
+
+.home-icon {
+	margin-top: 3em;
+	margin-bottom: 1em;
+	margin-left: 12em;
+	position: absolute;
 }

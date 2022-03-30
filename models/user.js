@@ -52,7 +52,7 @@ const user = new mongoose.Schema({
 		type: String,
 		required: true,
 		default:
-			"https://res.cloudinary.com/doyt19vwv/image/upload/v1646923245/odydlozucf9ql6osef2g.jpg",
+			"https://res.cloudinary.com/doyt19vwv/image/upload/v1648267669/blank-profile-temp_lpa44x.png",
 	},
 
 	cloudinary_id: {
@@ -115,6 +115,22 @@ const user = new mongoose.Schema({
 		],
 		required: false,
 		default: [],
+	facebook: {
+		type: String,
+		required: false,
+		default: "",
+	},
+
+	instagram: {
+		type: String,
+		required: false,
+		default: "",
+	},
+
+	twitter: {
+		type: String,
+		required: false,
+		default: "",
 	},
 });
 

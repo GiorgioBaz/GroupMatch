@@ -618,7 +618,17 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 // Updates user's information
 app.post("/updateProfile", async function (req, res) {
 	const user = req.user;
-	const { name, email, academics, degree, gpa, studyLoad } = req.body;
+	const {
+		name,
+		email,
+		academics,
+		degree,
+		gpa,
+		studyLoad,
+		facebook,
+		instagram,
+		twitter,
+	} = req.body;
 	User.findOne({ email: email }, (error, doc) => {
 		if (error) throw error;
 		if (doc) {
@@ -642,6 +652,9 @@ app.post("/updateProfile", async function (req, res) {
 					degree: degree,
 					gpa: gpa,
 					studyLoad: studyLoad,
+					facebook: facebook,
+					instagram: instagram,
+					twitter: twitter,
 				}
 			)
 				.then(() => {
@@ -664,7 +677,6 @@ app.post("/api/upload", async (req, res) => {
 		const uploadResponse = await cloudinary.uploader.upload(fileStr, {
 			upload_preset: "GroupMatch",
 		});
-		console.log(uploadResponse);
 		User.findOneAndUpdate(
 			{ email: user.email },
 			{

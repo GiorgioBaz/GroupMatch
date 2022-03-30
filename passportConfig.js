@@ -43,6 +43,9 @@ module.exports = function (passport) {
 				numUsers: user.numUsers,
 				potentialMatches: user.potentialMatches,
 				confirmedMatches: user.confirmedMatches,
+				facebook: user.facebook,
+				instagram: user.instagram,
+				twitter: user.twitter,
 			};
 			cb(err, userInformation);
 		});

@@ -22,8 +22,8 @@ mongoose
 mongoose.Promise = global.Promise;
 
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(
 	cors({
 		origin: "http://localhost:3000", // <-- location of the react app were connecting to
