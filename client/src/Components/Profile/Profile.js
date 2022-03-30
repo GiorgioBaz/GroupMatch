@@ -91,6 +91,9 @@ function Profile() {
 				setGpa(res.data.user.gpa);
 				setStudyLoad(res.data.user.studyLoad);
 				setAvatar(res.data.user.avatar);
+				setFacebook(res.data.user.facebook);
+				setInstagram(res.data.user.instagram);
+				setTwitter(res.data.user.twitter);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -158,7 +161,12 @@ function Profile() {
 			);
 
 		for (let key of Object.keys(user)) {
-			if (user[key] !== updatedUser[key] && key !== "academics") {
+			if (
+				user[key] !== updatedUser[key] &&
+				key !== "academics" &&
+				key !== "avatar" &&
+				key !== "cloudinary_id"
+			) {
 				updated[key] = updatedUser[key];
 			} else if (key === "academics") {
 				const updatedAcademics = updatedUser[key].find(
@@ -186,6 +194,7 @@ function Profile() {
 				"error"
 			);
 		}
+
 		Axios({
 			method: "POST",
 			data: payload,
@@ -194,7 +203,11 @@ function Profile() {
 		}).then((res) => {
 			if (res.data.success) {
 				handleSubmitFile();
-				Swal.fire(`${res.data.message}`, "", "success");
+				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.reload(true);
+					}
+				});
 			} else {
 				setErrorMsg(res.data.message);
 			}

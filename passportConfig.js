@@ -38,6 +38,9 @@ module.exports = function (passport) {
 				studyLoad: user.studyLoad,
 				avatar: user.avatar,
 				cloudinary_id: user.cloudinary_id,
+				facebook: user.facebook,
+				instagram: user.instagram,
+				twitter: user.twitter,
 			};
 			cb(err, userInformation);
 		});
