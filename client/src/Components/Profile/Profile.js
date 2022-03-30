@@ -461,8 +461,11 @@ function Profile() {
 						</span>
 						<p className="disclaimer">
 							Disclaimer: At least one social is needed to connect
-							with other students.
+							with other students. <br />
+							(This information will only be visible to students
+							you match)
 						</p>
+
 						<div className="profile-form-inputs">
 							<div className="facebook-div">
 								<div className="facebook-label">
