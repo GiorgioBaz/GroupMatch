@@ -132,6 +132,7 @@ function Profile() {
 			case 2:
 				setGrade3(e.target.value);
 				break;
+			default:
 		}
 		setIsDisabled("");
 	}
@@ -147,6 +148,7 @@ function Profile() {
 			case 2:
 				setSubject3(e.target.value);
 				break;
+			default:
 		}
 		setIsDisabled("");
 	}

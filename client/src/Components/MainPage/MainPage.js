@@ -12,7 +12,7 @@ function MainPage() {
 
 	async function getUserList() {
 		let userList;
-		const user = await Axios({
+		await Axios({
 			method: "GET",
 			withCredentials: true,
 			url: "http://localhost:5000/userList",
@@ -30,8 +30,11 @@ function MainPage() {
 		return userList;
 	}
 
-	useEffect(async () => {
-		setUserList(await getUserList());
+	useEffect(() => {
+		async function getUser() {
+			setUserList(await getUserList());
+		}
+		getUser();
 	}, []);
 
 	async function handleRejection(user) {
@@ -78,6 +81,11 @@ function MainPage() {
 			</div>
 
 			<div className="main-card">
+				{userList?.length === 0 && (
+					<p className="empty-p">
+						There's no one new in your class...
+					</p>
+				)}
 				{userList?.length > 0 &&
 					userList?.map((student, i) => (
 						<div className="absolute-student-card" key={i}>

@@ -612,9 +612,6 @@ app.get("/userProfile", (req, res) => {
 	}
 });
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
 // Updates user's information
 app.post("/updateProfile", async function (req, res) {
 	const user = req.user;
@@ -840,13 +837,6 @@ app.get("/userList", async (req, res) => {
 
 	const dbUser = await User.findOne({ email: currentUser.email });
 
-	if (dbUser.allUsers.length === 0) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
-
 	return res.send({
 		success: true,
 		message: "List Filtered",
@@ -866,13 +856,6 @@ app.post("/declineUser", async (req, res) => {
 	}
 
 	const filteredUsers = await filterUserList(_id, currentUser);
-
-	if (filteredUsers.length === 0) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
 
 	if (filteredUsers === "404") {
 		return res.send({
@@ -918,7 +901,10 @@ app.post("/acceptUser", async (req, res) => {
 			message: "This student has deactivated their account",
 		});
 	}
-	if (!previouslyMatched) {
+	if (
+		!previouslyMatched ||
+		(previouslyMatched && dbUser.allUsers.length === 1)
+	) {
 		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
 		await dbUser.save().then(async () => {
 			if (isMatch(dbUser, matchedUser)) {
@@ -954,12 +940,6 @@ app.post("/acceptUser", async (req, res) => {
 	// From here we will need to send all that users information (including socials when its done) to the frontend where it will be displayed
 
 	const filteredUsers = await filterUserList(_id, currentUser);
-	if (filteredUsers.length === 0) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
 
 	if (filteredUsers === "404") {
 		return res.send({

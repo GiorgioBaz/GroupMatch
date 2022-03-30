@@ -115,6 +115,7 @@ const user = new mongoose.Schema({
 		],
 		required: false,
 		default: [],
+	},
 	facebook: {
 		type: String,
 		required: false,
