@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
+import logoutIcon from "../../Assets/logout-icon.svg";
 
 function MainPage() {
 	const [userList, setUserList] = useState([]);
@@ -74,6 +75,20 @@ function MainPage() {
 			}
 		});
 	}
+
+	const logout = () => {
+		Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/logout",
+		}).then(() =>
+			Swal.fire("Successfully Logged Out").then((swal) => {
+				if (swal.isConfirmed || swal.isDismissed) {
+					window.location.href = "/";
+				}
+			})
+		);
+	};
 	return (
 		<div className="main-div">
 			<div>
@@ -154,6 +169,12 @@ function MainPage() {
 						</div>
 					))}
 			</div>
+			<img
+				alt="logoutIcon"
+				src={logoutIcon}
+				className="logout-icon"
+				onClick={logout}
+			></img>
 		</div>
 	);
 }

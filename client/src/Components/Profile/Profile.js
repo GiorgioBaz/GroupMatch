@@ -15,6 +15,7 @@ import twitterIcon from "../../Assets/twitterIcon.svg";
 import facebookIcon from "../../Assets/facebookIcon.svg";
 import instagramIcon from "../../Assets/instagramIcon.svg";
 import homeIcon from "../../Assets/home-icon.svg";
+import logoutIcon from "../../Assets/logout-icon.svg";
 
 function Profile() {
 	const [username, setUsername] = useState("");
@@ -261,6 +262,20 @@ function Profile() {
 		} catch (err) {
 			console.error(err);
 		}
+	};
+
+	const logout = () => {
+		Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/logout",
+		}).then(() =>
+			Swal.fire("Successfully Logged Out").then((swal) => {
+				if (swal.isConfirmed || swal.isDismissed) {
+					window.location.href = "/";
+				}
+			})
+		);
 	};
 
 	return (
@@ -557,6 +572,12 @@ function Profile() {
 						</div>
 					</form>
 				</div>
+				<img
+					alt="logoutIcon"
+					src={logoutIcon}
+					className="logout-icon"
+					onClick={logout}
+				></img>
 			</div>
 		</>
 	);

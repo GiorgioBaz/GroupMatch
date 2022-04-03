@@ -365,3 +365,11 @@
 	margin-left: 12em;
 	position: absolute;
 }
+
+.logout-icon {
+	margin-top: 3em;
+	margin-bottom: 1em;
+	margin-left: 36em;
+	position: absolute;
+	cursor: pointer;
+}
