@@ -7,21 +7,49 @@
 	height: 100vh;
 }
 
+.absolute-student-card {
+	position: absolute;
+	width: 25vw;
+}
+
+.absolute-student-card:nth-child(1) {
+	position: absolute;
+	box-shadow: 1px 6px 6px 6px rgba(0, 0, 0, 0.25);
+	border-radius: 5% 5% 0% 0%;
+}
+
 .main-card {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	width: 25vw;
 	height: fit-content;
 	position: relative;
-	margin-top: 6em;
 	align-items: center;
+	bottom: 1em;
+}
+
+.nav-buttons {
+	display: flex;
+	width: 100vw;
+	justify-content: space-around;
+	padding-top: 5vh;
+}
+
+.nav-buttons > .logout-icon {
+	cursor: pointer;
+}
+
+.nav-buttons > .profile-icon {
+	cursor: pointer;
 }
 
 .main-student-photo {
-	width: 23em;
+	width: 25vw;
 	height: 23em;
-	margin-top: 0.5em;
 	border-radius: 5% 5% 0% 0%;
+	background-size: cover;
+	background-position: center;
+	border-bottom: 1px solid black;
 }
 
 .empty-p {
@@ -29,42 +57,42 @@
 	justify-content: center;
 	align-items: center;
 	font-size: 1.35em;
-	margin-top: 15em;
+	padding-top: 15em;
 }
 
 .student-info {
 	display: flex;
 	flex-direction: column;
 	width: 23em;
-	height: fit-content;
-	box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.25);
+	height: 16em;
 	border-radius: 0% 0% 5% 5%;
+	background-color: white;
 }
 
 .student-title {
 	display: flex;
 	flex-direction: row;
-	margin-top: 1em;
+	padding-top: 1em;
 }
 
 .student-name {
 	font-size: 17px;
-	margin-left: 5%;
+	padding-left: 5%;
 }
 
 .student-degree {
 	font-size: 17px;
-	margin-left: 5%;
+	padding-left: 5%;
 	font-weight: normal;
 }
 
 .student-academics {
-	margin-top: 1.4em;
+	padding-top: 1.4em;
 	display: flex;
 	flex-direction: column;
 	font-size: 15px;
-	margin-left: 5%;
-	margin-bottom: 0.5em;
+	padding-left: 5%;
+	padding-bottom: 0.5em;
 }
 
 .academic-marks {
@@ -75,9 +103,9 @@
 .student-degree-details {
 	display: flex;
 	flex-direction: row;
-	margin-top: 1.4em;
-	margin-bottom: 0.5em;
-	margin-left: 5%;
+	padding-top: 1.4em;
+	padding-bottom: 0.5em;
+	padding-left: 5%;
 }
 
 .student-gpa {
@@ -86,25 +114,31 @@
 
 .student-study {
 	font-size: 15px;
-	margin-left: 40%;
+	padding-left: 40%;
 }
 
 .student-interest-buttons {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	margin-top: 4em;
+	padding-bottom: 1em;
 	width: 20em;
 }
 
 .student-reject-image {
 	width: 4em;
-	margin-left: 20%;
+	padding-left: 35%;
 	cursor: pointer;
 }
 
 .student-interest-image {
 	width: 4em;
-	margin-left: 20%;
+	padding-left: 35%;
+	cursor: pointer;
+}
+
+.student-interest-:nth-child(1) {
+	width: 4em;
+	padding-left: 35%;
 	cursor: pointer;
 }

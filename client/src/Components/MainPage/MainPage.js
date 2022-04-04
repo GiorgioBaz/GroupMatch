@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
+import profileIcon from "../../Assets/profile-icon.svg";
 import logoutIcon from "../../Assets/logout-icon.svg";
 
 function MainPage() {
@@ -39,6 +40,22 @@ function MainPage() {
 	}, []);
 
 	async function handleRejection(user) {
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[userList.length - 1].user);
+		if (lastUser.indexOf(user._id) > -1) {
+			await Axios({
+				method: "POST",
+				withCredentials: true,
+				url: "http://localhost:5000/updateUserList",
+				data: { user: user },
+			}).then((res) => {
+				if (res.data.success) {
+					setUserList(res.data.userList);
+				}
+			});
+		}
+
+		//Rejects the user and filters the list
 		await Axios({
 			method: "POST",
 			withCredentials: true,
@@ -58,6 +75,22 @@ function MainPage() {
 	}
 
 	async function handleMatch(user) {
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[userList.length - 1].user);
+		if (lastUser.indexOf(user._id) > -1) {
+			await Axios({
+				method: "POST",
+				withCredentials: true,
+				url: "http://localhost:5000/updateUserList",
+				data: { user: user },
+			}).then((res) => {
+				if (res.data.success) {
+					setUserList(res.data.userList);
+				}
+			});
+		}
+
+		// adds users to potential matches or confirmed matches
 		await Axios({
 			method: "POST",
 			withCredentials: true,
@@ -82,7 +115,7 @@ function MainPage() {
 			withCredentials: true,
 			url: "http://localhost:5000/logout",
 		}).then(() =>
-			Swal.fire("Successfully Logged Out").then((swal) => {
+			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {
 					window.location.href = "/";
 				}
@@ -91,90 +124,97 @@ function MainPage() {
 	};
 	return (
 		<div className="main-div">
-			<div>
-				<Link to="/profile">Profile</Link>
-			</div>
+			<div className="nav-buttons">
+				<Link to="/profile" className="profile-icon">
+					<img alt="profileIcon" src={profileIcon}></img>
+				</Link>
 
+				<img
+					alt="logoutIcon"
+					src={logoutIcon}
+					className="logout-icon"
+					onClick={logout}
+				></img>
+			</div>
 			<div className="main-card">
 				{userList?.length === 0 && (
 					<p className="empty-p">
 						There's no one new in your class...
 					</p>
 				)}
-				{userList?.length > 0 &&
-					userList?.map((student, i) => (
-						<div className="absolute-student-card" key={i}>
-							<div className="main-student-photo">
-								<img
-									alt="Student"
-									className="main-student-photo"
-									src={student.user.avatar}
-								/>
-							</div>
-
-							<div className="student-info">
-								<div className="student-title">
-									<h3 className="student-name">
-										{student.user.name}
-									</h3>
-									<h5 className="student-degree">
-										{student.user.degree}
-									</h5>
+				<div className="swipe">
+					{userList?.length > 0 &&
+						userList?.map((student, i) => (
+							<div className="absolute-student-card" key={i}>
+								<div className="main-student-photo">
+									<img
+										alt="Student"
+										className="main-student-photo"
+										src={student.user.avatar}
+									/>
 								</div>
 
-								{student.user.academics?.length > 0 &&
-									student.user.academics.map(
-										(academic, i) => (
-											<div
-												className="student-academics"
-												key={i}
-											>
-												<p>
-													<span className="academic-marks">
-														{academic.grade || "HD"}{" "}
-														-{" "}
-													</span>
-													{academic.subject}
-												</p>
-											</div>
-										)
-									)}
-
-								<div className="student-degree-details">
-									<div className="student-gpa">
-										<p>{student.user.gpa}</p>
+								<div className="student-info">
+									<div className="student-title">
+										<h3 className="student-name">
+											{student.user.name}
+										</h3>
+										<h5 className="student-degree">
+											{student.user.degree}
+										</h5>
 									</div>
 
-									<div className="student-study">
-										<p>{student.user.studyLoad}</p>
+									{student.user.academics?.length > 0 &&
+										student.user.academics.map(
+											(academic, i) => (
+												<div
+													className="student-academics"
+													key={i}
+												>
+													<p>
+														<span className="academic-marks">
+															{academic.grade ||
+																"HD"}{" "}
+															-{" "}
+														</span>
+														{academic.subject}
+													</p>
+												</div>
+											)
+										)}
+
+									<div className="student-degree-details">
+										<div className="student-gpa">
+											<p>{student.user.gpa}</p>
+										</div>
+
+										<div className="student-study">
+											<p>{student.user.studyLoad}</p>
+										</div>
 									</div>
 								</div>
+								<div className="student-interest-buttons">
+									<img
+										alt="Reject"
+										className="student-reject-image"
+										src={rejectIcon}
+										onClick={(e) =>
+											handleRejection(student.user)
+										}
+									/>
+									<img
+										alt="Interest"
+										className="student-interest-image"
+										src={interestIcon}
+										onClick={() =>
+											handleMatch(student.user)
+										}
+									/>
+								</div>
 							</div>
-							<div className="student-interest-buttons">
-								<img
-									alt="Reject"
-									className="student-reject-image"
-									src={rejectIcon}
-									onClick={(e) =>
-										handleRejection(student.user)
-									}
-								/>
-								<img
-									alt="Interest"
-									className="student-interest-image"
-									src={interestIcon}
-									onClick={() => handleMatch(student.user)}
-								/>
-							</div>
-						</div>
-					))}
+						))}
+				</div>
 			</div>
-			<img
-				alt="logoutIcon"
-				src={logoutIcon}
-				className="logout-icon"
-				onClick={logout}
-			></img>
 		</div>
 	);
 }

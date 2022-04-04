@@ -46,6 +46,8 @@ module.exports = function (passport) {
 				facebook: user.facebook,
 				instagram: user.instagram,
 				twitter: user.twitter,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt,
 			};
 			cb(err, userInformation);
 		});

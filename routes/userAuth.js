@@ -765,7 +765,7 @@ app.post("/updateAllUsers", async (req, res) => {
 	).then(() => {
 		return res.send({
 			success: true,
-			message: "Your profile has been changed!",
+			message: "User List Successfully Updated",
 		});
 	});
 });
@@ -780,21 +780,45 @@ app.post("/updateUserList", async (req, res) => {
 		});
 	}
 
+	const dbUser = await User.findOne({ email: user.email });
+
+	//converts isoStrings to Unix Epoch time for comparison
+	const isoToUnix = (time) => new Date(time).getTime();
+
+	const userCreatedAt = isoToUnix(dbUser.updatedAt);
+
 	const updateUser = await getAllUsers(req);
-	if (updateUser.length > user.numUsers) {
-		User.findOneAndUpdate(
-			{ email: user.email },
-			{ allUsers: updateUser, numUsers: updateUser.length }
-		).then(() => {
+
+	const newUsers = updateUser.filter((user) => {
+		return isoToUnix(user.user.createdAt) > userCreatedAt;
+	});
+
+	const existingUser = updateUser.find((e) => {
+		const matchId = newUsers.findIndex((user) => {
+			return e.user._id === user.user._id;
+		});
+
+		if (matchId > -1) {
+			newUsers.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
+	if (newUsers.length > 0) {
+		dbUser.allUsers.push(...newUsers);
+		await dbUser.save().then(() => {
 			return res.send({
 				success: true,
-				message: "Your profile has been changed!",
+				message: "New users successfully added",
+				userList: dbUser.allUsers,
 			});
 		});
 	} else {
 		return res.send({
-			success: true,
-			message: "Your profile is already up to date",
+			success: false,
+			message: "Your user list is already up to date",
 		});
 	}
 });
@@ -816,13 +840,6 @@ async function filterUserList(userId, currentUser) {
 	} else {
 		return "404";
 	}
-}
-
-function isMatch(currentUser, matchedUser) {
-	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
-		return e.user.id.toString() === currentUser.id;
-	});
-	return confirmedMatch;
 }
 
 app.get("/userList", async (req, res) => {
@@ -875,6 +892,13 @@ app.post("/declineUser", async (req, res) => {
 		userList: filteredUsers,
 	});
 });
+
+function isMatch(currentUser, matchedUser) {
+	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
+		return e.user.id.toString() === currentUser.id;
+	});
+	return confirmedMatch;
+}
 
 app.post("/acceptUser", async (req, res) => {
 	const currentUser = req.user;

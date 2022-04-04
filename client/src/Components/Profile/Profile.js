@@ -270,14 +270,13 @@ function Profile() {
 			withCredentials: true,
 			url: "http://localhost:5000/logout",
 		}).then(() =>
-			Swal.fire("Successfully Logged Out").then((swal) => {
+			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {
 					window.location.href = "/";
 				}
 			})
 		);
 	};
-
 	return (
 		<>
 			<Link className="home-icon" to="/mainpage">
