@@ -40,6 +40,22 @@ function MainPage() {
 	}, []);
 
 	async function handleRejection(user) {
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[userList.length - 1].user);
+		if (lastUser.indexOf(user._id) > -1) {
+			await Axios({
+				method: "POST",
+				withCredentials: true,
+				url: "http://localhost:5000/updateUserList",
+				data: { user: user },
+			}).then((res) => {
+				if (res.data.success) {
+					setUserList(res.data.userList);
+				}
+			});
+		}
+
+		//Rejects the user and filters the list
 		await Axios({
 			method: "POST",
 			withCredentials: true,
@@ -59,6 +75,22 @@ function MainPage() {
 	}
 
 	async function handleMatch(user) {
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[userList.length - 1].user);
+		if (lastUser.indexOf(user._id) > -1) {
+			await Axios({
+				method: "POST",
+				withCredentials: true,
+				url: "http://localhost:5000/updateUserList",
+				data: { user: user },
+			}).then((res) => {
+				if (res.data.success) {
+					setUserList(res.data.userList);
+				}
+			});
+		}
+
+		// adds users to potential matches or confirmed matches
 		await Axios({
 			method: "POST",
 			withCredentials: true,
