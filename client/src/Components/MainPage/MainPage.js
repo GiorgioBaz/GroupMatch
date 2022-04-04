@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
+import profileIcon from "../../Assets/profile-icon.svg";
 import logoutIcon from "../../Assets/logout-icon.svg";
 
 function MainPage() {
@@ -82,7 +83,7 @@ function MainPage() {
 			withCredentials: true,
 			url: "http://localhost:5000/logout",
 		}).then(() =>
-			Swal.fire("Successfully Logged Out").then((swal) => {
+			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {
 					window.location.href = "/";
 				}
@@ -91,11 +92,19 @@ function MainPage() {
 	};
 	return (
 		<div className="main-div">
-			<div>
-				<Link to="/profile">Profile</Link>
-			</div>
-
 			<div className="main-card">
+				<div className="nav-buttons">
+					<Link to="/profile" className="profile-icon">
+						<img alt="profileIcon" src={profileIcon}></img>
+					</Link>
+
+					<img
+						alt="logoutIcon"
+						src={logoutIcon}
+						className="logout-icon"
+						onClick={logout}
+					></img>
+				</div>
 				{userList?.length === 0 && (
 					<p className="empty-p">
 						There's no one new in your class...
@@ -169,12 +178,6 @@ function MainPage() {
 						</div>
 					))}
 			</div>
-			<img
-				alt="logoutIcon"
-				src={logoutIcon}
-				className="logout-icon"
-				onClick={logout}
-			></img>
 		</div>
 	);
 }

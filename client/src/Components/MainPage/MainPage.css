@@ -13,8 +13,22 @@
 	width: 25vw;
 	height: fit-content;
 	position: relative;
-	margin-top: 6em;
+	margin-top: 3em;
 	align-items: center;
+}
+
+.nav-buttons {
+	display: flex;
+	width: 100vw;
+	justify-content: space-around;
+}
+
+.nav-buttons > .logout-icon {
+	cursor: pointer;
+}
+
+.nav-buttons > .profile-icon {
+	cursor: pointer;
 }
 
 .main-student-photo {
