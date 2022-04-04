@@ -7,13 +7,19 @@
 	height: 100vh;
 }
 
+
+.swipe{
+    position: absolute;
+}
+
 .main-card {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+    justify-content: center;
 	width: 25vw;
 	height: fit-content;
 	position: relative;
-	margin-top: 3em;
+	margin-top: 25em;
 	align-items: center;
 }
 
@@ -21,6 +27,7 @@
 	display: flex;
 	width: 100vw;
 	justify-content: space-around;
+    margin-top: 5vh;
 }
 
 .nav-buttons > .logout-icon {
@@ -36,6 +43,8 @@
 	height: 23em;
 	margin-top: 0.5em;
 	border-radius: 5% 5% 0% 0%;
+    background-size: cover;
+    background-position: center;
 }
 
 .empty-p {
@@ -50,9 +59,10 @@
 	display: flex;
 	flex-direction: column;
 	width: 23em;
-	height: fit-content;
+	height: 16em;
 	box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.25);
 	border-radius: 0% 0% 5% 5%;
+    background-color: white;
 }
 
 .student-title {

@@ -124,8 +124,7 @@ function MainPage() {
 	};
 	return (
 		<div className="main-div">
-			<div className="main-card">
-				<div className="nav-buttons">
+			<div className="nav-buttons">
 					<Link to="/profile" className="profile-icon">
 						<img alt="profileIcon" src={profileIcon}></img>
 					</Link>
@@ -137,6 +136,8 @@ function MainPage() {
 						onClick={logout}
 					></img>
 				</div>
+			<div className="main-card">
+				
 				{userList?.length === 0 && (
 					<p className="empty-p">
 						There's no one new in your class...
@@ -144,6 +145,7 @@ function MainPage() {
 				)}
 				{userList?.length > 0 &&
 					userList?.map((student, i) => (
+						<div className="swipe">
 						<div className="absolute-student-card" key={i}>
 							<div className="main-student-photo">
 								<img
@@ -207,6 +209,7 @@ function MainPage() {
 									onClick={() => handleMatch(student.user)}
 								/>
 							</div>
+						</div>
 						</div>
 					))}
 			</div>
