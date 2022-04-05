@@ -46,6 +46,7 @@ module.exports = function (passport) {
 				facebook: user.facebook,
 				instagram: user.instagram,
 				twitter: user.twitter,
+				numLogins: user.numLogins,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt,
 			};
