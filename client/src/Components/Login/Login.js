@@ -32,7 +32,7 @@ function Login() {
 	const login = async (e) => {
 		e.preventDefault();
 		const user = await handleLogin();
-		if (user.numLogins === 1) {
+		if (user?.numLogins === 1) {
 			await Axios({
 				method: "POST",
 				url: "http://localhost:5000/updateAllUsers",
@@ -87,12 +87,14 @@ function Login() {
 
 					<div className="password-div">
 						<div className="password-label">
-							<img
-								alt="Password Icon"
-								className="password-icon"
-								src={passwordIcon}
-							/>
-							<h3 className="form-input-headers">Password</h3>
+							<div className="password-icon-label">
+								<img
+									alt="Password Icon"
+									className="password-icon"
+									src={passwordIcon}
+								/>
+								<h3 className="form-input-headers">Password</h3>
+							</div>
 							<Link
 								to="/forgotpassword"
 								className="resetpass-span"

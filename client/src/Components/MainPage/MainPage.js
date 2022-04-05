@@ -76,7 +76,7 @@ function MainPage() {
 
 	async function handleMatch(user) {
 		//Update user list with newly registered users
-		const lastUser = Object.values(userList[userList.length - 1].user);
+		const lastUser = Object.values(userList[0].user);
 		if (lastUser.indexOf(user._id) > -1) {
 			await Axios({
 				method: "POST",
@@ -99,6 +99,9 @@ function MainPage() {
 		}).then((res) => {
 			if (res.data.success) {
 				setUserList(res.data.userList);
+				if (res.data.isMatch) {
+					console.log("here");
+				}
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -185,10 +188,19 @@ function MainPage() {
 
 									<div className="student-degree-details">
 										<div className="student-gpa">
-											<p>{student.user.gpa}</p>
+											<p>
+												<span className="academic-marks">
+													{student.user.gpa && "GPA"}{" "}
+												</span>
+												{student.user.gpa}
+											</p>
 										</div>
 
 										<div className="student-study">
+											<span className="academic-marks">
+												{student.user.studyLoad &&
+													"Studying"}
+											</span>
 											<p>{student.user.studyLoad}</p>
 										</div>
 									</div>

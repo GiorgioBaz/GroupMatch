@@ -9,13 +9,15 @@
 
 .absolute-student-card {
 	position: absolute;
-	width: 25vw;
+	width: 23vw;
 }
 
-.absolute-student-card:nth-child(1) {
+.absolute-student-card:last-child {
 	position: absolute;
 	box-shadow: 1px 6px 6px 6px rgba(0, 0, 0, 0.25);
 	border-radius: 5% 5% 0% 0%;
+	background-color: white;
+	width: 25em;
 }
 
 .main-card {
@@ -25,7 +27,7 @@
 	height: fit-content;
 	position: relative;
 	align-items: center;
-	bottom: 1em;
+	bottom: 2em;
 }
 
 .nav-buttons {
@@ -44,7 +46,7 @@
 }
 
 .main-student-photo {
-	width: 25vw;
+	width: 23vw;
 	height: 23em;
 	border-radius: 5% 5% 0% 0%;
 	background-size: cover;
@@ -63,10 +65,11 @@
 .student-info {
 	display: flex;
 	flex-direction: column;
-	width: 23em;
-	height: 16em;
+	width: 25em;
+	height: 18em;
 	border-radius: 0% 0% 5% 5%;
 	background-color: white;
+	overflow: auto;
 }
 
 .student-title {
@@ -114,7 +117,8 @@
 
 .student-study {
 	font-size: 15px;
-	padding-left: 40%;
+	padding-left: 60%;
+	width: 20em;
 }
 
 .student-interest-buttons {

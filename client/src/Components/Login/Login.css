@@ -51,11 +51,16 @@
 	display: flex;
 	flex-direction: row;
 	margin-left: 7.3%;
+	justify-content: space-between;
 }
 
 .password-icon {
 	margin-left: 1.1%;
 	margin-bottom: 1%;
+}
+
+.password-icon-label > .form-input-headers {
+	margin-left: 6%;
 }
 
 .form-input-headers {
@@ -130,8 +135,14 @@
 }
 
 .resetpass-span {
-	margin-left: 7.6em;
 	color: #8324fb;
 	font-weight: 400;
 	text-decoration: none;
+	margin-right: 6%;
+}
+
+.password-icon-label {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1%;
 }
