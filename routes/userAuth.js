@@ -15,9 +15,13 @@ cloudinary.config({
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
 // Routes
-app.post("/login", (req, res, next) => {
+app.post("/login", async (req, res, next) => {
 	const body = req.body;
 	const userEmail = body.email;
+
+	const dbUser = await User.findOne({ email: userEmail });
+	dbUser.numLogins += 1;
+	await dbUser.save();
 
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
@@ -40,6 +44,7 @@ app.post("/login", (req, res, next) => {
 				res.send({
 					success: true,
 					message: "Successfully Authenticated",
+					user: req.user,
 				});
 				console.log(req.user);
 			});

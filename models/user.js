@@ -71,6 +71,12 @@ const user = new mongoose.Schema(
 			default: 0,
 		},
 
+		numLogins: {
+			type: Number,
+			required: false,
+			default: 0,
+		},
+
 		allUsers: {
 			type: [
 				{

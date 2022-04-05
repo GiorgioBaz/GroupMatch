@@ -16,9 +16,8 @@ function Login() {
 		<p className="error-p">{errorMsg}</p>
 	);
 
-	const login = (e) => {
-		e.preventDefault();
-		Axios({
+	async function handleLogin() {
+		const user = await Axios({
 			method: "POST",
 			data: {
 				email: loginEmail,
@@ -26,17 +25,36 @@ function Login() {
 			},
 			withCredentials: true,
 			url: "http://localhost:5000/login",
-		}).then((res) => {
-			if (res.data.success) {
-				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
+		}).then();
+		return user.data.user;
+	}
+
+	const login = async (e) => {
+		e.preventDefault();
+		const user = await handleLogin();
+		if (user.numLogins === 1) {
+			await Axios({
+				method: "POST",
+				url: "http://localhost:5000/updateAllUsers",
+				withCredentials: true,
+			}).then(() =>
+				Swal.fire("Successfully Authenticated", "", "success").then(
+					(swal) => {
+						if (swal.isConfirmed || swal.isDismissed) {
+							window.location.href = "/profile";
+						}
+					}
+				)
+			);
+		} else {
+			Swal.fire("Successfully Authenticated", "", "success").then(
+				(swal) => {
 					if (swal.isConfirmed || swal.isDismissed) {
 						window.location.href = "/mainpage";
 					}
-				});
-			} else {
-				setErrorMsg(res.data.message);
-			}
-		});
+				}
+			);
+		}
 	};
 
 	return (
