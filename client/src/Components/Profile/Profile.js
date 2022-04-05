@@ -39,6 +39,7 @@ function Profile() {
 	const [facebook, setFacebook] = useState();
 	const [twitter, setTwitter] = useState();
 	const [instagram, setInstagram] = useState();
+	const [numLogins, setnumLogins] = useState();
 
 	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
@@ -62,6 +63,7 @@ function Profile() {
 		facebook: facebook,
 		instagram: instagram,
 		twitter: twitter,
+		numLogins: numLogins
 	};
 
 	async function getUserInfo() {
@@ -97,6 +99,7 @@ function Profile() {
 				setFacebook(res.data.user.facebook);
 				setInstagram(res.data.user.instagram);
 				setTwitter(res.data.user.twitter);
+				setnumLogins(res.data.user.numLogins)
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -202,6 +205,8 @@ function Profile() {
 			);
 		}
 
+		setnumLogins(numLogins + 1);
+
 		Axios({
 			method: "POST",
 			data: payload,
@@ -210,11 +215,7 @@ function Profile() {
 		}).then((res) => {
 			if (res.data.success) {
 				handleSubmitFile();
-				Swal.fire(`${res.data.message}`, "", "success").then((swal) => {
-					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.reload(true);
-					}
-				});
+				Swal.fire(`${res.data.message}`, "", "success")
 			} else {
 				setErrorMsg(res.data.message);
 			}
@@ -279,9 +280,9 @@ function Profile() {
 	};
 	return (
 		<>
-			<Link className="home-icon" to="/mainpage">
+			{numLogins > 1 && <Link className="home-icon" to="/mainpage">
 				<img alt="mainpageIcon" src={homeIcon}></img>
-			</Link>
+			</Link>}
 
 			<div className="profile-div">
 				<input
@@ -302,6 +303,9 @@ function Profile() {
 							className="student-photo"
 							src={previewSource ? previewSource : avatar}
 						/>
+						<p className="disclaimer2">
+							Disclaimer: Updating your profile is mandatory and improves your chances of matching with fellow students
+						</p>
 						<div className="profile-form-inputs">
 							<div className="username-div">
 								<div className="username-label">
@@ -480,8 +484,7 @@ function Profile() {
 							<hr />
 						</span>
 						<p className="disclaimer">
-							Disclaimer: At least one social is needed to connect
-							with other students. <br />
+							Disclaimer: We recommend the use of socials such as facebook for organising group <br />
 							(This information will only be visible to students
 							you match)
 						</p>
@@ -504,7 +507,6 @@ function Profile() {
 										setFacebook(e.target.value);
 										setIsDisabled("");
 									}}
-									required
 								></input>
 							</div>
 
