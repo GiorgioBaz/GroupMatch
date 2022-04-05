@@ -26,7 +26,11 @@ function MainPage() {
 					"Oops! Something Broke",
 					`${res.data.message}`,
 					"error"
-				);
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
 			}
 		});
 		return userList;
@@ -69,7 +73,11 @@ function MainPage() {
 					"Oops! Something Broke",
 					`${res.data.message}`,
 					"error"
-				);
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
 			}
 		});
 	}
@@ -77,7 +85,7 @@ function MainPage() {
 	async function handleMatch(user) {
 		//Update user list with newly registered users
 		const lastUser = Object.values(userList[0].user);
-		if (lastUser.indexOf(user._id) > -1) {
+		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
 			await Axios({
 				method: "POST",
 				withCredentials: true,
@@ -89,6 +97,30 @@ function MainPage() {
 				}
 			});
 		}
+
+		// add logic which only performs the seekmatches every 4 records accepted or rejected
+		await Axios({
+			method: "GET",
+			withCredentials: true,
+			url: "http://localhost:5000/retrieveMatches",
+		}).then((res) => {
+			if (res.data.success) {
+				console.log(res.data.matches);
+				res.data.matches.map((match) => {
+					// enter swal code here steph :-)
+				});
+			} else {
+				Swal.fire(
+					"Oops! Something Broke",
+					`${res.data.message}`,
+					"error"
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
+			}
+		});
 
 		// adds users to potential matches or confirmed matches
 		await Axios({
@@ -107,7 +139,11 @@ function MainPage() {
 					"Oops! Something Broke",
 					`${res.data.message}`,
 					"error"
-				);
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
 			}
 		});
 	}

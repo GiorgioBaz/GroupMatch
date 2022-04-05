@@ -44,7 +44,7 @@ app.post("/login", async (req, res, next) => {
 				res.send({
 					success: true,
 					message: "Successfully Authenticated",
-					user: req.user,
+					numLogins: dbUser?.numLogins,
 				});
 				console.log(req.user);
 			});
@@ -898,6 +898,42 @@ app.post("/declineUser", async (req, res) => {
 	});
 });
 
+app.get("/retrieveMatches", async (req, res) => {
+	const currentUser = req.user;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const dbUser = await User.findOne({ email: currentUser.email });
+	let confirmedMatches = [];
+
+	for (const user of dbUser?.confirmedMatches) {
+		const { name, email, degree, academics, facebook, instagram, twitter } =
+			await User.findById(user.user.id.toString());
+		confirmedMatches.push({
+			user: {
+				name: name,
+				email: email,
+				degree: degree,
+				academics: academics,
+				facebook: facebook,
+				instagram: instagram,
+				twitter: twitter,
+			},
+		});
+	}
+
+	return res.send({
+		success: true,
+		message: "Matches Retrieved",
+		matches: confirmedMatches,
+	});
+});
+
 function isMatch(currentUser, matchedUser) {
 	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
 		return e.user.id.toString() === currentUser.id;
@@ -937,12 +973,6 @@ app.post("/acceptUser", async (req, res) => {
 		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
 		await dbUser.save().then(async () => {
 			if (isMatch(dbUser, matchedUser)) {
-				dbUser.confirmedMatches.push({
-					user: {
-						id: matchedUser.id,
-						name: matchedUser.name,
-					},
-				});
 				matchedUser.confirmedMatches.push({
 					user: {
 						id: dbUser.id,

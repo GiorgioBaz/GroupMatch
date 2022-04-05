@@ -39,7 +39,7 @@ function Profile() {
 	const [facebook, setFacebook] = useState();
 	const [twitter, setTwitter] = useState();
 	const [instagram, setInstagram] = useState();
-	const [numLogins, setnumLogins] = useState();
+	const [numLogins, setNumLogins] = useState();
 
 	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
@@ -63,7 +63,7 @@ function Profile() {
 		facebook: facebook,
 		instagram: instagram,
 		twitter: twitter,
-		numLogins: numLogins
+		numLogins: numLogins,
 	};
 
 	async function getUserInfo() {
@@ -99,13 +99,17 @@ function Profile() {
 				setFacebook(res.data.user.facebook);
 				setInstagram(res.data.user.instagram);
 				setTwitter(res.data.user.twitter);
-				setnumLogins(res.data.user.numLogins)
+				setNumLogins(res.data.user.numLogins);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
 					`${res.data.message}`,
 					"error"
-				);
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
 			}
 		});
 	}
@@ -167,7 +171,11 @@ function Profile() {
 				"Oops! Something Broke",
 				`Please Log In To Your Account Again`,
 				"error"
-			);
+			).then((swal) => {
+				if (swal.isConfirmed || swal.isDismissed) {
+					window.location.href = "/";
+				}
+			});
 
 		for (let key of Object.keys(user)) {
 			if (
@@ -205,7 +213,7 @@ function Profile() {
 			);
 		}
 
-		setnumLogins(numLogins + 1);
+		setNumLogins(numLogins + 1);
 
 		Axios({
 			method: "POST",
@@ -215,7 +223,7 @@ function Profile() {
 		}).then((res) => {
 			if (res.data.success) {
 				handleSubmitFile();
-				Swal.fire(`${res.data.message}`, "", "success")
+				Swal.fire(`${res.data.message}`, "", "success");
 			} else {
 				setErrorMsg(res.data.message);
 			}
@@ -280,9 +288,11 @@ function Profile() {
 	};
 	return (
 		<>
-			{numLogins > 1 && <Link className="home-icon" to="/mainpage">
-				<img alt="mainpageIcon" src={homeIcon}></img>
-			</Link>}
+			{numLogins > 1 && (
+				<Link className="home-icon" to="/mainpage">
+					<img alt="mainpageIcon" src={homeIcon}></img>
+				</Link>
+			)}
 
 			<div className="profile-div">
 				<input
@@ -304,7 +314,9 @@ function Profile() {
 							src={previewSource ? previewSource : avatar}
 						/>
 						<p className="disclaimer2">
-							Disclaimer: Updating your profile is mandatory and improves your chances of matching with fellow students
+							Disclaimer: Updating your profile is mandatory and
+							improves your <br /> chances of matching with fellow
+							students
 						</p>
 						<div className="profile-form-inputs">
 							<div className="username-div">
@@ -484,7 +496,8 @@ function Profile() {
 							<hr />
 						</span>
 						<p className="disclaimer">
-							Disclaimer: We recommend the use of socials such as facebook for organising group <br />
+							Disclaimer: We recommend the use of socials such as
+							facebook for organising groups <br />
 							(This information will only be visible to students
 							you match)
 						</p>
@@ -573,12 +586,14 @@ function Profile() {
 						</div>
 					</form>
 				</div>
-				<img
-					alt="logoutIcon"
-					src={logoutIcon}
-					className="logout-icon"
-					onClick={logout}
-				></img>
+				{numLogins > 1 && (
+					<img
+						alt="logoutIcon"
+						src={logoutIcon}
+						className="logout-icon"
+						onClick={logout}
+					></img>
+				)}
 			</div>
 		</>
 	);

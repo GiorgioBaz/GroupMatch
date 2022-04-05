@@ -26,13 +26,13 @@ function Login() {
 			withCredentials: true,
 			url: "http://localhost:5000/login",
 		}).then();
-		return user.data.user;
+		return user.data?.numLogins;
 	}
 
 	const login = async (e) => {
 		e.preventDefault();
-		const user = await handleLogin();
-		if (user?.numLogins === 1) {
+		const numLogins = await handleLogin();
+		if (numLogins === 1) {
 			await Axios({
 				method: "POST",
 				url: "http://localhost:5000/updateAllUsers",
