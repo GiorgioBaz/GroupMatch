@@ -8,6 +8,9 @@ import rejectIcon from "../../Assets/reject-button-icon.svg";
 import interestIcon from "../../Assets/interest-button-icon.svg";
 import profileIcon from "../../Assets/profile-icon.svg";
 import logoutIcon from "../../Assets/logout-icon.svg";
+import twitterIcon from "../../Assets/twitterIcon.svg";
+import facebookIcon from "../../Assets/facebookIcon.svg";
+import instagramIcon from "../../Assets/instagramIcon.svg";
 
 function MainPage() {
 	const [userList, setUserList] = useState([]);
@@ -131,8 +134,38 @@ function MainPage() {
 		}).then((res) => {
 			if (res.data.success) {
 				setUserList(res.data.userList);
-				if (res.data.isMatch) {
-					console.log("here");
+				if(res.data.isMatch){
+					Swal.fire({
+						showDenyButton: true,
+						showCancelButton: true,
+						cancelButtonColor: '#FFFFFF',
+						confirmButtonColor: '#FFFFFF',
+						denyButtonColor: '#FFFFFF',
+						confirmButtonText: `<img alt="Instagram" class="instagram-swal" src=${instagramIcon}/>`,
+						denyButtonText: `<img alt="Facebook" class="facebook-swal" src=${facebookIcon} />`,
+						cancelButtonText: `<img alt="Twitter" class="twitter-swal" src=${twitterIcon} />`,
+						html: `<b>You have just matched with</b><br>` +
+						`<img alt="Student" class="student-photo-swal" src=${profileIcon}/>` +
+						`<div class="student-title-swal">` +
+						`<h3 class="student-name">Joy</h3> <h5 class="student-degree">Computer Science</h5>` +
+						`</div>` +
+						`<p class="student-email-swal">joy@email.com</p>` +
+						`<div class="student-academics-swal">` +
+						`<p><span class="academic-marks">HD - </span>Applications Programming</p>` +
+						`<p><span class="academic-marks">HD - </span>Data Structures and Algorithms</p>` +
+						`<p><span class="academic-marks">HD - </span>Discrete Mathematics</p>` +
+						`</div>`
+					}).then((result)=>{
+						if(result.isConfirmed){
+							handleSocials();
+						}
+						else if(result.isDenied){
+							handleSocials();
+						}
+						else if(result.isDismissed){
+							handleSocials();
+						}
+					})
 				}
 			} else {
 				Swal.fire(
@@ -146,6 +179,10 @@ function MainPage() {
 				});
 			}
 		});
+	}
+
+	function handleSocials(){
+		console.log("SOcial");
 	}
 
 	const logout = () => {

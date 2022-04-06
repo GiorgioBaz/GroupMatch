@@ -79,12 +79,12 @@
 }
 
 .student-name {
-	font-size: 17px;
+	font-size: 30px;
 	padding-left: 5%;
 }
 
 .student-degree {
-	font-size: 17px;
+	font-size: 22px;
 	padding-left: 5%;
 	font-weight: normal;
 }
@@ -145,4 +145,52 @@
 	width: 4em;
 	padding-left: 35%;
 	cursor: pointer;
+}
+
+.student-photo-swal{
+	width: 5em;
+	border-radius: 50%;
+	align-self: center;
+}
+
+.student-title-swal {
+	display: flex;
+	flex-direction: row;
+	text-align: center;
+	align-items: center;
+}
+
+.student-academics-swal {
+	padding-top: 1%;
+	display: flex;
+	flex-direction: column;
+	font-size: 18px;
+	text-align: left;
+	padding-left: 5%;
+}
+
+.student-email-swal{
+	font-size: 18px;
+	text-align: left;
+	padding-left: 5%;
+	padding-top: 3%;
+}
+
+.social-media-swal{
+	display: flex;
+	flex-direction: row;
+	padding-left: 5%;
+	padding-top: 6%;
+}
+
+.instagram-swal{
+	width: 3em;
+}
+
+.facebook-swal{
+	width: 3em;
+}
+
+.twitter-swal{
+	width: 3em;
 }

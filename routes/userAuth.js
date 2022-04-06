@@ -959,6 +959,7 @@ app.post("/acceptUser", async (req, res) => {
 	const previouslyMatched = dbUser.potentialMatches.some((e) => {
 		return e.user.id?.toString() === _id;
 	});
+	const confirmedMatch = isMatch(dbUser, matchedUser);
 
 	if (!matchedUser) {
 		return res.send({
@@ -972,7 +973,13 @@ app.post("/acceptUser", async (req, res) => {
 	) {
 		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
 		await dbUser.save().then(async () => {
-			if (isMatch(dbUser, matchedUser)) {
+			if (confirmedMatch) {
+				dbUser.confirmedMatches.push({
+					user: {
+						id: matchedUser.id,
+						name: matchedUser.name,
+					},
+				});
 				matchedUser.confirmedMatches.push({
 					user: {
 						id: dbUser.id,
@@ -1016,6 +1023,7 @@ app.post("/acceptUser", async (req, res) => {
 		success: true,
 		message: "List Filtered",
 		userList: filteredUsers,
+		isMatch: confirmedMatch
 	});
 });
 
