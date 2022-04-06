@@ -46,7 +46,7 @@
 }
 
 .main-student-photo {
-	width: 23vw;
+	width: 25em;
 	height: 23em;
 	border-radius: 5% 5% 0% 0%;
 	background-size: cover;
@@ -98,8 +98,8 @@
 	padding-bottom: 0.5em;
 }
 
-.academic-marks {
-	font-weight: bold;
+.student-academics-swal > p > .academic-mark {
+	font-weight: bold !important;
 	font-size: 15px;
 }
 
@@ -147,8 +147,8 @@
 	cursor: pointer;
 }
 
-.student-photo-swal{
-	width: 5em;
+.student-photo-swal {
+	width: 7em;
 	border-radius: 50%;
 	align-self: center;
 }
@@ -169,28 +169,34 @@
 	padding-left: 5%;
 }
 
-.student-email-swal{
+.student-email-swal {
 	font-size: 18px;
 	text-align: left;
 	padding-left: 5%;
 	padding-top: 3%;
 }
 
-.social-media-swal{
+.social-media-swal {
 	display: flex;
 	flex-direction: row;
 	padding-left: 5%;
 	padding-top: 6%;
 }
 
-.instagram-swal{
+.instagram-swal {
 	width: 3em;
 }
 
-.facebook-swal{
+.facebook-swal {
 	width: 3em;
 }
 
-.twitter-swal{
+.twitter-swal {
 	width: 3em;
+}
+
+b {
+	font-size: 32px;
+	font-weight: 500;
+	margin-bottom: 10em;
 }

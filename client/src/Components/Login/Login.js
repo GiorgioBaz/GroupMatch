@@ -26,34 +26,42 @@ function Login() {
 			withCredentials: true,
 			url: "http://localhost:5000/login",
 		}).then();
-		return user.data?.numLogins;
+		return {
+			success: user.data?.success,
+			message: user.data?.message,
+			numLogins: user.data?.numLogins,
+		};
 	}
 
 	const login = async (e) => {
 		e.preventDefault();
-		const numLogins = await handleLogin();
-		if (numLogins === 1) {
+		const data = await handleLogin();
+		if (data.numLogins === 1) {
 			await Axios({
 				method: "POST",
 				url: "http://localhost:5000/updateAllUsers",
 				withCredentials: true,
-			}).then(() =>
-				Swal.fire("Successfully Authenticated", "", "success").then(
-					(swal) => {
+			}).then(() => {
+				if (data.success) {
+					Swal.fire(`${data.message}`, "", "success").then((swal) => {
 						if (swal.isConfirmed || swal.isDismissed) {
 							window.location.href = "/profile";
 						}
-					}
-				)
-			);
+					});
+				} else {
+					setErrorMsg(data.message);
+				}
+			});
 		} else {
-			Swal.fire("Successfully Authenticated", "", "success").then(
-				(swal) => {
+			if (data.success) {
+				Swal.fire(`${data.message}`, "", "success").then((swal) => {
 					if (swal.isConfirmed || swal.isDismissed) {
 						window.location.href = "/mainpage";
 					}
-				}
-			);
+				});
+			} else {
+				setErrorMsg(data.message);
+			}
 		}
 	};
 

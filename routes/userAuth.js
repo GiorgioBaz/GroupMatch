@@ -20,8 +20,10 @@ app.post("/login", async (req, res, next) => {
 	const userEmail = body.email;
 
 	const dbUser = await User.findOne({ email: userEmail });
-	dbUser.numLogins += 1;
-	await dbUser.save();
+	if (dbUser) {
+		dbUser.numLogins += 1;
+		await dbUser.save();
+	}
 
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
@@ -715,7 +717,6 @@ async function getAllUsers(req = undefined) {
 		for (let key of Object.keys(user._doc)) {
 			//Filter out the keys we dont want to display
 			if (
-				key !== "email" &&
 				key !== "password" &&
 				key !== "passwordRequested" &&
 				key !== "academics" &&
@@ -912,13 +913,22 @@ app.get("/retrieveMatches", async (req, res) => {
 	let confirmedMatches = [];
 
 	for (const user of dbUser?.confirmedMatches) {
-		const { name, email, degree, academics, facebook, instagram, twitter } =
-			await User.findById(user.user.id.toString());
+		const {
+			name,
+			email,
+			degree,
+			avatar,
+			academics,
+			facebook,
+			instagram,
+			twitter,
+		} = await User.findById(user.user.id.toString());
 		confirmedMatches.push({
 			user: {
 				name: name,
 				email: email,
 				degree: degree,
+				avatar: avatar,
 				academics: academics,
 				facebook: facebook,
 				instagram: instagram,
@@ -1023,7 +1033,7 @@ app.post("/acceptUser", async (req, res) => {
 		success: true,
 		message: "List Filtered",
 		userList: filteredUsers,
-		isMatch: confirmedMatch
+		isMatch: confirmedMatch,
 	});
 });
 

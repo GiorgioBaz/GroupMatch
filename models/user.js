@@ -82,6 +82,7 @@ const user = new mongoose.Schema(
 				{
 					user: {
 						_id: Schema.Types.ObjectId,
+						email: Schema.Types.String,
 						name: Schema.Types.String,
 						degree: Schema.Types.String,
 						gpa: Schema.Types.String,
