@@ -442,6 +442,7 @@ function Profile() {
 									<input
 										className="profile-input"
 										placeholder="GPA / 7"
+										type="number"
 										value={gpa || ""}
 										onChange={(e) => {
 											setGpa(e.target.value);
