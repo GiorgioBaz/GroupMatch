@@ -293,10 +293,15 @@ function MainPage() {
 			})
 		);
 	};
+
 	return (
 		<div className="main-div">
 			<div className="nav-buttons">
-				<Link to="/profile" className="profile-icon">
+				<Link
+					to={"/profile"}
+					state={{ from: window.location.pathname }}
+					className="profile-icon"
+				>
 					<img alt="profileIcon" src={profileIcon}></img>
 				</Link>
 

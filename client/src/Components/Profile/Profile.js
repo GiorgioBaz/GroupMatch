@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import "./Profile.css";
@@ -65,6 +65,8 @@ function Profile() {
 		twitter: twitter,
 		numLogins: numLogins,
 	};
+
+	const location = useLocation();
 
 	async function getUserInfo() {
 		const user = await Axios({
@@ -286,9 +288,10 @@ function Profile() {
 			})
 		);
 	};
+
 	return (
 		<>
-			{numLogins > 1 && (
+			{(numLogins > 1 || location.state?.from === "/mainpage") && (
 				<Link className="home-icon" to="/mainpage">
 					<img alt="mainpageIcon" src={homeIcon}></img>
 				</Link>
@@ -313,11 +316,14 @@ function Profile() {
 							className="student-photo"
 							src={previewSource ? previewSource : avatar}
 						/>
-						<p className="disclaimer2">
-							Disclaimer: Updating your profile is mandatory and
-							improves your <br /> chances of matching with fellow
-							students
-						</p>
+						{numLogins === 0 && (
+							<p className="disclaimer2">
+								Disclaimer: Updating your profile is mandatory
+								and improves your <br /> chances of matching
+								with fellow students
+							</p>
+						)}
+
 						<div className="profile-form-inputs">
 							<div className="username-div">
 								<div className="username-label">
@@ -586,7 +592,7 @@ function Profile() {
 						</div>
 					</form>
 				</div>
-				{numLogins > 1 && (
+				{(numLogins > 1 || location.state?.from === "/mainpage") && (
 					<img
 						alt="logoutIcon"
 						src={logoutIcon}
