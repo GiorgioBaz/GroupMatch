@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const { db } = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
 cloudinary.config({
@@ -21,8 +22,12 @@ app.post("/login", async (req, res, next) => {
 
 	const dbUser = await User.findOne({ email: userEmail });
 	if (dbUser) {
-		dbUser.numLogins += 1;
-		await dbUser.save();
+		const numLogins = dbUser.numLogins + 1;
+		await User.updateOne(
+			{ email: userEmail },
+			{ $set: { numLogins: numLogins } },
+			{ timestamps: false }
+		);
 	}
 
 	passport.authenticate("local", (err, user, info) => {
@@ -817,7 +822,7 @@ app.post("/updateUserList", async (req, res) => {
 		return isoToUnix(user.user.createdAt) > userCreatedAt;
 	});
 
-	const existingUser = updateUser.find((e) => {
+	const existingUser = dbUser.allUsers.find((e) => {
 		const matchId = newUsers.findIndex((user) => {
 			return e.user._id === user.user._id;
 		});
@@ -846,11 +851,6 @@ app.post("/updateUserList", async (req, res) => {
 		});
 	}
 });
-
-// Create new post route similar to update all users (practically the same)
-// In this route you will need to evaluate the length of the current amount of registered users against the last number of registered users
-// To see if there have been new users. If so you wanna update the allUsers key with the new users (practically copy-paste the findoneandupdatecode)
-// You will also need to update the numUsers key (also in the findoneandupdatecode)
 
 // Filters the list of users based on the user currently being displayed
 async function filterUserList(userId, currentUser) {
@@ -931,34 +931,65 @@ app.get("/retrieveMatches", async (req, res) => {
 	let confirmedMatches = [];
 
 	for (const user of dbUser?.confirmedMatches) {
-		const {
-			name,
-			email,
-			degree,
-			avatar,
-			academics,
-			facebook,
-			instagram,
-			twitter,
-		} = await User.findById(user.user.id.toString());
-		confirmedMatches.push({
-			user: {
-				name: name,
-				email: email,
-				degree: degree,
-				avatar: avatar,
-				academics: academics,
-				facebook: facebook,
-				instagram: instagram,
-				twitter: twitter,
-			},
-		});
+		if (user.user.displayed === false) {
+			const {
+				id,
+				name,
+				email,
+				degree,
+				avatar,
+				academics,
+				facebook,
+				instagram,
+				twitter,
+			} = await User.findById(user.user.id.toString());
+			confirmedMatches.push({
+				user: {
+					id: id,
+					name: name,
+					email: email,
+					degree: degree,
+					avatar: avatar,
+					academics: academics,
+					facebook: facebook,
+					instagram: instagram,
+					twitter: twitter,
+				},
+			});
+		}
 	}
 
 	return res.send({
 		success: true,
 		message: "Matches Retrieved",
 		matches: confirmedMatches,
+	});
+});
+
+app.post("/updateMatches", async (req, res) => {
+	const currentUser = req.user;
+	const { userDisplayed } = req.body;
+
+	if (!currentUser) {
+		return res.send({
+			success: false,
+			message: "Please Log In To Your Account Again",
+		});
+	}
+
+	const dbUser = await User.findOne({ email: currentUser.email });
+
+	const displayedDbUser = dbUser.confirmedMatches?.find((user) => {
+		return user.user.id.toString() === userDisplayed;
+	});
+	if (displayedDbUser) {
+		displayedDbUser.user.displayed = true;
+		await dbUser.save();
+	}
+
+	return res.send({
+		success: true,
+		message: "Matches Updated",
 	});
 });
 
@@ -1002,16 +1033,11 @@ app.post("/acceptUser", async (req, res) => {
 		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
 		await dbUser.save().then(async () => {
 			if (confirmedMatch) {
-				dbUser.confirmedMatches.push({
-					user: {
-						id: matchedUser.id,
-						name: matchedUser.name,
-					},
-				});
 				matchedUser.confirmedMatches.push({
 					user: {
 						id: dbUser.id,
 						name: dbUser.name,
+						displayed: false,
 					},
 				});
 				await dbUser.save();
@@ -1024,14 +1050,6 @@ app.post("/acceptUser", async (req, res) => {
 			message: "You've previously liked this student",
 		});
 	}
-
-	//When a match is classified as a potential match we will add that entire user object to the potentialMatches key
-	//From here we will need to loop through the list of all potential users' potentialMatches key to evaluate whether its a confirmed match
-	//If a match is confirmed the entire user will be added onto the confirmedMatches key
-	//This will be done using some sort of a function isMatch, which will return true or false depending on the evaluation
-
-	// After the above is complete we will need to create a new function which pulls the information of the user just matched
-	// From here we will need to send all that users information (including socials when its done) to the frontend where it will be displayed
 
 	const filteredUsers = await filterUserList(_id, currentUser);
 

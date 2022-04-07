@@ -125,6 +125,10 @@ const user = new mongoose.Schema(
 					user: {
 						id: Schema.Types.ObjectId,
 						name: Schema.Types.String,
+						displayed: {
+							type: Schema.Types.Boolean,
+							default: false,
+						},
 					},
 				},
 			],

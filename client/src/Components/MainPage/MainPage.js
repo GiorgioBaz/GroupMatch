@@ -17,14 +17,13 @@ function MainPage() {
 	const [userList, setUserList] = useState([]);
 
 	async function getUserList() {
-		let userList;
 		await Axios({
 			method: "GET",
 			withCredentials: true,
 			url: "http://localhost:5000/userList",
 		}).then((res) => {
 			if (res.data.success) {
-				userList = res.data.userList;
+				setUserList(res.data.userList);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -37,12 +36,24 @@ function MainPage() {
 				});
 			}
 		});
-		return userList;
 	}
+
+	const retrieveNewUsers = async () => {
+		await Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/updateUserList",
+		}).then((res) => {
+			if (res.data.success) {
+				setUserList(res.data.userList);
+			}
+		});
+	};
 
 	useEffect(() => {
 		async function getUser() {
-			setUserList(await getUserList());
+			await getUserList();
+			await retrieveNewUsers();
 		}
 		getUser();
 	}, []);
@@ -58,18 +69,9 @@ function MainPage() {
 		setUserList(filteredList);
 
 		//Update user list with newly registered users
-		const lastUser = Object.values(userList[userList.length - 1].user);
-		if (lastUser.indexOf(user._id) > -1) {
-			await Axios({
-				method: "POST",
-				withCredentials: true,
-				url: "http://localhost:5000/updateUserList",
-				data: { user: user },
-			}).then((res) => {
-				if (res.data.success) {
-					setUserList(res.data.userList);
-				}
-			});
+		const lastUser = Object.values(userList[0].user);
+		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
+			retrieveNewUsers();
 		}
 
 		//Rejects the user and filters the list
@@ -126,16 +128,7 @@ function MainPage() {
 		//Update user list with newly registered users
 		const lastUser = Object.values(userList[0].user);
 		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
-			await Axios({
-				method: "POST",
-				withCredentials: true,
-				url: "http://localhost:5000/updateUserList",
-				data: { user: user },
-			}).then((res) => {
-				if (res.data.success) {
-					setUserList(res.data.userList);
-				}
-			});
+			retrieveNewUsers();
 		}
 
 		function handleSocials(e, userType) {
@@ -155,6 +148,14 @@ function MainPage() {
 		}
 
 		// add logic which only performs the seekmatches every 4 records accepted or rejected
+		const updateMatches = async (userDisplayed) => {
+			await Axios({
+				method: "POST",
+				withCredentials: true,
+				url: "http://localhost:5000/updateMatches",
+				data: { userDisplayed },
+			});
+		};
 		await Axios({
 			method: "GET",
 			withCredentials: true,
@@ -186,6 +187,7 @@ function MainPage() {
 								);
 							})
 							.join("");
+					let userDisplayed = match.user.id;
 					await Swal.fire({
 						showDenyButton: true,
 						showCancelButton: true,
@@ -207,13 +209,16 @@ function MainPage() {
 							`<div class="student-academics-swal">` +
 							`${matchedUserAcademics || ""}` +
 							`</div>`,
-					}).then((result) => {
+					}).then(async (result) => {
 						if (result.isConfirmed) {
 							handleSocials(result, match.user);
+							await updateMatches(userDisplayed);
 						} else if (result.isDenied) {
 							handleSocials(result, match.user);
+							await updateMatches(userDisplayed);
 						} else if (result.isDismissed) {
 							handleSocials(result, match.user);
+							await updateMatches(userDisplayed);
 						}
 					});
 				}
