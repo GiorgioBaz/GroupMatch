@@ -635,6 +635,24 @@ app.post("/updateProfile", async function (req, res) {
 	} = req.body;
 	User.findOne({ email: email }, (error, doc) => {
 		if (error) throw error;
+		if (facebook && (!facebook.includes("https") || !facebook.includes("www.") && !facebook.includes(".com"))) {
+				return res.send({
+					success: false,
+					message: "Please enter a valid Facebook URL"
+				})
+			}
+			if (instagram && (!instagram.includes("https") || !instagram.includes("www.") && !instagram.includes(".com"))) {
+				return res.send({
+					success: false,
+					message: "Please enter a valid Instagram URL"
+				})
+			}
+			if (twitter && (!twitter.includes("https") || !twitter.includes("www.") && !twitter.includes(".com"))) {
+				return res.send({
+					success: false,
+					message: "Please enter a valid Twitter URL"
+				})
+			}
 		if (doc) {
 			res.send({
 				success: false,
@@ -660,7 +678,7 @@ app.post("/updateProfile", async function (req, res) {
 					instagram: instagram,
 					twitter: twitter,
 				}
-			)
+			) 
 				.then(() => {
 					return res.send({
 						success: true,
