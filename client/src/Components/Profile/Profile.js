@@ -45,14 +45,14 @@ function Profile() {
 		<p className="error-p">{errorMsg}</p>
 	);
 	const facebookErr = errorMsg && errorMsg.includes("Facebook") && (
-        <p className="error-p">{errorMsg}</p>
-    );
+		<p className="error-p">{errorMsg}</p>
+	);
 	const instagramErr = errorMsg && errorMsg.includes("Instagram") && (
-        <p className="error-p">{errorMsg}</p>
-    );
+		<p className="error-p">{errorMsg}</p>
+	);
 	const twitterErr = errorMsg && errorMsg.includes("Twitter") && (
-        <p className="error-p">{errorMsg}</p>
-    );
+		<p className="error-p">{errorMsg}</p>
+	);
 	// Creates an array of objects which we use to evaluate if the grades has been changed so we can send the new info
 	const academicFields = [
 		{ grade: grade1, subject: subject1 },
@@ -325,7 +325,7 @@ function Profile() {
 							className="student-photo"
 							src={previewSource ? previewSource : avatar}
 						/>
-						{numLogins === 0 && (
+						{numLogins === 1 && (
 							<p className="disclaimer2">
 								Disclaimer: Updating your profile is mandatory
 								and improves your <br /> chances of matching
@@ -452,6 +452,7 @@ function Profile() {
 										className="profile-input"
 										placeholder="GPA / 7"
 										type="number"
+										step={0.01}
 										value={gpa || ""}
 										onChange={(e) => {
 											setGpa(e.target.value);
@@ -538,7 +539,6 @@ function Profile() {
 									}}
 								></input>
 								{facebookErr}
-
 							</div>
 
 							<div className="instagram-div">
@@ -562,8 +562,7 @@ function Profile() {
 										setIsDisabled("");
 									}}
 								/>
-																{instagramErr}
-
+								{instagramErr}
 							</div>
 
 							<div className="twitter-div">
@@ -584,8 +583,7 @@ function Profile() {
 										setIsDisabled("");
 									}}
 								/>
-																{twitterErr}
-
+								{twitterErr}
 							</div>
 						</div>
 						<div className="profile-buttons">

@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
-const { db } = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
 cloudinary.config({
@@ -22,10 +21,9 @@ app.post("/login", async (req, res, next) => {
 
 	const dbUser = await User.findOne({ email: userEmail });
 	if (dbUser) {
-		const numLogins = dbUser.numLogins + 1;
 		await User.updateOne(
 			{ email: userEmail },
-			{ $set: { numLogins: numLogins } },
+			{ $set: { numLogins: (dbUser.numLogins += 1) } },
 			{ timestamps: false }
 		);
 	}
@@ -640,24 +638,36 @@ app.post("/updateProfile", async function (req, res) {
 	} = req.body;
 	User.findOne({ email: email }, (error, doc) => {
 		if (error) throw error;
-		if (facebook && ((!facebook.includes("https") || !facebook.includes(".com")) && (!facebook.includes("www.") || !facebook.includes(".com")))) {
-				return res.send({
-					success: false,
-					message: "Please enter a valid Facebook URL"
-				})
-			}
-			if (instagram && ((!instagram.includes("https") || !instagram.includes(".com")) && (!instagram.includes("www.") || !instagram.includes(".com")))) {
-				return res.send({
-					success: false,
-					message: "Please enter a valid Instagram URL"
-				})
-			}
-			if (twitter && ((!twitter.includes("https") || !twitter.includes(".com")) && (!twitter.includes("www.") || !twitter.includes(".com")))) {
-				return res.send({
-					success: false,
-					message: "Please enter a valid Twitter URL"
-				})
-			}
+		if (
+			facebook &&
+			!facebook.includes("https://www.facebook.com/") &&
+			!facebook.includes("www.facebook.com/")
+		) {
+			return res.send({
+				success: false,
+				message: "Please enter a valid Facebook URL",
+			});
+		}
+		if (
+			instagram &&
+			!instagram.includes("https://www.instagram.com/") &&
+			!instagram.includes("www.instagram.com/")
+		) {
+			return res.send({
+				success: false,
+				message: "Please enter a valid Instagram URL",
+			});
+		}
+		if (
+			twitter &&
+			!twitter.includes("https://twitter.com/") &&
+			!twitter.includes("www.twitter.com/")
+		) {
+			return res.send({
+				success: false,
+				message: "Please enter a valid Twitter URL",
+			});
+		}
 		if (doc) {
 			res.send({
 				success: false,
@@ -683,7 +693,7 @@ app.post("/updateProfile", async function (req, res) {
 					instagram: instagram,
 					twitter: twitter,
 				}
-			) 
+			)
 				.then(() => {
 					return res.send({
 						success: true,
@@ -814,12 +824,14 @@ app.post("/updateUserList", async (req, res) => {
 	//converts isoStrings to Unix Epoch time for comparison
 	const isoToUnix = (time) => new Date(time).getTime();
 
-	const userCreatedAt = isoToUnix(dbUser.updatedAt);
+	const userCreatedAt = isoToUnix(dbUser.createdAt);
 
 	const updateUser = await getAllUsers(req);
 
 	const newUsers = updateUser.filter((user) => {
-		return isoToUnix(user.user.createdAt) > userCreatedAt;
+		if (user.user.displayed === false) {
+			return isoToUnix(user.user.createdAt) > userCreatedAt;
+		}
 	});
 
 	const existingUser = dbUser.allUsers.find((e) => {
@@ -896,7 +908,17 @@ app.post("/declineUser", async (req, res) => {
 		});
 	}
 
-	const filteredUsers = await filterUserList(_id, currentUser);
+	const dbUser = await User.findOne({ email: currentUser.email });
+
+	const displayedDbUser = dbUser.allUsers?.find((user) => {
+		return user.user._id.toString() === _id;
+	});
+	if (displayedDbUser && displayedDbUser.user.displayed === false) {
+		displayedDbUser.user.displayed = true;
+		await dbUser.save();
+	}
+
+	const filteredUsers = await filterUserList(_id, dbUser);
 
 	if (filteredUsers === "404") {
 		return res.send({
@@ -906,7 +928,7 @@ app.post("/declineUser", async (req, res) => {
 	}
 
 	await User.findOneAndUpdate(
-		{ email: currentUser.email },
+		{ email: dbUser.email },
 		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
 	);
 
@@ -982,7 +1004,7 @@ app.post("/updateMatches", async (req, res) => {
 	const displayedDbUser = dbUser.confirmedMatches?.find((user) => {
 		return user.user.id.toString() === userDisplayed;
 	});
-	if (displayedDbUser) {
+	if (displayedDbUser && displayedDbUser.user.displayed === false) {
 		displayedDbUser.user.displayed = true;
 		await dbUser.save();
 	}
@@ -1019,6 +1041,14 @@ app.post("/acceptUser", async (req, res) => {
 		return e.user.id?.toString() === _id;
 	});
 	const confirmedMatch = isMatch(dbUser, matchedUser);
+
+	const displayedDbUser = dbUser.allUsers?.find((user) => {
+		return user.user._id.toString() === _id;
+	});
+	if (displayedDbUser && displayedDbUser.user.displayed === false) {
+		displayedDbUser.user.displayed = true;
+		await dbUser.save();
+	}
 
 	if (!matchedUser) {
 		return res.send({

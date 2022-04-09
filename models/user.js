@@ -97,6 +97,10 @@ const user = new mongoose.Schema(
 						facebook: Schema.Types.String,
 						instagram: Schema.Types.String,
 						twitter: Schema.Types.String,
+						displayed: {
+							type: Schema.Types.Boolean,
+							default: false,
+						},
 						createdAt: Schema.Types.Date,
 						updatedAt: Schema.Types.Date,
 					},

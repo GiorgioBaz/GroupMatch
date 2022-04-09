@@ -58,15 +58,15 @@ function MainPage() {
 		getUser();
 	}, []);
 
-	function filterUserList(user) {
-		return userList.filter((e) => {
-			return e.user._id !== user._id;
-		});
-	}
+	// function filterUserList(user) {
+	// 	return userList.filter((e) => {
+	// 		return e.user._id !== user._id;
+	// 	});
+	// }
 
 	async function handleRejection(user) {
-		const filteredList = filterUserList(user);
-		setUserList(filteredList);
+		// const filteredList = filterUserList(user);
+		// setUserList(filteredList);
 
 		//Update user list with newly registered users
 		const lastUser = Object.values(userList[0].user);
@@ -82,6 +82,7 @@ function MainPage() {
 			data: { user: user },
 		}).then((res) => {
 			if (res.data.success) {
+				setUserList(res.data.userList);
 			} else {
 				Swal.fire(
 					"Oops! Something Broke",
@@ -97,8 +98,8 @@ function MainPage() {
 	}
 
 	async function handleMatch(user) {
-		const filteredList = filterUserList(user);
-		setUserList(filteredList);
+		// const filteredList = filterUserList(user);
+		// setUserList(filteredList);
 
 		const academics =
 			user.academics?.length > 0 &&
@@ -156,6 +157,7 @@ function MainPage() {
 				data: { userDisplayed },
 			});
 		};
+
 		await Axios({
 			method: "GET",
 			withCredentials: true,
@@ -243,6 +245,7 @@ function MainPage() {
 			data: { user: user },
 		}).then((res) => {
 			if (res.data.success) {
+				setUserList(res.data.userList);
 				if (res.data.isMatch) {
 					Swal.fire({
 						showDenyButton: true,
