@@ -72,7 +72,7 @@ app.post("/register", (req, res) => {
 	if (name && name.length < 3) {
 		return res.send({
 			success: false,
-			message: "Name must be more than 3 characters",
+			message: "Name must be more than 2 characters",
 		});
 	}
 
@@ -842,16 +842,20 @@ app.post("/updateUserList", async (req, res) => {
 	const userCreatedAt = isoToUnix(dbUser.createdAt);
 
 	const updateUser = await getAllUsers(req);
+	if (updateUser.length === dbUser.allUsers.length) {
+		return res.send({
+			success: false,
+			message: "Your user list is already up to date",
+		});
+	}
 
 	const newUsers = updateUser.filter((user) => {
-		if (user.user.displayed === false) {
-			return isoToUnix(user.user.createdAt) > userCreatedAt;
-		}
+		return isoToUnix(user.user.createdAt) > userCreatedAt;
 	});
 
-	const existingUser = dbUser.allUsers.find((e) => {
+	const potentialUser = dbUser.potentialMatches.filter((e) => {
 		const matchId = newUsers.findIndex((user) => {
-			return e.user._id === user.user._id;
+			return e.user.id.toString() === user.user._id;
 		});
 
 		if (matchId > -1) {
@@ -862,7 +866,20 @@ app.post("/updateUserList", async (req, res) => {
 		}
 	});
 
-	if (newUsers.length > 0) {
+	const rejectedUser = dbUser.rejectedMatches.filter((e) => {
+		const matchId = newUsers.findIndex((user) => {
+			return e.user.id.toString() === user.user._id;
+		});
+
+		if (matchId > -1) {
+			newUsers.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
+	if (newUsers.length > 0 && newUsers.length !== dbUser.allUsers.length) {
 		dbUser.allUsers.push(...newUsers);
 		await dbUser.save().then(() => {
 			return res.send({
@@ -914,7 +931,7 @@ app.get("/userList", async (req, res) => {
 
 app.post("/declineUser", async (req, res) => {
 	const currentUser = req.user;
-	const { _id } = req.body?.user;
+	const { _id, name } = req.body?.user;
 
 	if (!currentUser) {
 		return res.send({
@@ -924,16 +941,10 @@ app.post("/declineUser", async (req, res) => {
 	}
 
 	const dbUser = await User.findOne({ email: currentUser.email });
-
-	const displayedDbUser = dbUser.allUsers?.find((user) => {
-		return user.user._id.toString() === _id;
-	});
-	if (displayedDbUser && displayedDbUser.user.displayed === false) {
-		displayedDbUser.user.displayed = true;
-		await dbUser.save();
-	}
-
 	const filteredUsers = await filterUserList(_id, dbUser);
+
+	dbUser?.rejectedMatches.push({ user: { id: _id, name: name } });
+	await dbUser.save();
 
 	if (filteredUsers === "404") {
 		return res.send({
@@ -1057,13 +1068,19 @@ app.post("/acceptUser", async (req, res) => {
 	});
 	const confirmedMatch = isMatch(dbUser, matchedUser);
 
-	const displayedDbUser = dbUser.allUsers?.find((user) => {
-		return user.user._id.toString() === _id;
-	});
-	if (displayedDbUser && displayedDbUser.user.displayed === false) {
-		displayedDbUser.user.displayed = true;
-		await dbUser.save();
+	const filteredUsers = await filterUserList(_id, currentUser);
+
+	if (filteredUsers === "404") {
+		return res.send({
+			success: false,
+			message: "That User No Longer Exists",
+		});
 	}
+
+	await User.findOneAndUpdate(
+		{ email: currentUser.email },
+		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
+	);
 
 	if (!matchedUser) {
 		return res.send({
@@ -1085,31 +1102,10 @@ app.post("/acceptUser", async (req, res) => {
 						displayed: false,
 					},
 				});
-				await dbUser.save();
 				await matchedUser.save();
 			}
 		});
-	} else {
-		return res.send({
-			success: false,
-			message: "You've previously liked this student",
-		});
 	}
-
-	const filteredUsers = await filterUserList(_id, currentUser);
-
-	if (filteredUsers === "404") {
-		return res.send({
-			success: false,
-			message: "That User No Longer Exists",
-		});
-	}
-
-	await User.findOneAndUpdate(
-		{ email: currentUser.email },
-		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
-	);
-
 	return res.send({
 		success: true,
 		message: "List Filtered",

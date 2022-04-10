@@ -50,114 +50,33 @@ function MainPage() {
 		});
 	};
 
-	useEffect(() => {
-		async function getUser() {
-			await getUserList();
-			await retrieveNewUsers();
+	function handleSocials(e, userType) {
+		if (e.isConfirmed) {
+			if (userType.instagram) {
+				window.open(userType.instagram, "_blank").focus();
+			}
+		} else if (e.isDenied) {
+			if (userType.facebook) {
+				window.open(userType.facebook, "_blank").focus();
+			}
+		} else if (e.isDismissed) {
+			if (userType.twitter) {
+				window.open(userType.twitter, "_blank").focus();
+			}
 		}
-		getUser();
-	}, []);
+	}
 
-	// function filterUserList(user) {
-	// 	return userList.filter((e) => {
-	// 		return e.user._id !== user._id;
-	// 	});
-	// }
-
-	async function handleRejection(user) {
-		// const filteredList = filterUserList(user);
-		// setUserList(filteredList);
-
-		//Update user list with newly registered users
-		const lastUser = Object.values(userList[0].user);
-		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
-			retrieveNewUsers();
-		}
-
-		//Rejects the user and filters the list
+	// add logic which only performs the seekmatches every 4 records accepted or rejected
+	const updateMatches = async (userDisplayed) => {
 		await Axios({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/declineUser",
-			data: { user: user },
-		}).then((res) => {
-			if (res.data.success) {
-				setUserList(res.data.userList);
-			} else {
-				Swal.fire(
-					"Oops! Something Broke",
-					`${res.data.message}`,
-					"error"
-				).then((swal) => {
-					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.href = "/";
-					}
-				});
-			}
+			url: "http://localhost:5000/updateMatches",
+			data: { userDisplayed },
 		});
-	}
+	};
 
-	async function handleMatch(user) {
-		// const filteredList = filterUserList(user);
-		// setUserList(filteredList);
-
-		const academics =
-			user.academics?.length > 0 &&
-			user.academics
-				.map((academic) => {
-					return (
-						'<div className="student-academics">' +
-						"<p>" +
-						'<span className="academic-mark">' +
-						`${academic.grade || "HD"} -` +
-						`</span>` +
-						`${academic.subject}` +
-						"</p>" +
-						"</div>"
-					);
-				})
-				.join("");
-
-		const userImg = ReactDOMServer.renderToString(
-			<img
-				alt="Student"
-				className="student-photo-swal"
-				src={user.avatar}
-			/>
-		);
-
-		//Update user list with newly registered users
-		const lastUser = Object.values(userList[0].user);
-		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
-			retrieveNewUsers();
-		}
-
-		function handleSocials(e, userType) {
-			if (e.isConfirmed) {
-				if (userType.instagram) {
-					window.open(userType.instagram, "_blank").focus();
-				}
-			} else if (e.isDenied) {
-				if (userType.facebook) {
-					window.open(userType.facebook, "_blank").focus();
-				}
-			} else if (e.isDismissed) {
-				if (userType.twitter) {
-					window.open(userType.twitter, "_blank").focus();
-				}
-			}
-		}
-
-		// add logic which only performs the seekmatches every 4 records accepted or rejected
-		const updateMatches = async (userDisplayed) => {
-			await Axios({
-				method: "POST",
-				withCredentials: true,
-				url: "http://localhost:5000/updateMatches",
-				data: { userDisplayed },
-			});
-		};
-
+	const retrieveMatches = async () => {
 		await Axios({
 			method: "GET",
 			withCredentials: true,
@@ -236,6 +155,90 @@ function MainPage() {
 				});
 			}
 		});
+	};
+
+	useEffect(() => {
+		async function getUser() {
+			await getUserList();
+			await retrieveNewUsers();
+			await retrieveMatches();
+		}
+		getUser();
+	}, []);
+
+	// function filterUserList(user) {
+	// 	return userList.filter((e) => {
+	// 		return e.user._id !== user._id;
+	// 	});
+	// }
+
+	async function handleRejection(user) {
+		// const filteredList = filterUserList(user);
+		// setUserList(filteredList);
+
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[0].user);
+		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
+			retrieveNewUsers();
+		}
+
+		//Rejects the user and filters the list
+		await Axios({
+			method: "POST",
+			withCredentials: true,
+			url: "http://localhost:5000/declineUser",
+			data: { user: user },
+		}).then((res) => {
+			if (res.data.success) {
+				setUserList(res.data.userList);
+			} else {
+				Swal.fire(
+					"Oops! Something Broke",
+					`${res.data.message}`,
+					"error"
+				).then((swal) => {
+					if (swal.isConfirmed || swal.isDismissed) {
+						window.location.href = "/";
+					}
+				});
+			}
+		});
+	}
+
+	async function handleMatch(user) {
+		// const filteredList = filterUserList(user);
+		// setUserList(filteredList);
+
+		const academics =
+			user.academics?.length > 0 &&
+			user.academics
+				.map((academic) => {
+					return (
+						'<div className="student-academics">' +
+						"<p>" +
+						'<span className="academic-mark">' +
+						`${academic.grade || "HD"} -` +
+						`</span>` +
+						`${academic.subject}` +
+						"</p>" +
+						"</div>"
+					);
+				})
+				.join("");
+
+		const userImg = ReactDOMServer.renderToString(
+			<img
+				alt="Student"
+				className="student-photo-swal"
+				src={user.avatar}
+			/>
+		);
+
+		//Update user list with newly registered users
+		const lastUser = Object.values(userList[0].user);
+		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
+			retrieveNewUsers();
+		}
 
 		// adds users to potential matches or confirmed matches
 		await Axios({

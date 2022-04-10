@@ -35,7 +35,6 @@ function Login() {
 			setErrorMsg(res.data.message);
 		});
 	};
-	console.log(errorMsg);
 	return (
 		<div className="forgot-div">
 			<div className="forgot-card">
