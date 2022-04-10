@@ -60,11 +60,26 @@ app.post("/login", async (req, res, next) => {
 app.post("/register", (req, res) => {
 	const body = req.body;
 	const userEmail = body.email;
+	const name = body.name;
 
 	if (!userEmail.includes("@") || !userEmail.includes(".com")) {
 		return res.send({
 			success: false,
 			message: "Please enter a valid email",
+		});
+	}
+
+	if (name && name.length < 3) {
+		return res.send({
+			success: false,
+			message: "Name must be more than 3 characters",
+		});
+	}
+
+	if (!name) {
+		return res.send({
+			success: false,
+			message: "Names are required for matching purposes",
 		});
 	}
 

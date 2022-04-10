@@ -47,7 +47,7 @@
 	margin-bottom: 1%;
 }
 
-.password-label {
+.login-form > .password-div > .password-label {
 	display: flex;
 	flex-direction: row;
 	margin-left: 7.3%;

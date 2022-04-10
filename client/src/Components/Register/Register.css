@@ -36,8 +36,8 @@
 	margin-bottom: 0.75em;
 }
 
-.name-div {
-	margin-bottom: 2em;
+.register-form > .email-div {
+	margin-top: 2em;
 }
 
 .name-label {
@@ -63,4 +63,10 @@
 .create-button {
 	text-align: center;
 	cursor: pointer;
+}
+
+.register-form > .password-div > .password-label {
+	display: flex;
+	flex-direction: row;
+	margin-left: 7.3%;
 }

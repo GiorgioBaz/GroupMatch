@@ -16,12 +16,16 @@ function Login() {
 	//const [data, setData] = useState(null);
 	const [errorMsg, setErrorMsg] = useState("");
 
-	const emailErr = errorMsg && errorMsg && (
+	const emailErr = errorMsg && errorMsg.includes("email") && (
 		<p className="error-p">{errorMsg}</p>
 	);
 
 	const passMismatchErr = registerPassword !== confirmPassword && (
 		<p className="error-p">Passwords are not the same</p>
+	);
+
+	const fullNameErr = errorMsg && errorMsg.includes("Name") && (
+		<p className="error-p">{errorMsg}</p>
 	);
 
 	const register = (e) => {
@@ -99,6 +103,7 @@ function Login() {
 							required
 						/>
 					</div>
+					{fullNameErr}
 
 					<div className="email-div">
 						<div className="email-label">
