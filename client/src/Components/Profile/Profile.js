@@ -41,7 +41,7 @@ function Profile() {
 	const [instagram, setInstagram] = useState();
 	const [numLogins, setNumLogins] = useState();
 
-	const emailErr = errorMsg && errorMsg.includes("email") && (
+	const emailErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
 	);
 	const facebookErr = errorMsg && errorMsg.includes("Facebook") && (
@@ -453,6 +453,7 @@ function Profile() {
 										placeholder="GPA / 7"
 										type="number"
 										step={0.01}
+										max="7"										
 										value={gpa || ""}
 										onChange={(e) => {
 											setGpa(e.target.value);
