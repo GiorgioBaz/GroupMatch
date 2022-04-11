@@ -166,16 +166,7 @@ function MainPage() {
 		getUser();
 	}, []);
 
-	// function filterUserList(user) {
-	// 	return userList.filter((e) => {
-	// 		return e.user._id !== user._id;
-	// 	});
-	// }
-
 	async function handleRejection(user) {
-		// const filteredList = filterUserList(user);
-		// setUserList(filteredList);
-
 		//Update user list with newly registered users
 		const lastUser = Object.values(userList[0].user);
 		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
@@ -196,11 +187,7 @@ function MainPage() {
 					"Oops! Something Broke",
 					`${res.data.message}`,
 					"error"
-				).then((swal) => {
-					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.href = "/";
-					}
-				});
+				);
 			}
 		});
 	}
@@ -239,6 +226,8 @@ function MainPage() {
 		if (lastUser.indexOf(user._id) > -1 || userList?.length === 0) {
 			retrieveNewUsers();
 		}
+
+		retrieveMatches();
 
 		// adds users to potential matches or confirmed matches
 		await Axios({
