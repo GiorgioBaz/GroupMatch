@@ -41,7 +41,11 @@ function Profile() {
 	const [instagram, setInstagram] = useState();
 	const [numLogins, setNumLogins] = useState();
 
-	const emailErr = errorMsg && errorMsg && (
+	const fullNameErr = errorMsg && errorMsg.includes("Name") && (
+		<p className="error-p">{errorMsg}</p>
+	);
+
+	const emailErr = errorMsg && errorMsg.toLowerCase().includes("email") && (
 		<p className="error-p">{errorMsg}</p>
 	);
 	const facebookErr = errorMsg && errorMsg.includes("Facebook") && (
@@ -224,8 +228,6 @@ function Profile() {
 			);
 		}
 
-		setNumLogins(numLogins + 1);
-
 		Axios({
 			method: "POST",
 			data: payload,
@@ -233,8 +235,10 @@ function Profile() {
 			url: "http://localhost:5000/updateProfile",
 		}).then((res) => {
 			if (res.data.success) {
+				setNumLogins(numLogins + 1);
 				handleSubmitFile();
 				Swal.fire(`${res.data.message}`, "", "success");
+				setErrorMsg("");
 			} else {
 				setErrorMsg(res.data.message);
 			}
@@ -351,7 +355,9 @@ function Profile() {
 										setUsername(e.target.value);
 										setIsDisabled("");
 									}}
+									required
 								></input>
+								{fullNameErr}
 							</div>
 
 							<div className="email-div">
@@ -453,7 +459,7 @@ function Profile() {
 										placeholder="GPA / 7"
 										type="number"
 										step={0.01}
-										max="7"										
+										max="7"
 										value={gpa || ""}
 										onChange={(e) => {
 											setGpa(e.target.value);

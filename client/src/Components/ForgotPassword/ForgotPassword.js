@@ -22,6 +22,7 @@ function Login() {
 			url: "http://localhost:5000/forgotpassword",
 		}).then((res) => {
 			if (res.data.success) {
+				setErrorMsg("");
 				Swal.fire(
 					`${res.data.message}`,
 					"Please check your inboxes including spam",
@@ -31,8 +32,9 @@ function Login() {
 						window.location.href = "/";
 					}
 				});
+			} else {
+				setErrorMsg(res.data.message);
 			}
-			setErrorMsg(res.data.message);
 		});
 	};
 	return (

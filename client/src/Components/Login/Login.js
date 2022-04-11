@@ -43,6 +43,7 @@ function Login() {
 				withCredentials: true,
 			}).then(() => {
 				if (data.success) {
+					setErrorMsg("");
 					Swal.fire(`${data.message}`, "", "success").then((swal) => {
 						if (swal.isConfirmed || swal.isDismissed) {
 							window.location.href = "/profile";
@@ -54,6 +55,7 @@ function Login() {
 			});
 		} else {
 			if (data.success) {
+				setErrorMsg("");
 				Swal.fire(`${data.message}`, "", "success").then((swal) => {
 					if (swal.isConfirmed || swal.isDismissed) {
 						window.location.href = "/mainpage";

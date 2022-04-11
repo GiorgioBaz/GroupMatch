@@ -42,6 +42,7 @@ function ResetPassword() {
 				url: "http://localhost:5000/forgotpassword",
 			}).then((res) => {
 				if (res.data.success) {
+					setErrorMsg("");
 					Swal.fire({
 						title: "Success",
 						text: `${res.data.message}`,

@@ -653,6 +653,12 @@ app.post("/updateProfile", async function (req, res) {
 	} = req.body;
 	User.findOne({ email: email }, (error, doc) => {
 		if (error) throw error;
+		if (name && name.length < 3) {
+			return res.send({
+				success: false,
+				message: "Name must be more than 2 characters",
+			});
+		}
 		if (
 			facebook &&
 			!facebook.includes("https://www.facebook.com/") &&
@@ -791,7 +797,7 @@ async function getAllUsers(req = undefined) {
 				userInfo.user[key] = user[key].toString();
 			}
 		}
-		allUsers.push(userInfo); // push all of the user information we want to the
+		allUsers.push(userInfo); // push all of the user information we want to the array
 		userInfo = { user: {} }; // resets object for next iteration
 	});
 	return allUsers;

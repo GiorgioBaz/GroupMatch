@@ -43,6 +43,7 @@ function Login() {
 				url: "http://localhost:5000/register",
 			}).then((res) => {
 				if (res.data.success) {
+					setErrorMsg("");
 					Swal.fire({
 						title: "Success",
 						text: `${res.data.message}`,
@@ -59,27 +60,6 @@ function Login() {
 			});
 		}
 	};
-	/*
-	const getUser = () => {
-		Axios({
-			method: "GET",
-			withCredentials: true,
-			url: "http://localhost:5000/currentUser",
-		}).then((res) => {
-			setData(res.data);
-			console.log(res.data);
-		});
-	};
-
-	const logout = () => {
-		Axios({
-			method: "POST",
-			withCredentials: true,
-			url: "http://localhost:5000/logout",
-		}).then((res) => console.log(res));
-		//May need a window relocation once the page is fully developed
-	};
-	*/
 	return (
 		<div className="register-div">
 			<div className="register-card">
