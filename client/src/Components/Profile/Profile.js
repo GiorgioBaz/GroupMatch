@@ -278,7 +278,7 @@ function Profile() {
 
 	const uploadImage = async (base64EncodedImage) => {
 		try {
-			await fetch("/api/upload", {
+			await axiosInstance("/upload", {
 				method: "POST",
 				body: JSON.stringify({ data: base64EncodedImage }),
 				headers: { "Content-Type": "application/json" },

@@ -728,7 +728,7 @@ app.post("/updateProfile", async function (req, res) {
 	});
 });
 
-app.post("/api/upload", async (req, res) => {
+app.post("/upload", async (req, res) => {
 	const user = req.user;
 	try {
 		const fileStr = req.body.data;
