@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../../config";
+import showLoading from "../../showLoading";
 import Swal from "sweetalert2";
 
 import "./ResetPassword.css";
@@ -12,6 +13,7 @@ function ResetPassword() {
 	const [resetEmail, setResetEmail] = useState("");
 	const [resetCode, setResetCode] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const emailErr = errorMsg &&
 		errorMsg.includes("incorrect spelling or missing characters") && (
@@ -31,6 +33,7 @@ function ResetPassword() {
 		e.preventDefault();
 
 		if (resetPassword === confirmPassword) {
+			setLoading(true);
 			axiosInstance({
 				method: "POST",
 				data: {
@@ -41,6 +44,7 @@ function ResetPassword() {
 				withCredentials: true,
 				url: "/forgotpassword",
 			}).then((res) => {
+				setLoading(false);
 				if (res.data.success) {
 					setErrorMsg("");
 					Swal.fire({
@@ -60,6 +64,11 @@ function ResetPassword() {
 			});
 		}
 	};
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
+
 	return (
 		<div className="reset-div">
 			<div className="reset-card">

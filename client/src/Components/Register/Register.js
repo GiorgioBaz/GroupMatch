@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../../config";
+import showLoading from "../../showLoading";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -13,8 +14,8 @@ function Login() {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [registerName, setRegisterName] = useState("");
 	const [registerEmail, setRegisterEmail] = useState("");
-	//const [data, setData] = useState(null);
 	const [errorMsg, setErrorMsg] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const emailErr = errorMsg && errorMsg.includes("email") && (
 		<p className="error-p">{errorMsg}</p>
@@ -32,6 +33,7 @@ function Login() {
 		e.preventDefault();
 
 		if (registerPassword === confirmPassword) {
+			setLoading(true);
 			axiosInstance({
 				method: "POST",
 				data: {
@@ -42,6 +44,7 @@ function Login() {
 				withCredentials: true,
 				url: "/register",
 			}).then((res) => {
+				setLoading(false);
 				if (res.data.success) {
 					setErrorMsg("");
 					Swal.fire({
@@ -60,6 +63,11 @@ function Login() {
 			});
 		}
 	};
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
+
 	return (
 		<div className="register-div">
 			<div className="register-card">

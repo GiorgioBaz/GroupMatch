@@ -1,6 +1,7 @@
 import "./MainPage.css";
 import ReactDOMServer from "react-dom/server";
 import { axiosInstance } from "../../config";
+import showLoading from "../../showLoading";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
@@ -15,17 +16,20 @@ import facebookIcon from "../../Assets/facebookIcon.svg";
 
 function MainPage() {
 	const [userList, setUserList] = useState([]);
+	const [loading, setLoading] = useState(false);
 
 	const instaImg = ReactDOMServer.renderToString(
-		<img alt="Instagram" class="instagram-swal" src={instaIcon} />
+		<img alt="Instagram" className="instagram-swal" src={instaIcon} />
 	);
 
 	async function getUserList() {
+		setLoading(true);
 		await axiosInstance({
 			method: "GET",
 			withCredentials: true,
 			url: "/userList",
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setUserList(res.data.userList);
 			} else {
@@ -43,11 +47,13 @@ function MainPage() {
 	}
 
 	const retrieveNewUsers = async () => {
+		setLoading(true);
 		await axiosInstance({
 			method: "POST",
 			withCredentials: true,
 			url: "/updateUserList",
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setUserList(res.data.userList);
 			}
@@ -114,6 +120,8 @@ function MainPage() {
 							.join("");
 					let userDisplayed = match.user.id;
 					await Swal.fire({
+						focusConfirm: false,
+						showCloseButton: true,
 						showDenyButton: true,
 						showCancelButton: true,
 						cancelButtonColor: "#FFFFFF",
@@ -177,6 +185,7 @@ function MainPage() {
 			retrieveNewUsers();
 		}
 
+		setLoading(true);
 		//Rejects the user and filters the list
 		await axiosInstance({
 			method: "POST",
@@ -184,6 +193,7 @@ function MainPage() {
 			url: "/declineUser",
 			data: { user: user },
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setUserList(res.data.userList);
 			} else {
@@ -233,6 +243,7 @@ function MainPage() {
 
 		retrieveMatches();
 
+		setLoading(true);
 		// adds users to potential matches or confirmed matches
 		await axiosInstance({
 			method: "POST",
@@ -240,12 +251,15 @@ function MainPage() {
 			url: "/acceptUser",
 			data: { user: user },
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setUserList(res.data.userList);
 				if (res.data.isMatch) {
 					Swal.fire({
+						focusConfirm: false,
 						showDenyButton: true,
 						showCancelButton: true,
+						showCloseButton: true,
 						cancelButtonColor: "#FFFFFF",
 						confirmButtonColor: "#FFFFFF",
 						denyButtonColor: "#FFFFFF",
@@ -285,18 +299,24 @@ function MainPage() {
 	}
 
 	const logout = () => {
+		setLoading(true);
 		axiosInstance({
 			method: "POST",
 			withCredentials: true,
 			url: "/logout",
-		}).then(() =>
+		}).then(() => {
+			setLoading(false);
 			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {
 					window.location.href = "/";
 				}
-			})
-		);
+			});
+		});
 	};
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
 
 	return (
 		<div className="main-div">

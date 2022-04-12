@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { axiosInstance } from "../../config";
+import showLoading from "../../showLoading";
 import { Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -40,6 +41,7 @@ function Profile() {
 	const [twitter, setTwitter] = useState();
 	const [instagram, setInstagram] = useState();
 	const [numLogins, setNumLogins] = useState();
+	const [loading, setLoading] = useState(false);
 
 	const fullNameErr = errorMsg && errorMsg.includes("Name") && (
 		<p className="error-p">{errorMsg}</p>
@@ -82,21 +84,25 @@ function Profile() {
 	const location = useLocation();
 
 	async function getUserInfo() {
+		setLoading(true);
 		const user = await axiosInstance({
 			method: "GET",
 			withCredentials: true,
 			url: "/userProfile",
 		});
+		setLoading(false);
 		return user.data.user;
 	}
 
 	// Sets all the default information pulled from the db
 	function setUserInfo() {
+		setLoading(true);
 		axiosInstance({
 			method: "GET",
 			withCredentials: true,
 			url: "/userProfile",
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				const academics = res.data.user.academics;
 				setUsername(res.data.user.name);
@@ -138,6 +144,10 @@ function Profile() {
 		setUserInfo();
 		setIsDisabled(true);
 	}, [resetForm]);
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
 
 	function handleRadioChange(e) {
 		setStudyLoad(e.target.value);
@@ -227,13 +237,14 @@ function Profile() {
 				"error"
 			);
 		}
-
+		setLoading(true);
 		axiosInstance({
 			method: "POST",
 			data: payload,
 			withCredentials: true,
 			url: "/updateProfile",
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setNumLogins(numLogins + 1);
 				handleSubmitFile();
@@ -277,6 +288,7 @@ function Profile() {
 	}
 
 	const uploadImage = async (base64EncodedImage) => {
+		setLoading(true);
 		try {
 			await axiosInstance("/upload", {
 				method: "POST",
@@ -285,21 +297,25 @@ function Profile() {
 			});
 		} catch (err) {
 			console.error(err);
+			setLoading(false);
 		}
+		setLoading(false);
 	};
 
 	const logout = () => {
+		setLoading(true);
 		axiosInstance({
 			method: "POST",
 			withCredentials: true,
 			url: "/logout",
-		}).then(() =>
+		}).then(() => {
+			setLoading(false);
 			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {
 					window.location.href = "/";
 				}
-			})
-		);
+			});
+		});
 	};
 
 	return (

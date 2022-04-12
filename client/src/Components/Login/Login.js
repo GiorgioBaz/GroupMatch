@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../../config";
 import { Link } from "react-router-dom";
+import showLoading from "../../showLoading";
 import Swal from "sweetalert2";
 
 import "./Login.css";
@@ -11,12 +12,14 @@ function Login() {
 	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const passwordErr = errorMsg && errorMsg && (
 		<p className="error-p">{errorMsg}</p>
 	);
 
 	async function handleLogin() {
+		setLoading(true);
 		const user = await axiosInstance({
 			method: "POST",
 			data: {
@@ -26,6 +29,7 @@ function Login() {
 			withCredentials: true,
 			url: "/login",
 		}).then();
+		setLoading(false);
 		return {
 			success: user.data?.success,
 			message: user.data?.message,
@@ -37,11 +41,13 @@ function Login() {
 		e.preventDefault();
 		const data = await handleLogin();
 		if (data.numLogins === 1) {
+			setLoading(true);
 			await axiosInstance({
 				method: "POST",
 				url: "/updateAllUsers",
 				withCredentials: true,
 			}).then(() => {
+				setLoading(false);
 				if (data.success) {
 					setErrorMsg("");
 					Swal.fire(`${data.message}`, "", "success").then((swal) => {
@@ -66,6 +72,10 @@ function Login() {
 			}
 		}
 	};
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
 
 	return (
 		<div className="login-div">

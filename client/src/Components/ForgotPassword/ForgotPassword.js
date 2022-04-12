@@ -1,18 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../../config";
+import showLoading from "../../showLoading";
 import Swal from "sweetalert2";
 
 import "./ResetPassword.css";
 import emailIcon from "../../Assets/email-icon.svg";
 
-function Login() {
+function ForgotPassword() {
 	const [resetEmail, setResetEmail] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const emailError = errorMsg && <p className="error-p">{errorMsg}</p>;
 
 	const forgotPass = (e) => {
 		e.preventDefault();
+		setLoading(true);
 		axiosInstance({
 			method: "POST",
 			data: {
@@ -21,6 +24,7 @@ function Login() {
 			withCredentials: true,
 			url: "/forgotpassword",
 		}).then((res) => {
+			setLoading(false);
 			if (res.data.success) {
 				setErrorMsg("");
 				Swal.fire(
@@ -37,6 +41,11 @@ function Login() {
 			}
 		});
 	};
+
+	useEffect(() => {
+		showLoading(loading);
+	}, [loading]);
+
 	return (
 		<div className="forgot-div">
 			<div className="forgot-card">
@@ -75,4 +84,4 @@ function Login() {
 	);
 }
 
-export default Login;
+export default ForgotPassword;
