@@ -43,7 +43,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
 
-app.use("/", userAuth);
+app.use("/api", userAuth);
 
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.get("*", function (request, response) {

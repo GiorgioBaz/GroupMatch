@@ -1,6 +1,6 @@
 import "./MainPage.css";
 import ReactDOMServer from "react-dom/server";
-import Axios from "axios";
+import { axiosInstance } from "../../config";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
@@ -21,10 +21,10 @@ function MainPage() {
 	);
 
 	async function getUserList() {
-		await Axios({
+		await axiosInstance({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/userList",
+			url: "/userList",
 		}).then((res) => {
 			if (res.data.success) {
 				setUserList(res.data.userList);
@@ -43,10 +43,10 @@ function MainPage() {
 	}
 
 	const retrieveNewUsers = async () => {
-		await Axios({
+		await axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/updateUserList",
+			url: "/updateUserList",
 		}).then((res) => {
 			if (res.data.success) {
 				setUserList(res.data.userList);
@@ -72,19 +72,19 @@ function MainPage() {
 
 	// add logic which only performs the seekmatches every 4 records accepted or rejected
 	const updateMatches = async (userDisplayed) => {
-		await Axios({
+		await axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/updateMatches",
+			url: "/updateMatches",
 			data: { userDisplayed },
 		});
 	};
 
 	const retrieveMatches = async () => {
-		await Axios({
+		await axiosInstance({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/retrieveMatches",
+			url: "/retrieveMatches",
 		}).then(async (res) => {
 			if (res.data.success) {
 				for (const match of res.data.matches) {
@@ -178,10 +178,10 @@ function MainPage() {
 		}
 
 		//Rejects the user and filters the list
-		await Axios({
+		await axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/declineUser",
+			url: "/declineUser",
 			data: { user: user },
 		}).then((res) => {
 			if (res.data.success) {
@@ -234,10 +234,10 @@ function MainPage() {
 		retrieveMatches();
 
 		// adds users to potential matches or confirmed matches
-		await Axios({
+		await axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/acceptUser",
+			url: "/acceptUser",
 			data: { user: user },
 		}).then((res) => {
 			if (res.data.success) {
@@ -285,10 +285,10 @@ function MainPage() {
 	}
 
 	const logout = () => {
-		Axios({
+		axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/logout",
+			url: "/logout",
 		}).then(() =>
 			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {

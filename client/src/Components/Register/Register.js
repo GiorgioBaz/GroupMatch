@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Axios from "axios";
+import { axiosInstance } from "../../config";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -32,7 +32,7 @@ function Login() {
 		e.preventDefault();
 
 		if (registerPassword === confirmPassword) {
-			Axios({
+			axiosInstance({
 				method: "POST",
 				data: {
 					name: registerName,
@@ -40,7 +40,7 @@ function Login() {
 					password: registerPassword,
 				},
 				withCredentials: true,
-				url: "http://localhost:5000/register",
+				url: "/register",
 			}).then((res) => {
 				if (res.data.success) {
 					setErrorMsg("");

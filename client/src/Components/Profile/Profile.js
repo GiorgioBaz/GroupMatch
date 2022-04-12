@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import Axios from "axios";
+import { axiosInstance } from "../../config";
 import { Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -82,20 +82,20 @@ function Profile() {
 	const location = useLocation();
 
 	async function getUserInfo() {
-		const user = await Axios({
+		const user = await axiosInstance({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/userProfile",
+			url: "/userProfile",
 		});
 		return user.data.user;
 	}
 
 	// Sets all the default information pulled from the db
 	function setUserInfo() {
-		Axios({
+		axiosInstance({
 			method: "GET",
 			withCredentials: true,
-			url: "http://localhost:5000/userProfile",
+			url: "/userProfile",
 		}).then((res) => {
 			if (res.data.success) {
 				const academics = res.data.user.academics;
@@ -228,11 +228,11 @@ function Profile() {
 			);
 		}
 
-		Axios({
+		axiosInstance({
 			method: "POST",
 			data: payload,
 			withCredentials: true,
-			url: "http://localhost:5000/updateProfile",
+			url: "/updateProfile",
 		}).then((res) => {
 			if (res.data.success) {
 				setNumLogins(numLogins + 1);
@@ -289,10 +289,10 @@ function Profile() {
 	};
 
 	const logout = () => {
-		Axios({
+		axiosInstance({
 			method: "POST",
 			withCredentials: true,
-			url: "http://localhost:5000/logout",
+			url: "/logout",
 		}).then(() =>
 			Swal.fire("Successfully Logged Out", "", "success").then((swal) => {
 				if (swal.isConfirmed || swal.isDismissed) {

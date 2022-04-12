@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Axios from "axios";
+import { axiosInstance } from "../../config";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -17,14 +17,14 @@ function Login() {
 	);
 
 	async function handleLogin() {
-		const user = await Axios({
+		const user = await axiosInstance({
 			method: "POST",
 			data: {
 				email: loginEmail,
 				password: loginPassword,
 			},
 			withCredentials: true,
-			url: "http://localhost:5000/login",
+			url: "/login",
 		}).then();
 		return {
 			success: user.data?.success,
@@ -37,9 +37,9 @@ function Login() {
 		e.preventDefault();
 		const data = await handleLogin();
 		if (data.numLogins === 1) {
-			await Axios({
+			await axiosInstance({
 				method: "POST",
-				url: "http://localhost:5000/updateAllUsers",
+				url: "/updateAllUsers",
 				withCredentials: true,
 			}).then(() => {
 				if (data.success) {

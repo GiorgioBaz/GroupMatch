@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Axios from "axios";
+import { axiosInstance } from "../../config";
 import Swal from "sweetalert2";
 
 import "./ResetPassword.css";
@@ -13,13 +13,13 @@ function Login() {
 
 	const forgotPass = (e) => {
 		e.preventDefault();
-		Axios({
+		axiosInstance({
 			method: "POST",
 			data: {
 				email: resetEmail,
 			},
 			withCredentials: true,
-			url: "http://localhost:5000/forgotpassword",
+			url: "/forgotpassword",
 		}).then((res) => {
 			if (res.data.success) {
 				setErrorMsg("");
