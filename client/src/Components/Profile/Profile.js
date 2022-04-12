@@ -280,7 +280,8 @@ function Profile() {
 		try {
 			await axiosInstance("/upload", {
 				method: "POST",
-				body: JSON.stringify({ data: base64EncodedImage }),
+				data: JSON.stringify({ data: base64EncodedImage }),
+				headers: { "Content-Type": "application/json" },
 			});
 		} catch (err) {
 			console.error(err);
