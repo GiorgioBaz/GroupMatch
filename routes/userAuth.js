@@ -859,6 +859,19 @@ app.post("/updateUserList", async (req, res) => {
 		return isoToUnix(user.user.createdAt) > userCreatedAt;
 	});
 
+	const existingUser = dbUser.allUsers.find((e) => {
+		const matchId = newUsers.findIndex((user) => {
+			return e.user._id === user.user._id;
+		});
+
+		if (matchId > -1) {
+			newUsers.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
 	const potentialUser = dbUser.potentialMatches.filter((e) => {
 		const matchId = newUsers.findIndex((user) => {
 			return e.user.id.toString() === user.user._id;

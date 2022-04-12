@@ -10,11 +10,15 @@ import interestIcon from "../../Assets/interest-button-icon.svg";
 import profileIcon from "../../Assets/profile-icon.svg";
 import logoutIcon from "../../Assets/logout-icon.svg";
 import twitterIcon from "../../Assets/twitterIcon.svg";
+import instaIcon from "../../Assets/instaIcon.svg";
 import facebookIcon from "../../Assets/facebookIcon.svg";
-import instagramIcon from "../../Assets/instagramIcon.svg";
 
 function MainPage() {
 	const [userList, setUserList] = useState([]);
+
+	const instaImg = ReactDOMServer.renderToString(
+		<img alt="Instagram" class="instagram-swal" src={instaIcon} />
+	);
 
 	async function getUserList() {
 		await Axios({
@@ -115,7 +119,7 @@ function MainPage() {
 						cancelButtonColor: "#FFFFFF",
 						confirmButtonColor: "#FFFFFF",
 						denyButtonColor: "#FFFFFF",
-						confirmButtonText: `<img alt="Instagram" class="instagram-swal" src=${instagramIcon}/>`,
+						confirmButtonText: `${instaImg}`,
 						denyButtonText: `<img alt="Facebook" class="facebook-swal" src=${facebookIcon} />`,
 						cancelButtonText: `<img alt="Twitter" class="twitter-swal" src=${twitterIcon} />`,
 						html:
@@ -245,7 +249,7 @@ function MainPage() {
 						cancelButtonColor: "#FFFFFF",
 						confirmButtonColor: "#FFFFFF",
 						denyButtonColor: "#FFFFFF",
-						confirmButtonText: `<img alt="Instagram" class="instagram-swal" src=${instagramIcon}/>`,
+						confirmButtonText: `${instaImg}`,
 						denyButtonText: `<img alt="Facebook" class="facebook-swal" src=${facebookIcon} />`,
 						cancelButtonText: `<img alt="Twitter" class="twitter-swal" src=${twitterIcon} />`,
 						html:

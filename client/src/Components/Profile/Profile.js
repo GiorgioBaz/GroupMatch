@@ -13,7 +13,7 @@ import gpaIcon from "../../Assets/gpa-icon.svg";
 import studyLoadIcon from "../../Assets/study-load-icon.svg";
 import twitterIcon from "../../Assets/twitterIcon.svg";
 import facebookIcon from "../../Assets/facebookIcon.svg";
-import instagramIcon from "../../Assets/instagramIcon.svg";
+import instaIcon from "../../Assets/instaIcon.svg";
 import homeIcon from "../../Assets/home-icon.svg";
 import logoutIcon from "../../Assets/logout-icon.svg";
 
@@ -553,7 +553,7 @@ function Profile() {
 									<img
 										alt="instagram Icon"
 										className="instagram-icon"
-										src={instagramIcon}
+										src={instaIcon}
 									/>
 									<h3 className="profile-header">
 										Instagram
