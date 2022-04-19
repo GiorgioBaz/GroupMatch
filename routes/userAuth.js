@@ -31,7 +31,7 @@ app.post("/login", async (req, res, next) => {
 	passport.authenticate("local", (err, user, info) => {
 		if (err) throw err;
 
-		if (!userEmail.includes("@") || !userEmail.includes(".com")) {
+		if (!userEmail.includes("@")) {
 			return res.send({
 				success: false,
 				message: "Please enter a valid email",
@@ -62,7 +62,7 @@ app.post("/register", (req, res) => {
 	const userEmail = body.email;
 	const name = body.name;
 
-	if (!userEmail.includes("@") || !userEmail.includes(".com")) {
+	if (!userEmail.includes("@")) {
 		return res.send({
 			success: false,
 			message: "Please enter a valid email",
@@ -695,7 +695,7 @@ app.post("/updateProfile", async function (req, res) {
 				message: "Email already exists!",
 			});
 		} else {
-			if (email && (!email.includes("@") || !email.includes(".com"))) {
+			if (email && !email.includes("@")) {
 				return res.send({
 					success: false,
 					message: "Please enter a valid email",
@@ -818,7 +818,48 @@ app.post("/updateAllUsers", async (req, res) => {
 		});
 	}
 
+	const dbUser = await User.findOne({ email: user.email });
 	const updateUser = await getAllUsers(req);
+
+	const existingUser = dbUser.allUsers.find((e) => {
+		const matchId = updateUser.findIndex((user) => {
+			return e.user._id === user.user._id;
+		});
+
+		if (matchId > -1) {
+			updateUser.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
+	const potentialUser = dbUser.potentialMatches.filter((e) => {
+		const matchId = updateUser.findIndex((user) => {
+			return e.user.id.toString() === user.user._id;
+		});
+
+		if (matchId > -1) {
+			updateUser.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
+	const rejectedUser = dbUser.rejectedMatches.filter((e) => {
+		const matchId = updateUser.findIndex((user) => {
+			return e.user.id.toString() === user.user._id;
+		});
+
+		if (matchId > -1) {
+			updateUser.splice(matchId, 1);
+			return true;
+		} else {
+			return false;
+		}
+	});
+
 	User.findOneAndUpdate(
 		{ email: user.email },
 		{ allUsers: updateUser, numUsers: updateUser.length }

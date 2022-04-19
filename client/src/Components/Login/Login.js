@@ -59,17 +59,25 @@ function Login() {
 					setErrorMsg(data.message);
 				}
 			});
-		} else {
-			if (data.success) {
-				setErrorMsg("");
-				Swal.fire(`${data.message}`, "", "success").then((swal) => {
-					if (swal.isConfirmed || swal.isDismissed) {
-						window.location.href = "/mainpage";
-					}
-				});
-			} else {
-				setErrorMsg(data.message);
-			}
+		} else if (data.numLogins > 1) {
+			setLoading(true);
+			await axiosInstance({
+				method: "POST",
+				url: "/updateAllUsers",
+				withCredentials: true,
+			}).then(() => {
+				setLoading(false);
+				if (data.success) {
+					setErrorMsg("");
+					Swal.fire(`${data.message}`, "", "success").then((swal) => {
+						if (swal.isConfirmed || swal.isDismissed) {
+							window.location.href = "/mainpage";
+						}
+					});
+				} else {
+					setErrorMsg(data.message);
+				}
+			});
 		}
 	};
 
