@@ -27,7 +27,7 @@ To run the backend via node use ```npm start```
 ## Description
 Made to address the needs of students at UTS struggling to find groups with the same mindset and goals.
 
-This application utilises a familiar Tinder-based design to match students with peers who have like-minded goals for subjects.
+This application utilises a familiar Tinder-like design to match students with peers who have like-minded goals for subjects.
 
 It aims to do this through a simple yes or no decision that students make depending on their peer's previous academic results and goals for the current subject.
 
