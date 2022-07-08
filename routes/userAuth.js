@@ -7,142 +7,141 @@ const User = require("../models/user");
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config({ path: "../config.env" });
 cloudinary.config({
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY,
-	api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
-// Routes
 app.post("/login", async (req, res, next) => {
-	const body = req.body;
-	const userEmail = body.email;
+    const body = req.body;
+    const userEmail = body.email;
 
-	const dbUser = await User.findOne({ email: userEmail });
-	if (dbUser) {
-		await User.updateOne(
-			{ email: userEmail },
-			{ $set: { numLogins: (dbUser.numLogins += 1) } },
-			{ timestamps: false }
-		);
-	}
+    const dbUser = await User.findOne({ email: userEmail });
+    if (dbUser) {
+        await User.updateOne(
+            { email: userEmail },
+            { $set: { numLogins: (dbUser.numLogins += 1) } },
+            { timestamps: false }
+        );
+    }
 
-	passport.authenticate("local", (err, user, info) => {
-		if (err) throw err;
+    passport.authenticate("local", (err, user, info) => {
+        if (err) throw err;
 
-		if (!userEmail.includes("@")) {
-			return res.send({
-				success: false,
-				message: "Please enter a valid email",
-			});
-		}
+        if (!userEmail.includes("@")) {
+            return res.send({
+                success: false,
+                message: "Please enter a valid email",
+            });
+        }
 
-		if (!user)
-			res.send({
-				success: false,
-				message: "Incorrect email or password",
-			});
-		else {
-			req.logIn(user, (err) => {
-				if (err) throw err;
-				res.send({
-					success: true,
-					message: "Successfully Authenticated",
-					numLogins: dbUser?.numLogins,
-				});
-				console.log(req.user);
-			});
-		}
-	})(req, res, next);
+        if (!user)
+            res.send({
+                success: false,
+                message: "Incorrect email or password",
+            });
+        else {
+            req.logIn(user, (err) => {
+                if (err) throw err;
+                res.send({
+                    success: true,
+                    message: "Successfully Authenticated",
+                    numLogins: dbUser?.numLogins,
+                });
+                console.log(req.user);
+            });
+        }
+    })(req, res, next);
 });
 
 app.post("/register", (req, res) => {
-	const body = req.body;
-	const userEmail = body.email;
-	const name = body.name;
+    const body = req.body;
+    const userEmail = body.email;
+    const name = body.name;
 
-	if (!userEmail.includes("@")) {
-		return res.send({
-			success: false,
-			message: "Please enter a valid email",
-		});
-	}
+    if (!userEmail.includes("@")) {
+        return res.send({
+            success: false,
+            message: "Please enter a valid email",
+        });
+    }
 
-	if (name && name.length < 3) {
-		return res.send({
-			success: false,
-			message: "Name must be more than 2 characters",
-		});
-	}
+    if (name && name.length < 3) {
+        return res.send({
+            success: false,
+            message: "Name must be more than 2 characters",
+        });
+    }
 
-	if (!name) {
-		return res.send({
-			success: false,
-			message: "Names are required for matching purposes",
-		});
-	}
+    if (!name) {
+        return res.send({
+            success: false,
+            message: "Names are required for matching purposes",
+        });
+    }
 
-	User.findOne({ email: req.body.email }, async (err, doc) => {
-		if (err) throw err;
+    User.findOne({ email: req.body.email }, async (err, doc) => {
+        if (err) throw err;
 
-		if (doc)
-			res.send({
-				success: false,
-				message: "An account already exists with this email.",
-			});
+        if (doc)
+            res.send({
+                success: false,
+                message: "An account already exists with this email.",
+            });
 
-		if (!doc) {
-			const hashedPassword = await bcrypt.hash(req.body.password, 10);
-			const newUser = new User({
-				name: req.body.name,
-				email: req.body.email,
-				password: hashedPassword,
-			});
-			await newUser.save();
-			res.send({ success: true, message: "Welcome to GroupMatch!" });
-		}
-	});
+        if (!doc) {
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+            const newUser = new User({
+                name: req.body.name,
+                email: req.body.email,
+                password: hashedPassword,
+            });
+            await newUser.save();
+            res.send({ success: true, message: "Welcome to GroupMatch!" });
+        }
+    });
 });
 
 app.post("/forgotpassword", (req, res) => {
-	const body = req.body;
-	const newPassword = body.password;
-	const userEmail = body.email;
-	const inputtedCode = body.resetCode;
+    const body = req.body;
+    const newPassword = body.password;
+    const userEmail = body.email;
+    const inputtedCode = body.resetCode;
 
-	User.findOne({ email: userEmail }, (err, user) => {
-		if (err) throw err;
+    User.findOne({ email: userEmail }, (err, user) => {
+        if (err) throw err;
 
-		if (!userEmail) {
-			return res.send({
-				success: false,
-				message:
-					"Please check your email for incorrect spelling or missing characters",
-			});
-		}
+        if (!userEmail) {
+            return res.send({
+                success: false,
+                message:
+                    "Please check your email for incorrect spelling or missing characters",
+            });
+        }
 
-		if (!user) {
-			return res.send({
-				success: false,
-				message:
-					"Not a registered account, please check your email for incorrect spelling or missing characters",
-			});
-		}
-		if (user && !newPassword) {
-			let transporter = nodemailer.createTransport({
-				service: "Gmail",
-				auth: {
-					user: process.env.EMAIL,
-					pass: process.env.PASSWORD,
-				},
-			});
+        if (!user) {
+            return res.send({
+                success: false,
+                message:
+                    "Not a registered account, please check your email for incorrect spelling or missing characters",
+            });
+        }
+        if (user && !newPassword) {
+            let transporter = nodemailer.createTransport({
+                service: "Gmail",
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASSWORD,
+                },
+            });
 
-			let mailOptions = {
-				from: "groupmatchapp@gmail.com",
-				to: userEmail,
-				subject: "GroupMatch Application Password Reset!",
-				html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+            let mailOptions = {
+                from: "groupmatchapp@gmail.com",
+                to: userEmail,
+                subject: "GroupMatch Application Password Reset!",
+                html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       
           <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
           <head>
@@ -548,673 +547,669 @@ app.post("/forgotpassword", (req, res) => {
           <!--[if (IE)]></div><![endif]-->
           </body>
           </html>`,
-			};
+            };
 
-			transporter.sendMail(mailOptions, function (err, data) {
-				if (err) {
-					console.log("Error Occurred: ", err);
-				} else {
-					console.log("Email Sent");
-					return res.send({
-						success: true,
-						message: "A reset email has been sent",
-					});
-				}
-			});
-		}
-	});
+            transporter.sendMail(mailOptions, function (err, data) {
+                if (err) {
+                    console.log("Error Occurred: ", err);
+                } else {
+                    console.log("Email Sent");
+                    return res.send({
+                        success: true,
+                        message: "A reset email has been sent",
+                    });
+                }
+            });
+        }
+    });
 
-	User.findOne({ email: userEmail }, (err, user) => {
-		if (user && !user.passwordRequested) {
-			const currentUserId = user._id;
+    User.findOne({ email: userEmail }, (err, user) => {
+        if (user && !user.passwordRequested) {
+            const currentUserId = user._id;
 
-			User.findOneAndUpdate(
-				{ email: userEmail },
-				{ passwordRequested: true }
-			).then();
-		} else if (user && user.passwordRequested && newPassword) {
-			if (newPassword.length < 8) {
-				return res.send({
-					success: false,
-					message: "Password cannot be shorter than 8 characters",
-				});
-			}
-			if (!newPassword) {
-				return res.send({
-					success: false,
-					message: "Password cannot be blank!",
-				});
-			} else {
-				User.findOne(
-					{ _id: inputtedCode, email: userEmail },
-					async (err, user) => {
-						//This query is an ID check to see if the user already exists
-						if (!user) {
-							return res.send({
-								success: false,
-								message: "Incorrect reset code",
-							});
-						}
+            User.findOneAndUpdate(
+                { email: userEmail },
+                { passwordRequested: true }
+            ).then();
+        } else if (user && user.passwordRequested && newPassword) {
+            if (newPassword.length < 8) {
+                return res.send({
+                    success: false,
+                    message: "Password cannot be shorter than 8 characters",
+                });
+            }
+            if (!newPassword) {
+                return res.send({
+                    success: false,
+                    message: "Password cannot be blank!",
+                });
+            } else {
+                User.findOne(
+                    { _id: inputtedCode, email: userEmail },
+                    async (err, user) => {
+                        //This query is an ID check to see if the user already exists
+                        if (!user) {
+                            return res.send({
+                                success: false,
+                                message: "Incorrect reset code",
+                            });
+                        }
 
-						if (user && user.passwordRequested) {
-							User.findOneAndUpdate(
-								{ _id: inputtedCode },
-								{ passwordRequested: false }
-							).then(); //find the unique user entry and execute an update to log the account's successful email verification
+                        if (user && user.passwordRequested) {
+                            User.findOneAndUpdate(
+                                { _id: inputtedCode },
+                                { passwordRequested: false }
+                            ).then(); //find the unique user entry and execute an update to log the account's successful email verification
 
-							User.findOneAndUpdate(
-								{ email: userEmail },
-								{ password: await bcrypt.hash(newPassword, 10) }
-							).then(() => {
-								req.logOut();
-								return res.send({
-									success: true,
-									message: "Your password has been changed!",
-								});
-							});
-						}
-					}
-				);
-			}
-		}
-	});
+                            User.findOneAndUpdate(
+                                { email: userEmail },
+                                { password: await bcrypt.hash(newPassword, 10) }
+                            ).then(() => {
+                                req.logOut();
+                                return res.send({
+                                    success: true,
+                                    message: "Your password has been changed!",
+                                });
+                            });
+                        }
+                    }
+                );
+            }
+        }
+    });
 });
 
 app.post("/logout", function (req, res) {
-	req.logout();
-	res.send("Successfully Logged Out");
+    req.logout();
+    res.send("Successfully Logged Out");
 });
+
+// Profile Routes
 
 //Gets the currently logged in user
 app.get("/userProfile", (req, res) => {
-	if (req.user) {
-		return res.send({ success: true, user: req.user }); // The req.user stores the entire user that has been authenticated inside of it.
-	} else {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (req.user) {
+        return res.send({ success: true, user: req.user }); // The req.user stores the entire user that has been authenticated inside of it.
+    } else {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 });
 
 // Updates user's information
 app.post("/updateProfile", async function (req, res) {
-	const user = req.user;
-	const {
-		name,
-		email,
-		academics,
-		degree,
-		gpa,
-		studyLoad,
-		facebook,
-		instagram,
-		twitter,
-	} = req.body;
-	User.findOne({ email: email }, (error, doc) => {
-		if (error) throw error;
-		if (name && name.length < 3) {
-			return res.send({
-				success: false,
-				message: "Name must be more than 2 characters",
-			});
-		}
-		if (
-			facebook &&
-			!facebook.includes("https://www.facebook.com/") &&
-			!facebook.includes("www.facebook.com/")
-		) {
-			return res.send({
-				success: false,
-				message: "Please enter a valid Facebook URL",
-			});
-		}
-		if (
-			instagram &&
-			!instagram.includes("https://www.instagram.com/") &&
-			!instagram.includes("www.instagram.com/")
-		) {
-			return res.send({
-				success: false,
-				message: "Please enter a valid Instagram URL",
-			});
-		}
-		if (
-			twitter &&
-			!twitter.includes("https://twitter.com/") &&
-			!twitter.includes("www.twitter.com/")
-		) {
-			return res.send({
-				success: false,
-				message: "Please enter a valid Twitter URL",
-			});
-		}
-		if (doc) {
-			res.send({
-				success: false,
-				message: "Email already exists!",
-			});
-		} else {
-			if (email && !email.includes("@")) {
-				return res.send({
-					success: false,
-					message: "Please enter a valid email",
-				});
-			}
-			User.findOneAndUpdate(
-				{ email: user.email },
-				{
-					name: name,
-					email: email,
-					academics: academics,
-					degree: degree,
-					gpa: gpa,
-					studyLoad: studyLoad,
-					facebook: facebook,
-					instagram: instagram,
-					twitter: twitter,
-				}
-			)
-				.then(() => {
-					return res.send({
-						success: true,
-						message: "Your profile has been changed!",
-					});
-				})
-				.catch((err) => {
-					res.send(err); //catches any errors when updating
-				});
-		}
-	});
+    const user = req.user;
+    const {
+        name,
+        email,
+        academics,
+        degree,
+        gpa,
+        studyLoad,
+        facebook,
+        instagram,
+        twitter,
+    } = req.body;
+    User.findOne({ email: email }, (error, doc) => {
+        if (error) throw error;
+        if (name && name.length < 3) {
+            return res.send({
+                success: false,
+                message: "Name must be more than 2 characters",
+            });
+        }
+        if (
+            facebook &&
+            !facebook.includes("https://www.facebook.com/") &&
+            !facebook.includes("www.facebook.com/")
+        ) {
+            return res.send({
+                success: false,
+                message: "Please enter a valid Facebook URL",
+            });
+        }
+        if (
+            instagram &&
+            !instagram.includes("https://www.instagram.com/") &&
+            !instagram.includes("www.instagram.com/")
+        ) {
+            return res.send({
+                success: false,
+                message: "Please enter a valid Instagram URL",
+            });
+        }
+        if (
+            twitter &&
+            !twitter.includes("https://twitter.com/") &&
+            !twitter.includes("www.twitter.com/")
+        ) {
+            return res.send({
+                success: false,
+                message: "Please enter a valid Twitter URL",
+            });
+        }
+        if (doc) {
+            res.send({
+                success: false,
+                message: "Email already exists!",
+            });
+        } else {
+            if (email && !email.includes("@")) {
+                return res.send({
+                    success: false,
+                    message: "Please enter a valid email",
+                });
+            }
+            User.findOneAndUpdate(
+                { email: user.email },
+                {
+                    name: name,
+                    email: email,
+                    academics: academics,
+                    degree: degree,
+                    gpa: gpa,
+                    studyLoad: studyLoad,
+                    facebook: facebook,
+                    instagram: instagram,
+                    twitter: twitter,
+                }
+            )
+                .then(() => {
+                    return res.send({
+                        success: true,
+                        message: "Your profile has been changed!",
+                    });
+                })
+                .catch((err) => {
+                    res.send(err); //catches any errors when updating
+                });
+        }
+    });
 });
 
 app.post("/upload", async (req, res) => {
-	const user = req.user;
-	try {
-		const fileStr = req.body.data;
-		const uploadResponse = await cloudinary.uploader.upload(fileStr, {
-			upload_preset: "GroupMatch",
-		});
-		User.findOneAndUpdate(
-			{ email: user.email },
-			{
-				avatar: uploadResponse.secure_url,
-				cloudinary_id: uploadResponse.public_id,
-			}
-		).then(() => {
-			return res.send({
-				success: true,
-				message: "Your profile image has been changed!",
-			});
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ err: "Something went wrong" });
-	}
+    const user = req.user;
+    try {
+        const fileStr = req.body.data;
+        const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+            upload_preset: "GroupMatch",
+        });
+        User.findOneAndUpdate(
+            { email: user.email },
+            {
+                avatar: uploadResponse.secure_url,
+                cloudinary_id: uploadResponse.public_id,
+            }
+        ).then(() => {
+            return res.send({
+                success: true,
+                message: "Your profile image has been changed!",
+            });
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err: "Something went wrong" });
+    }
 });
 
-//FUCKEN TOOK 5 HOURS TO MAKE THIS SHIT, WHY DOES THIS EVEN WORK
+// Main Functionality Routes
+
 async function getAllUsers(req = undefined) {
-	let rawUsers;
-	if (req) {
-		const currentUser = req.user;
-		rawUsers = await User.find({ email: { $ne: currentUser.email } }); // Gets all users from db excluding current user
-	} else {
-		rawUsers = await User.find({}); // Gets all users from db for Postman purposes
-	}
+    let rawUsers;
+    if (req) {
+        const currentUser = req.user;
+        rawUsers = await User.find({ email: { $ne: currentUser.email } }); // Gets all users from db excluding current user
+    } else {
+        rawUsers = await User.find({}); // Gets all users from db for Postman purposes
+    }
 
-	const allUsers = [];
-	let userInfo = { user: {} };
+    const allUsers = [];
+    let userInfo = { user: {} };
 
-	//Loop through all users and add information to variables above
-	rawUsers.forEach((user) => {
-		for (let key of Object.keys(user._doc)) {
-			//Filter out the keys we dont want to display
-			if (
-				key !== "password" &&
-				key !== "passwordRequested" &&
-				key !== "academics" &&
-				key !== "allUsers" &&
-				key !== "_id" &&
-				key !== "cloudinary_id" &&
-				key !== "numUsers" &&
-				key !== "__v"
-			) {
-				//Adds every key to the userinfo object for later
-				userInfo.user[key] = user[key];
-			} else if (key === "academics") {
-				//special logic to loop through the academics array and get all objects
-				const academics = [];
+    //Loop through all users and add information to variables above
+    rawUsers.forEach((user) => {
+        for (let key of Object.keys(user._doc)) {
+            //Filter out the keys we dont want to display
+            if (
+                key !== "password" &&
+                key !== "passwordRequested" &&
+                key !== "academics" &&
+                key !== "allUsers" &&
+                key !== "_id" &&
+                key !== "cloudinary_id" &&
+                key !== "numUsers" &&
+                key !== "__v"
+            ) {
+                //Adds every key to the userinfo object for later
+                userInfo.user[key] = user[key];
+            } else if (key === "academics") {
+                //special logic to loop through the academics array and get all objects
+                const academics = [];
 
-				if (user[key].length !== 0) {
-					user[key].forEach((academic) => {
-						const { grade, subject } = academic;
-						academics.push({ grade, subject });
-					});
-					userInfo.user[key] = academics; // Sets the academics key in the userinfo object
-				} else userInfo.user[key] = [];
-			} else if (key === "_id") {
-				userInfo.user[key] = user[key].toString();
-			}
-		}
-		allUsers.push(userInfo); // push all of the user information we want to the array
-		userInfo = { user: {} }; // resets object for next iteration
-	});
-	return allUsers;
+                if (user[key].length !== 0) {
+                    user[key].forEach((academic) => {
+                        const { grade, subject } = academic;
+                        academics.push({ grade, subject });
+                    });
+                    userInfo.user[key] = academics; // Sets the academics key in the userinfo object
+                } else userInfo.user[key] = [];
+            } else if (key === "_id") {
+                userInfo.user[key] = user[key].toString();
+            }
+        }
+        allUsers.push(userInfo); // push all of the user information we want to the array
+        userInfo = { user: {} }; // resets object for next iteration
+    });
+    return allUsers;
 }
 
 app.get("/allUsers", async function (req, res) {
-	const allUsers = await getAllUsers();
-	res.send(allUsers);
+    const allUsers = await getAllUsers();
+    res.send(allUsers);
 });
 
 app.post("/updateAllUsers", async (req, res) => {
-	const user = req.user;
+    const user = req.user;
 
-	if (!user) {
-		return res.send({
-			success: true,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!user) {
+        return res.send({
+            success: true,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: user.email });
-	const updateUser = await getAllUsers(req);
+    const dbUser = await User.findOne({ email: user.email });
+    const updateUser = await getAllUsers(req);
 
-	const existingUser = dbUser.allUsers.find((e) => {
-		const matchId = updateUser.findIndex((user) => {
-			return e.user._id === user.user._id;
-		});
+    const existingUser = dbUser.allUsers.find((e) => {
+        const matchId = updateUser.findIndex((user) => {
+            return e.user._id === user.user._id;
+        });
 
-		if (matchId > -1) {
-			updateUser.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            updateUser.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	const potentialUser = dbUser.potentialMatches.filter((e) => {
-		const matchId = updateUser.findIndex((user) => {
-			return e.user.id.toString() === user.user._id;
-		});
+    const potentialUser = dbUser.potentialMatches.filter((e) => {
+        const matchId = updateUser.findIndex((user) => {
+            return e.user.id.toString() === user.user._id;
+        });
 
-		if (matchId > -1) {
-			updateUser.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            updateUser.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	const rejectedUser = dbUser.rejectedMatches.filter((e) => {
-		const matchId = updateUser.findIndex((user) => {
-			return e.user.id.toString() === user.user._id;
-		});
+    const rejectedUser = dbUser.rejectedMatches.filter((e) => {
+        const matchId = updateUser.findIndex((user) => {
+            return e.user.id.toString() === user.user._id;
+        });
 
-		if (matchId > -1) {
-			updateUser.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            updateUser.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	User.findOneAndUpdate(
-		{ email: user.email },
-		{ allUsers: updateUser, numUsers: updateUser.length }
-	).then(() => {
-		return res.send({
-			success: true,
-			message: "User List Successfully Updated",
-		});
-	});
+    User.findOneAndUpdate(
+        { email: user.email },
+        { allUsers: updateUser, numUsers: updateUser.length }
+    ).then(() => {
+        return res.send({
+            success: true,
+            message: "User List Successfully Updated",
+        });
+    });
 });
 
 app.post("/updateUserList", async (req, res) => {
-	const user = req.user;
+    const user = req.user;
 
-	if (!user) {
-		return res.send({
-			success: true,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!user) {
+        return res.send({
+            success: true,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: user.email });
+    const dbUser = await User.findOne({ email: user.email });
 
-	//converts isoStrings to Unix Epoch time for comparison
-	const isoToUnix = (time) => new Date(time).getTime();
+    //converts isoStrings to Unix Epoch time for comparison
+    const isoToUnix = (time) => new Date(time).getTime();
 
-	const userCreatedAt = isoToUnix(dbUser.createdAt);
+    const userCreatedAt = isoToUnix(dbUser.createdAt);
 
-	const updateUser = await getAllUsers(req);
-	if (updateUser.length === dbUser.allUsers.length) {
-		return res.send({
-			success: false,
-			message: "Your user list is already up to date",
-		});
-	}
+    const updateUser = await getAllUsers(req);
+    if (updateUser.length === dbUser.allUsers.length) {
+        return res.send({
+            success: false,
+            message: "Your user list is already up to date",
+        });
+    }
 
-	const newUsers = updateUser.filter((user) => {
-		return isoToUnix(user.user.createdAt) > userCreatedAt;
-	});
+    const newUsers = updateUser.filter((user) => {
+        return isoToUnix(user.user.createdAt) > userCreatedAt;
+    });
 
-	const existingUser = dbUser.allUsers.find((e) => {
-		const matchId = newUsers.findIndex((user) => {
-			return e.user._id === user.user._id;
-		});
+    const existingUser = dbUser.allUsers.find((e) => {
+        const matchId = newUsers.findIndex((user) => {
+            return e.user._id === user.user._id;
+        });
 
-		if (matchId > -1) {
-			newUsers.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            newUsers.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	const potentialUser = dbUser.potentialMatches.filter((e) => {
-		const matchId = newUsers.findIndex((user) => {
-			return e.user.id.toString() === user.user._id;
-		});
+    const potentialUser = dbUser.potentialMatches.filter((e) => {
+        const matchId = newUsers.findIndex((user) => {
+            return e.user.id.toString() === user.user._id;
+        });
 
-		if (matchId > -1) {
-			newUsers.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            newUsers.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	const rejectedUser = dbUser.rejectedMatches.filter((e) => {
-		const matchId = newUsers.findIndex((user) => {
-			return e.user.id.toString() === user.user._id;
-		});
+    const rejectedUser = dbUser.rejectedMatches.filter((e) => {
+        const matchId = newUsers.findIndex((user) => {
+            return e.user.id.toString() === user.user._id;
+        });
 
-		if (matchId > -1) {
-			newUsers.splice(matchId, 1);
-			return true;
-		} else {
-			return false;
-		}
-	});
+        if (matchId > -1) {
+            newUsers.splice(matchId, 1);
+            return true;
+        } else {
+            return false;
+        }
+    });
 
-	if (newUsers.length > 0 && newUsers.length !== dbUser.allUsers.length) {
-		dbUser.allUsers.push(...newUsers);
-		await dbUser.save().then(() => {
-			return res.send({
-				success: true,
-				message: "New users successfully added",
-				userList: dbUser.allUsers,
-			});
-		});
-	} else {
-		return res.send({
-			success: false,
-			message: "Your user list is already up to date",
-		});
-	}
+    if (newUsers.length > 0 && newUsers.length !== dbUser.allUsers.length) {
+        dbUser.allUsers.push(...newUsers);
+        await dbUser.save().then(() => {
+            return res.send({
+                success: true,
+                message: "New users successfully added",
+                userList: dbUser.allUsers,
+            });
+        });
+    } else {
+        return res.send({
+            success: false,
+            message: "Your user list is already up to date",
+        });
+    }
 });
 
 // Filters the list of users based on the user currently being displayed
 async function filterUserList(userId, currentUser) {
-	const matchId = currentUser?.allUsers?.findIndex((el) => {
-		return el.user._id.toString() === userId;
-	});
+    const matchId = currentUser?.allUsers?.findIndex((el) => {
+        return el.user._id.toString() === userId;
+    });
 
-	if (matchId > -1) {
-		currentUser?.allUsers?.splice(matchId, 1);
-		return currentUser?.allUsers;
-	} else {
-		return "404";
-	}
+    if (matchId > -1) {
+        currentUser?.allUsers?.splice(matchId, 1);
+        return currentUser?.allUsers;
+    } else {
+        return "404";
+    }
 }
 
 app.get("/userList", async (req, res) => {
-	const currentUser = req.user;
+    const currentUser = req.user;
 
-	if (!currentUser) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!currentUser) {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: currentUser.email });
+    const dbUser = await User.findOne({ email: currentUser.email });
 
-	return res.send({
-		success: true,
-		message: "List Filtered",
-		userList: dbUser.allUsers,
-	});
+    return res.send({
+        success: true,
+        message: "List Filtered",
+        userList: dbUser.allUsers,
+    });
 });
 
 app.post("/declineUser", async (req, res) => {
-	const currentUser = req.user;
-	const { _id, name } = req.body?.user;
+    const currentUser = req.user;
+    const { _id, name } = req.body?.user;
 
-	if (!currentUser) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!currentUser) {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: currentUser.email });
-	const filteredUsers = await filterUserList(_id, dbUser);
+    const dbUser = await User.findOne({ email: currentUser.email });
+    const filteredUsers = await filterUserList(_id, dbUser);
 
-	dbUser?.rejectedMatches.push({ user: { id: _id, name: name } });
-	await dbUser.save();
+    dbUser?.rejectedMatches.push({ user: { id: _id, name: name } });
+    await dbUser.save();
 
-	if (filteredUsers === "404") {
-		return res.send({
-			success: false,
-			message: "That User No Longer Exists",
-		});
-	}
+    if (filteredUsers === "404") {
+        return res.send({
+            success: false,
+            message: "That User No Longer Exists",
+        });
+    }
 
-	await User.findOneAndUpdate(
-		{ email: dbUser.email },
-		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
-	);
+    await User.findOneAndUpdate(
+        { email: dbUser.email },
+        { allUsers: filteredUsers, numUsers: filteredUsers.length }
+    );
 
-	return res.send({
-		success: true,
-		message: "List Filtered",
-		userList: filteredUsers,
-	});
+    return res.send({
+        success: true,
+        message: "List Filtered",
+        userList: filteredUsers,
+    });
 });
 
 app.get("/retrieveMatches", async (req, res) => {
-	const currentUser = req.user;
+    const currentUser = req.user;
 
-	if (!currentUser) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!currentUser) {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: currentUser.email });
-	let confirmedMatches = [];
+    const dbUser = await User.findOne({ email: currentUser.email });
+    let confirmedMatches = [];
 
-	for (const user of dbUser?.confirmedMatches) {
-		if (user.user.displayed === false) {
-			const {
-				id,
-				name,
-				email,
-				degree,
-				avatar,
-				academics,
-				facebook,
-				instagram,
-				twitter,
-			} = await User.findById(user.user.id.toString());
-			confirmedMatches.push({
-				user: {
-					id: id,
-					name: name,
-					email: email,
-					degree: degree,
-					avatar: avatar,
-					academics: academics,
-					facebook: facebook,
-					instagram: instagram,
-					twitter: twitter,
-				},
-			});
-		}
-	}
+    for (const user of dbUser?.confirmedMatches) {
+        if (user.user.displayed === false) {
+            const {
+                id,
+                name,
+                email,
+                degree,
+                avatar,
+                academics,
+                facebook,
+                instagram,
+                twitter,
+            } = await User.findById(user.user.id.toString());
+            confirmedMatches.push({
+                user: {
+                    id: id,
+                    name: name,
+                    email: email,
+                    degree: degree,
+                    avatar: avatar,
+                    academics: academics,
+                    facebook: facebook,
+                    instagram: instagram,
+                    twitter: twitter,
+                },
+            });
+        }
+    }
 
-	return res.send({
-		success: true,
-		message: "Matches Retrieved",
-		matches: confirmedMatches,
-	});
+    return res.send({
+        success: true,
+        message: "Matches Retrieved",
+        matches: confirmedMatches,
+    });
 });
 
 app.post("/updateMatches", async (req, res) => {
-	const currentUser = req.user;
-	const { userDisplayed } = req.body;
+    const currentUser = req.user;
+    const { userDisplayed } = req.body;
 
-	if (!currentUser) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!currentUser) {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const dbUser = await User.findOne({ email: currentUser.email });
+    const dbUser = await User.findOne({ email: currentUser.email });
 
-	const displayedDbUser = dbUser.confirmedMatches?.find((user) => {
-		return user.user.id.toString() === userDisplayed;
-	});
-	if (displayedDbUser && displayedDbUser.user.displayed === false) {
-		displayedDbUser.user.displayed = true;
-		await dbUser.save();
-	}
+    const displayedDbUser = dbUser.confirmedMatches?.find((user) => {
+        return user.user.id.toString() === userDisplayed;
+    });
+    if (displayedDbUser && displayedDbUser.user.displayed === false) {
+        displayedDbUser.user.displayed = true;
+        await dbUser.save();
+    }
 
-	return res.send({
-		success: true,
-		message: "Matches Updated",
-	});
+    return res.send({
+        success: true,
+        message: "Matches Updated",
+    });
 });
 
 function isMatch(currentUser, matchedUser) {
-	const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
-		return e.user.id.toString() === currentUser.id;
-	});
-	return confirmedMatch;
+    const confirmedMatch = matchedUser?.potentialMatches.some((e) => {
+        return e.user.id.toString() === currentUser.id;
+    });
+    return confirmedMatch;
 }
 
 app.post("/acceptUser", async (req, res) => {
-	const currentUser = req.user;
-	const { _id, name } = req.body.user;
+    const currentUser = req.user;
+    const { _id, name } = req.body.user;
 
-	if (!currentUser) {
-		return res.send({
-			success: false,
-			message: "Please Log In To Your Account Again",
-		});
-	}
+    if (!currentUser) {
+        return res.send({
+            success: false,
+            message: "Please Log In To Your Account Again",
+        });
+    }
 
-	const matchedUser = await User.findById(_id);
+    const matchedUser = await User.findById(_id);
 
-	// Adds the payload user to the current users potential matches
-	const dbUser = await User.findOne({ email: currentUser.email });
-	const previouslyMatched = dbUser.potentialMatches.some((e) => {
-		return e.user.id?.toString() === _id;
-	});
-	const confirmedMatch = isMatch(dbUser, matchedUser);
+    // Adds the payload user to the current users potential matches
+    const dbUser = await User.findOne({ email: currentUser.email });
+    const previouslyMatched = dbUser.potentialMatches.some((e) => {
+        return e.user.id?.toString() === _id;
+    });
+    const confirmedMatch = isMatch(dbUser, matchedUser);
 
-	const filteredUsers = await filterUserList(_id, currentUser);
+    const filteredUsers = await filterUserList(_id, currentUser);
 
-	if (filteredUsers === "404") {
-		return res.send({
-			success: false,
-			message: "That User No Longer Exists",
-		});
-	}
+    if (filteredUsers === "404") {
+        return res.send({
+            success: false,
+            message: "That User No Longer Exists",
+        });
+    }
 
-	await User.findOneAndUpdate(
-		{ email: currentUser.email },
-		{ allUsers: filteredUsers, numUsers: filteredUsers.length }
-	);
+    await User.findOneAndUpdate(
+        { email: currentUser.email },
+        { allUsers: filteredUsers, numUsers: filteredUsers.length }
+    );
 
-	if (!matchedUser) {
-		return res.send({
-			success: false,
-			message: "This student has deactivated their account",
-		});
-	}
-	if (
-		!previouslyMatched ||
-		(previouslyMatched && dbUser.allUsers.length === 1)
-	) {
-		dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
-		await dbUser.save().then(async () => {
-			if (confirmedMatch) {
-				matchedUser.confirmedMatches.push({
-					user: {
-						id: dbUser.id,
-						name: dbUser.name,
-						displayed: false,
-					},
-				});
-				await matchedUser.save();
-			}
-		});
-	}
-	return res.send({
-		success: true,
-		message: "List Filtered",
-		userList: filteredUsers,
-		isMatch: confirmedMatch,
-	});
+    if (!matchedUser) {
+        return res.send({
+            success: false,
+            message: "This student has deactivated their account",
+        });
+    }
+    if (
+        !previouslyMatched ||
+        (previouslyMatched && dbUser.allUsers.length === 1)
+    ) {
+        dbUser?.potentialMatches.push({ user: { id: _id, name: name } });
+        await dbUser.save().then(async () => {
+            if (confirmedMatch) {
+                matchedUser.confirmedMatches.push({
+                    user: {
+                        id: dbUser.id,
+                        name: dbUser.name,
+                        displayed: false,
+                    },
+                });
+                await matchedUser.save();
+            }
+        });
+    }
+    return res.send({
+        success: true,
+        message: "List Filtered",
+        userList: filteredUsers,
+        isMatch: confirmedMatch,
+    });
 });
 
 function checkAuthenticated(req, res, next) {
-	if (req.isAuthenticated()) {
-		return;
-	}
+    if (req.isAuthenticated()) {
+        return;
+    }
 }
-
-/*function checknotAuthenticated (req, res, next) {
-	if (req.isAuthenticated()) {
-		return res.redirect('/')
-	}
-  next()
-} */
 
 //----------------------------------------- Postman Routes Only ---------------------------------------------------
 
 // DELETES ALL USERS IN THE DB ---- USE WISELY
 app.delete("/deleteAllPM", async function (req, res) {
-	await User.deleteMany({});
-	res.send("Successfully Deleted All Records");
+    await User.deleteMany({});
+    res.send("Successfully Deleted All Records");
 });
 
 // Gets a specific user by email
 app.post("/userPM", function (req, res) {
-	User.findOne({ email: req.body.email }, (err, user) => {
-		if (err) throw err;
-		if (!user) res.send("Ya dun goofed lad");
-		else {
-			res.send(user);
-		}
-	});
+    User.findOne({ email: req.body.email }, (err, user) => {
+        if (err) throw err;
+        if (!user) res.send("Ya dun goofed");
+        else {
+            res.send(user);
+        }
+    });
 });
 
 // Convienient Way to Get All Users in DB
 app.get("/allUsersPM", function (req, res) {
-	User.find({}, (err, user) => {
-		if (err) throw err;
-		if (!user) res.send("Ya dun goofed lad");
-		else {
-			res.send(user);
-		}
-	});
+    User.find({}, (err, user) => {
+        if (err) throw err;
+        if (!user) res.send("Ya dun goofed");
+        else {
+            res.send(user);
+        }
+    });
 });
 
 module.exports = app;
