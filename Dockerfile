@@ -10,6 +10,9 @@ COPY . /app
 # Install the application dependencies
 RUN npm install
 
+#Run build command to create build folder
+RUN npm run build
+
 # Define the entry point for the container
 CMD ["npm", "run", "dev"]
 
