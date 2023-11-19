@@ -104,6 +104,8 @@ app.post("/register", (req, res) => {
     });
 });
 
+// TODO: Update nodemailer to use secure access via 2FA as SMTP login for gmail accounts is disabled
+// Article: https://stackoverflow.com/questions/26196467/sending-email-via-node-js-using-nodemailer-is-not-working
 app.post("/forgotpassword", (req, res) => {
     const body = req.body;
     const newPassword = body.password;
