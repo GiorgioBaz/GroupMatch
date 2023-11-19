@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-	baseURL: "https://groupmatchapp.herokuapp.com/api",
+    baseURL: "https://groupmatch.onrender.com/api",
 });
