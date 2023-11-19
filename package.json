@@ -1,44 +1,44 @@
 {
-  "name": "grouper",
-  "version": "1.0.0",
-  "description": "The revolutionary new group matching application for University students looking to achieve high grades!",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "build": "cd client && npm run build",
-    "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build",
-    "start-watch": "nodemon index.js",
-    "dev": "concurrently \"npm run start-watch\" \"cd client && npm start\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GiorgioBaz/grouper.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/GiorgioBaz/grouper/issues"
-  },
-  "homepage": "https://github.com/GiorgioBaz/grouper#readme",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.1",
-    "cloudinary": "^1.28.1",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "dotenv": "^12.0.3",
-    "express": "^4.17.2",
-    "express-session": "^1.17.2",
-    "mongoose": "^6.1.7",
-    "nodemailer": "^6.7.2",
-    "passport": "^0.5.2",
-    "passport-local": "^1.0.0",
-    "react-scripts": "^5.0.1"
-  },
-  "devDependencies": {
-    "concurrently": "^7.0.0",
-    "nodemon": "^2.0.15"
-  }
+    "name": "grouper",
+    "version": "1.0.0",
+    "description": "The revolutionary new group matching application for University students looking to achieve high grades!",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "build": "cd client && npm run build",
+        "install-client": "cd client && npm install",
+        "build-client": "npm run install-client && npm run build",
+        "start-watch": "nodemon index.js",
+        "dev": "concurrently \"npm run start-watch\" \"cd client && npm start\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/GiorgioBaz/grouper.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/GiorgioBaz/grouper/issues"
+    },
+    "homepage": "https://github.com/GiorgioBaz/grouper#readme",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.1",
+        "cloudinary": "^1.28.1",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^12.0.3",
+        "express": "^4.17.2",
+        "express-session": "^1.17.2",
+        "mongoose": "^6.1.7",
+        "nodemailer": "^6.7.2",
+        "passport": "^0.5.2",
+        "passport-local": "^1.0.0",
+        "react-scripts": "^5.0.1"
+    },
+    "devDependencies": {
+        "concurrently": "^7.0.0",
+        "nodemon": "^2.0.15"
+    }
 }
