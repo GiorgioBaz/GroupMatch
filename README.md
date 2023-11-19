@@ -1,6 +1,6 @@
 # GroupMatch
 
-[GroupMatch](https://groupmatchapp.herokuapp.com/) is a JavaScript Application for students looking to form groups with like-minded peers 
+[GroupMatch](https://groupmatch.onrender.com/) is a JavaScript Application for students looking to form groups with like-minded peers 
 
 ## Installation
 
@@ -15,7 +15,7 @@ npm install
 
 ## Usage
 
-You can now access this application at [GroupMatch](https://groupmatchapp.herokuapp.com/)
+You can now access this application at [GroupMatch](https://groupmatch.onrender.com/)
 
 To run the backend and frontend concurrently use ```npm run dev```
 
