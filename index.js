@@ -15,9 +15,9 @@ const port = process.env.PORT || 5000;
 
 // Connect to the database
 mongoose
-	.connect(process.env.DB, { useNewUrlParser: true })
-	.then(() => console.log(`Database connected successfully`))
-	.catch((err) => console.log(err));
+    .connect(process.env.DB, { useNewUrlParser: true })
+    .then(() => console.log(`Database connected successfully`))
+    .catch((err) => console.log(err));
 
 // Since mongoose's Promise is deprecated, we override it with Node's Promise
 mongoose.Promise = global.Promise;
@@ -26,19 +26,19 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(
-	cors({
-		origin: "http://localhost:3000", // <-- location of the react app were connecting to
-		credentials: true,
-	})
+    cors({
+        origin: "http://localhost:3000", // <-- location of the react app were connecting to
+        credentials: true,
+    })
 );
 app.use(
-	session({
-		secret: "pennylanebevs",
-		resave: true,
-		saveUninitialized: true,
-	})
+    session({
+        secret: process.env.SECRET,
+        resave: true,
+        saveUninitialized: true,
+    })
 );
-app.use(cookieParser("pennylanebevs"));
+app.use(cookieParser(process.env.SECRET));
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
@@ -47,12 +47,12 @@ app.use("/api", userAuth);
 
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.get("*", function (request, response) {
-	response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+    response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 });
 
 //----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
 
 //Start Server
 app.listen(port, () => {
-	console.log("Server is listening on port 5000");
+    console.log("Server is listening on port 5000");
 });
