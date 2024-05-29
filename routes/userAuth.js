@@ -608,9 +608,10 @@ app.post("/forgotpassword", (req, res) => {
                                 { password: await bcrypt.hash(newPassword, 10) }
                             ).then(() => {
                                 // Since version 0.6.0, req.logout is asynchronous
-                                req.logout(function(err) {
-                                    if (err) { return next(err); }
-                                    res.redirect('/');
+                                req.logout(function (err) {
+                                    if (err) {
+                                        return next(err);
+                                    }
                                 });
                                 return res.send({
                                     success: true,
@@ -625,16 +626,15 @@ app.post("/forgotpassword", (req, res) => {
     });
 });
 
-app.post('/logout', function(req, res, next) {
+app.post("/logout", function (req, res, next) {
     // Since version 0.6.0, req.logout is asynchronous
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        res.redirect('/');
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
     });
     res.send("Successfully Logged Out");
 });
-
-
 
 // Profile Routes
 
